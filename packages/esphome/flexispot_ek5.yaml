@@ -1,0 +1,31 @@
+esphome:
+  name: flexispot_ek5
+  platform: ESP8266
+  board: nodemcuv2
+
+wifi:
+  ssid: "Abraham Linksys"
+  password: "PASSWORD42"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Flexispot EK5 Fallback Hotspot"
+    password: "VGhp4HGdsorM"
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: "1234"
+
+ota:
+  password: "1234"
+
+# Cover platform with position
+
+# Switch platform (presets)
+
+# Sensor (current height)
