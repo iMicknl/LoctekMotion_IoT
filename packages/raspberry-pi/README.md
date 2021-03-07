@@ -7,8 +7,7 @@ In the end I believe the Raspberry Pi is overkill for this scenario, but if you 
 ## Prerequisites
 
 - Raspberry Pi (with GPIO headers)
-- Ethernet cable 
-- Dupont cables
+- Material to connect to the RJ45 port
 
 ## Installation
 
@@ -24,6 +23,8 @@ Connect the GND, TX, RX and PIN20 (see [README](../../README.md#control-panels))
 | 12 (GPIO 18) | PIN 20 |
 
 ## Install
+
+Run `raspi-config` to turn on the serial connection. Go to Advanced Options -> Serial and enable the serial connection. You don't need to enable it for login.
 
 `sudo apt-get install python3-rpi.gpio`
 
