@@ -80,19 +80,17 @@ Based upon the great work of [minifloat](https://www.mikrocontroller.net/topic/4
 
 Fortunately, this is very common in such devices and thus there is a lot of documentation on this topic. There is a great tutorial on [Electronics Tutorials](https://www.electronics-tutorials.ws/combination/comb_6.html), if you want to learn more about this notation.
 
-Make sure you set the baud rate to 9600.
+Make sure you set the baud rate to 9600. For most LoctekMotion desks, the control box only broadcasts the current height for x seconds after you sent the Wake Up command. Otherwise you will receive `0x00` `0x00` `0x00` as payload.
 
-### Send a command
+### Execute a command
 
-The control box only accepts commands when the 'screen is awake'. This can be simulated by setting PIN 20 to HIGH.
-
-[TODO]
+The control box only accepts commands when the 'screen is active'. This can be simulated by setting `PIN 20` to HIGH.
 
 #### Command list
 
 | Command name | Start | Length | Type | Payload   | Checksum  | End  |
 | ------------ | ----- | ------ | ---- | --------- | --------- | ---- |
-| Wake up      | `9b`  | `06`   | `02` | `00` `00` | `6c` `a1` | `9d` |
+| Wake Up      | `9b`  | `06`   | `02` | `00` `00` | `6c` `a1` | `9d` |
 | Up           | `9b`  | `06`   | `02` | `01` `00` | `fc` `a0` | `9d` |
 | Down         | `9b`  | `06`   | `02` | `02` `00` | `0c` `a0` | `9d` |
 | M            | `9b`  | `06`   | `02` | `00` `ac` | `ac` `b8` | `9d` |
@@ -101,11 +99,11 @@ The control box only accepts commands when the 'screen is awake'. This can be si
 | Preset 3     | `9b`  | `06`   | `02` | `10` `00` | `ac` `ac` | `9d` |
 | Preset 4     | `9b`  | `06`   | `02` | `00` `01` | `ac` `60` | `9d` |
 
-All bytes combined will become the command to send to the control box.
+All bytes combined will become the command to send to the control box. See the [packages](#packages) for sample code.
 
 ## Similar projects / research
 
-While working on this project, I found out that I am not the only one with this idea. There are a few repositories on GitHub with great research which helped me kickstart this project.
+While working on this project, I found out that I am not the only one with this idea. There are a few repositories on GitHub with great research which helped me kickstart this project. ❤️
 
 - [grssmnn / ha-flexispot-standing-desk](https://github.com/grssmnn/ha-flexispot-standing-desk) - Home Assistant integration via MQTT (micropython)
 - [Dude88 / loctek_IOT_box](https://github.com/Dude88/loctek_IOT_box) - Arduino code to control via Alexa and MQTT 
