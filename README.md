@@ -36,6 +36,19 @@ The tables below will show a mapping of the RJ45 pinout to the pinout used by th
 
 In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I used a [RJ45 to RS232 adapter](https://www.allekabels.nl/rs232-kabel/4568/1041186/rj45-naar-rs232.html), but you simply can cut and split an ethernet cable as well.
 
+#### Supported Control Panels
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="#hs13a-1"><img src="https://www.loctekmotion.com/wp-content/uploads/2019/03/HS13A-1-control-panel.jpg" width="100px;" alt=""/><br /><sub><b>HS13A-1</b></sub></a><br /></td>
+    <td align="center"><a href="#hs01b-1"><img src="https://www.loctekmotion.com/wp-content/uploads/2019/02/HS01B-1-control-panel.jpg" width="100px;" alt=""/><br /><sub><b>HS01B-1</b></sub></a><br /></td>
+  </tr>
+</table>
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
+
+If your control panel is missing, feel free to [create an issue](https://github.com/iMicknl/LoctekMotion_IoT/issues/new) to discuss the possibilities or create a PR to add your research to this overview.  
 
 #### [HS13A-1](https://www.loctekmotion.com/shop/control-panel/hs13a-1/)
 
