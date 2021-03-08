@@ -34,7 +34,7 @@ The tables below will show a mapping of the RJ45 pinout to the pinout used by th
 
 ![RJ-45 connector layout](images/RJ-45_connector.jpg)
 
-In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I used a [RJ45 to RS232 adapter](https://www.allekabels.nl/rs232-kabel/4568/1041186/rj45-naar-rs232.html), but you simply can cut and split an ethernet cable as well.
+In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I used a [RJ45 to RS232 adapter](https://www.allekabels.nl/rs232-kabel/4568/1041186/rj45-naar-rs232.html) with DuPont cables (jump wires), but you simply can cut and split an ethernet cable as well.
 
 #### Supported Control Panels
 <!-- prettier-ignore-start -->
