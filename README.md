@@ -76,7 +76,7 @@ Other control panels / control boxes could be supported in the same way, but you
 
 ### Retrieve current height
 
-Based upon the great work of [minifloat](https://www.mikrocontroller.net/topic/493524), it became clear that the control panel utilises a [7-segment display](https://en.wikipedia.org/wiki/Seven-segment_display). The control box sends the height as [Binary Coded Decimal](https://www.electronics-tutorials.ws/binary/binary-coded-decimal.html), which is decoded in the control panel to drive the 7-segment display. **TODO CHECK**
+Based upon the great work of [minifloat](https://www.mikrocontroller.net/topic/493524), it became clear that the control panel utilises a [7-segment display](https://en.wikipedia.org/wiki/Seven-segment_display). The control box sends the height as hexadecimal, which is decoded in the control panel to drive the 7-segment display. The second number on the display also supports an optional decimal point.
 
 Fortunately, this is very common in such devices and thus there is a lot of documentation on this topic. There is a great tutorial on [Electronics Tutorials](https://www.electronics-tutorials.ws/combination/comb_6.html), if you want to learn more about this notation.
 
