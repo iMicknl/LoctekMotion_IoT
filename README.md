@@ -89,9 +89,9 @@ Other control panels / control boxes could be supported in the same way, but you
 
 ### Retrieve current height
 
-Based upon the great work of [minifloat](https://www.mikrocontroller.net/topic/493524), it became clear that the control panel utilises a [7-segment display](https://en.wikipedia.org/wiki/Seven-segment_display). The control box sends the height as hexadecimal, which is decoded in the control panel to drive the 7-segment display. The second number on the display also supports an optional decimal point.
+Based upon the great work of [minifloat](https://www.mikrocontroller.net/topic/493524), it became clear that the control panel utilises a [7-segment display](https://en.wikipedia.org/wiki/Seven-segment_display). Fortunately, this is very common in such devices and thus there is a lot of documentation on this topic. 
 
-Fortunately, this is very common in such devices and thus there is a lot of documentation on this topic. There is a great tutorial on [Electronics Tutorials](https://www.electronics-tutorials.ws/combination/comb_6.html), if you want to learn more about this notation.
+The control box sends the height as 4-bit hexadecimal, which is decoded in the control panel to drive the 7-segment display. The second number on the display also supports an optional decimal point.
 
 Make sure you set the baud rate to 9600. For most LoctekMotion desks, the control box only broadcasts the current height for x seconds after you sent the Wake Up command. Otherwise you will receive `0x00` `0x00` `0x00` as payload.
 
