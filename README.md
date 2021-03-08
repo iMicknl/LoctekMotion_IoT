@@ -95,6 +95,9 @@ The control box sends the height as 4-bit hexadecimal, which is decoded in the c
 
 Make sure you set the baud rate to 9600. For most LoctekMotion desks, the control box only broadcasts the current height for x seconds after you sent the Wake Up command. Otherwise you will receive `0x00` `0x00` `0x00` as payload.
 
+![](https://alselectro.files.wordpress.com/2015/03/image-27.png)
+source: [alselectro](https://alselectro.wordpress.com/2015/03/03/8051-tutorials-3-interfacing-7-segment-display/)
+
 ### Execute a command
 
 The control box only accepts commands when the 'screen is active'. This can be simulated by setting `PIN 20` to HIGH.
