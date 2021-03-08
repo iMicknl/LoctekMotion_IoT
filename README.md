@@ -41,8 +41,8 @@ In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I u
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="#hs13a-1"><img src="https://www.loctekmotion.com/wp-content/uploads/2019/03/HS13A-1-control-panel.jpg" width="100px;" alt=""/><br /><sub><b>HS13A-1</b></sub></a><br /></td>
-    <td align="center"><a href="#hs01b-1"><img src="https://www.loctekmotion.com/wp-content/uploads/2019/02/HS01B-1-control-panel.jpg" width="100px;" alt=""/><br /><sub><b>HS01B-1</b></sub></a><br /></td>
+    <td align="center"><a href="#hs13a-1"><img src="https://www.loctekmotion.com/wp-content/uploads/2019/03/HS13A-1-control-panel.jpg" width="180px;" alt=""/><br /><sub><b>HS13A-1</b></sub></a><br /></td>
+    <td align="center"><a href="#hs01b-1"><img src="https://www.loctekmotion.com/wp-content/uploads/2019/02/HS01B-1-control-panel.jpg" width="180px;" alt=""/><br /><sub><b>HS01B-1</b></sub></a><br /></td>
   </tr>
 </table>
 <!-- markdownlint-enable -->
