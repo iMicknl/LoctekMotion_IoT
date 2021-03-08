@@ -15,12 +15,12 @@ In the end I believe the Raspberry Pi is overkill for this scenario, but if you 
 
 Connect the GND, TX, RX and PIN20 (see [README](../../README.md#control-panels)) to the Raspberry Pi. In the Python script we use the following pins, but you can adapt this to your wishes.
 
-| PIN (GPIO)   | Name   |
-| ------------ | ------ |
-| 6            | GND    |
-| 8 (GPIO 14)  | RX     |
-| 10 (GPIO 15) | TX     |
-| 12 (GPIO 18) | PIN 20 |
+| Raspberry Pi | Loctek Motion |
+| ------------ | ------------- |
+| 6            | GND           |
+| 8 (GPIO 14)  | RX            |
+| 10 (GPIO 15) | TX            |
+| 12 (GPIO 18) | PIN 20        |
 
 ## Install
 
