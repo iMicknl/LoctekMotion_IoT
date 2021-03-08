@@ -1,6 +1,13 @@
 # ESPHome (work in progress)
 
-TODO Add note about pin out + 5V
+| ESP8266 | Loctek Motion |
+| ------- | ------------- |
+| GND     | GND           |
+| D6      | RX            |
+| D5      | TX            |
+| D2      | PIN 20        |
+
+If your board supports a 5V input, you could use the 5V provided by the control box to power your controller as well.
 
 ## Installation
 
