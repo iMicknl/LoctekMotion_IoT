@@ -1,8 +1,12 @@
 esphome:
   name: flexispot_ek5
+  comment: Flexispot EK5
   platform: ESP8266
   board: nodemcuv2
+  includes:
+    - desk_height.h
 
+# Change to your WiFi 
 wifi:
   ssid: "Abraham Linksys"
   password: "PASSWORD42"
@@ -14,9 +18,6 @@ wifi:
 
 captive_portal:
 
-# Enable logging
-logger:
-
 # Enable Home Assistant API
 api:
   password: "1234"
@@ -24,8 +25,115 @@ api:
 ota:
   password: "1234"
 
-# Cover platform with position
+# Enable logging
+logger:
+  level: DEBUG
+  baud_rate: 0
 
-# Switch platform (presets)
+# General config
+uart:
+  id: desk_uart
+  baud_rate: 9600
+  tx_pin: D5
+  rx_pin: D6
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
+
+# Switch platform (commands)
+switch:
+  - platform: gpio
+    name: "Virtual Screen"
+    pin:
+      number: D2
+      mode: OUTPUT
+    restore_mode: ALWAYS_OFF
+    internal: true
+
+  - platform: uart
+    name: "Preset 1"
+    id: switch_preset1
+    icon: mdi:numeric-1-box
+    data: [0x9b, 0x06, 0x02, 0x04, 0x00, 0xac, 0xa3, 0x9d]
+    uart_id: desk_uart
+
+  - platform: uart
+    name: "Preset 2"
+    id: switch_preset2
+    icon: mdi:numeric-2-box
+    data: [0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d]
+    uart_id: desk_uart
+
+  - platform: uart
+    name: "Sit"
+    id: switch_sit
+    icon: mdi:chair-rolling
+    data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
+    uart_id: desk_uart
+
+  - platform: uart
+    name: "Stand"
+    id: switch_stand
+    icon: mdi:human-handsup
+    data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
+    uart_id: desk_uart
+
+  - platform: uart
+    name: "Up"
+    id: switch_up
+    # icon: mdi:tray-arrow-up
+    icon: mdi:arrow-up-bold
+    data: [0x9b, 0x06, 0x02, 0x01, 0x00, 0xfc, 0xa0, 0x9d]
+    uart_id: desk_uart
+    internal: true
+
+  - platform: uart
+    name: "Down"
+    id: switch_down
+    # icon: mdi:tray-arrow-down
+    icon: mdi:arrow-down-bold
+    data: [0x9b, 0x06, 0x02, 0x02, 0x00, 0x0c, 0xa0, 0x9d]
+    uart_id: desk_uart
+    internal: true
+
+  - platform: uart
+    name: "M"
+    id: switch_m
+    icon: mdi:alpha-m-circle
+    data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
+    uart_id: desk_uart
+
+  - platform: uart
+    name: "(wake up)"
+    id: switch_wake_up
+    icon: mdi:gesture-tap-button
+    data: [0x9b, 0x06, 0x02, 0x00, 0x00, 0x6c, 0xa1, 0x9]
+    uart_id: desk_uart
+
+# Cover platform with position
+cover:
+  - platform: template
+    # icon: mdi:table-chair
+    # icon: mdi-human-male-height-variant
+    name: "Desk"
+    assumed_state: true
+
+    open_action:
+      - switch.turn_on: switch_up
+    close_action:
+      - switch.turn_on: switch_down
+    optimistic: true
 
 # Sensor (current height)
+# text_sensor:
+#   - platform: custom
+#     lambda: |-
+#       auto desk_height = new DeskHeight(id(desk_uart));
+#       App.register_component(desk_height);
+#       return {desk_height};
+#     text_sensors:
+#       id: "desk_height"
+#       name: Desk Height
+#       icon: "mdi:counter"

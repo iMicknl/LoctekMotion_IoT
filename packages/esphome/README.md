@@ -14,3 +14,6 @@ If your board supports a 5V input, you could use the 5V provided by the control 
 Please refer to the [ESPHome documentation](https://esphome.io/guides/getting_started_command_line.html).
 
 You can use `flexispot_ek5.yaml` as a boilerplate for your own implementation. This implementation has been created for the ESP8266 nodemcu, but can easily be adopted for other platforms.
+
+## Screenshots
+![ESPHome in Home Assistant](../../images/esphome.png)
