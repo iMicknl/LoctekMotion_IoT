@@ -4,7 +4,7 @@ esphome:
   platform: ESP8266
   board: nodemcuv2
   includes:
-    - desk_height.h
+    - desk_height_sensor.h
 
 # Change to your WiFi 
 wifi:
@@ -42,7 +42,18 @@ sensor:
     name: "WiFi Signal"
     update_interval: 60s
 
-# Switch platform (commands)
+  - platform: custom
+    lambda: |-
+      auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
+      App.register_component(desk_height_sensor);
+      return {desk_height_sensor};
+    sensors:
+      id: "desk_height"
+      name: Desk Height
+      unit_of_measurement: cm
+      accuracy_decimals: 1
+      icon: "mdi:counter"
+
 switch:
   - platform: gpio
     name: "Virtual Screen"
@@ -112,7 +123,6 @@ switch:
     data: [0x9b, 0x06, 0x02, 0x00, 0x00, 0x6c, 0xa1, 0x9]
     uart_id: desk_uart
 
-# Cover platform with position
 cover:
   - platform: template
     # icon: mdi:table-chair
@@ -125,15 +135,3 @@ cover:
     close_action:
       - switch.turn_on: switch_down
     optimistic: true
-
-# Sensor (current height)
-# text_sensor:
-#   - platform: custom
-#     lambda: |-
-#       auto desk_height = new DeskHeight(id(desk_uart));
-#       App.register_component(desk_height);
-#       return {desk_height};
-#     text_sensors:
-#       id: "desk_height"
-#       name: Desk Height
-#       icon: "mdi:counter"
