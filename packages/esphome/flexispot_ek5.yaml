@@ -42,6 +42,9 @@ sensor:
     name: "WiFi Signal"
     update_interval: 60s
 
+  - platform: uptime
+    name: Uptime
+
   - platform: custom
     lambda: |-
       auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
@@ -130,8 +133,27 @@ cover:
     name: "Desk"
     assumed_state: true
 
+    # Move desk up
     open_action:
-      - switch.turn_on: switch_up
+      - while:
+          condition:
+            sensor.in_range:
+              id: desk_height
+              below: 122.9 # Max height
+          then:
+          - logger.log: "Executing up command"
+          - switch.turn_on: switch_up
+          - delay: 10ms
+    
+    # Move desk down
     close_action:
-      - switch.turn_on: switch_down
+      - while:
+          condition:
+            sensor.in_range:
+              id: desk_height
+              above: 73.6 # Min height
+          then:
+          - logger.log: "Executing down command"
+          - switch.turn_on: switch_down
+          - delay: 10ms
     optimistic: true
