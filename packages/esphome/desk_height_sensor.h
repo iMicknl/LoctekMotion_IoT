@@ -6,7 +6,7 @@ class DeskHeightSensor : public PollingComponent, public UARTDevice, public Sens
 public:
   DeskHeightSensor(UARTComponent *parent) : PollingComponent(1000), UARTDevice(parent) {}
 
-  float value;
+  float value = NULL;
   float lastPublished = -1;
 
   unsigned long history[5];
@@ -77,12 +77,8 @@ public:
 
   void loop() override
   {
-    // const int max_line_length = 80;
-    // static byte buffer[max_line_length];
-
     while (available() > 0)
     {
-
       byte incomingByte = read();
       // ESP_LOGD("DEBUG", "Incoming byte is: %04x", incomingByte);
 
@@ -106,7 +102,7 @@ public:
         msg_type = incomingByte;
       }
 
-      // Fourth byte is first height digit, if msg type 0x12
+      // Fourth byte is first height digit, if msg type 0x12 & msg len 7
       if (history[2] == 0x9b)
       {
 
@@ -152,7 +148,7 @@ public:
           }
 
           value = finalHeight;
-          ESP_LOGD("DEBUG", "Current height is: %f", finalHeight);
+          ESP_LOGD("DeskHeightSensor", "Current height is: %f", finalHeight);
         }
       }
 
@@ -175,7 +171,7 @@ public:
 
   void update() override
   {
-    if (value != lastPublished)
+    if (value && value != lastPublished)
     {
       publish_state(value);
       lastPublished = value;

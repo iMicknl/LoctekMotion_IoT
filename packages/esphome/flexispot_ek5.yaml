@@ -1,8 +1,8 @@
 esphome:
   name: flexispot_ek5
   comment: Flexispot EK5
-  platform: ESP8266
-  board: nodemcuv2
+  platform: ESP8266 # Change to your type
+  board: nodemcuv2 # Change to your board
   includes:
     - desk_height_sensor.h
 
@@ -27,7 +27,7 @@ ota:
 
 # Enable logging
 logger:
-  level: DEBUG
+  # level: DEBUG # Enable if you face issues
   baud_rate: 0
 
 # General config
@@ -97,7 +97,6 @@ switch:
   - platform: uart
     name: "Up"
     id: switch_up
-    # icon: mdi:tray-arrow-up
     icon: mdi:arrow-up-bold
     data: [0x9b, 0x06, 0x02, 0x01, 0x00, 0xfc, 0xa0, 0x9d]
     uart_id: desk_uart
@@ -106,7 +105,6 @@ switch:
   - platform: uart
     name: "Down"
     id: switch_down
-    # icon: mdi:tray-arrow-down
     icon: mdi:arrow-down-bold
     data: [0x9b, 0x06, 0x02, 0x02, 0x00, 0x0c, 0xa0, 0x9d]
     uart_id: desk_uart
