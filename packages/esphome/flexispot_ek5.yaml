@@ -1,36 +1,41 @@
-esphome:
+substitutions:
+  device_name: Flexispot EK5
   name: flexispot_ek5
-  comment: Flexispot EK5
-  platform: ESP8266 # Change to your type
-  board: nodemcuv2 # Change to your board
+  min_height: "73.6" # Min height + 0.1
+  max_height: "122.9" # Max height - 0.1
+
+esphome:
+  name: ${name}
+  comment: ${device_name}
+  platform: ESP8266 # TODO Change to your platform
+  board: nodemcuv2 # TODO Change to your board
   includes:
     - desk_height_sensor.h
 
-# Change to your WiFi 
 wifi:
-  ssid: "Abraham Linksys"
-  password: "PASSWORD42"
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Flexispot EK5 Fallback Hotspot"
-    password: "VGhp4HGdsorM"
+    ssid: "${device_name} Fallback Hotspot"
+    password: !secret ap_fallback_password
+
 
 captive_portal:
 
-# Enable Home Assistant API
-api:
-  password: "1234"
-
-ota:
-  password: "1234"
-
 # Enable logging
 logger:
-  # level: DEBUG # Enable if you face issues
+  #level: DEBUG
   baud_rate: 0
 
-# General config
+# Enable Home Assistant API
+api:
+  password: !secret ha_api_password
+
+ota:
+  password: !secret ha_api_password
+
 uart:
   id: desk_uart
   baud_rate: 9600
@@ -81,14 +86,14 @@ switch:
     uart_id: desk_uart
 
   - platform: uart
-    name: "Sit"
+    name: "Sit" # Preset 3 on some control panels
     id: switch_sit
     icon: mdi:chair-rolling
     data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
     uart_id: desk_uart
 
   - platform: uart
-    name: "Stand"
+    name: "Stand" # Not available for all control panels
     id: switch_stand
     icon: mdi:human-handsup
     data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
@@ -118,7 +123,7 @@ switch:
     uart_id: desk_uart
 
   - platform: uart
-    name: "(wake up)"
+    name: "(wake up)" # Not available on all control panels
     id: switch_wake_up
     icon: mdi:gesture-tap-button
     data: [0x9b, 0x06, 0x02, 0x00, 0x00, 0x6c, 0xa1, 0x9d]
@@ -137,7 +142,7 @@ cover:
           condition:
             sensor.in_range:
               id: desk_height
-              below: 122.9 # Max height
+              below: ${max_height}
           then:
           - logger.log: "Executing up command"
           - switch.turn_on: switch_up
@@ -149,7 +154,7 @@ cover:
           condition:
             sensor.in_range:
               id: desk_height
-              above: 73.6 # Min height
+              above: ${min_height} 
           then:
           - logger.log: "Executing down command"
           - switch.turn_on: switch_down
