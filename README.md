@@ -53,7 +53,7 @@ If your control panel is missing, feel free to [create an issue](https://github.
 #### [HS13A-1](https://www.loctekmotion.com/shop/control-panel/hs13a-1/)
 
 - **Desk model**: Flexispot EK5
-- **Control box**: CB38M2B(IB)-1
+- **Tested with control box**: CB38M2B(IB)-1
 - **Source**: Printed on the PCB of the control box.
   
 | RJ45 pin | Name       | Cable Color |
@@ -70,7 +70,7 @@ If your control panel is missing, feel free to [create an issue](https://github.
 #### [HS01B-1](https://www.loctekmotion.com/shop/control-panel/hs05a-1/)
 
 - **Desk model**: Flexispot E5B
-- **Control box**: unknown
+- **Tested with control box**: unknown
 - **Source**: [nv1t/standing-desk-interceptor](https://github.com/nv1t/standing-desk-interceptor)
   
 | RJ45 pin | Name      | Cable Color |
