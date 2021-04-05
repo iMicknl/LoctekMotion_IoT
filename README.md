@@ -70,7 +70,7 @@ If your control panel is missing, feel free to [create an issue](https://github.
 #### [HS01B-1](https://www.loctekmotion.com/shop/control-panel/hs05a-1/)
 
 - **Desk model**: Flexispot E5B
-- **Tested with control box**: unknown
+- **Tested with control box**: CB38M2A-1
 - **Source**: [nv1t/standing-desk-interceptor](https://github.com/nv1t/standing-desk-interceptor)
   
 | RJ45 pin | Name      | Original Cable Color  | Ethernet cable color (T568B) |
