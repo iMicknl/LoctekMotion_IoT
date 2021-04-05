@@ -56,16 +56,16 @@ If your control panel is missing, feel free to [create an issue](https://github.
 - **Tested with control box**: CB38M2B(IB)-1
 - **Source**: Printed on the PCB of the control box.
   
-| RJ45 pin | Name       | Cable Color |
-| -------- | ---------- | ----------- |
-| 8        | RESET SWIM | Brown       |
-| 7        | PIN 20     | White       |
-| 6        | RX         | Purple      |
-| 5        | TX         | Red         |
-| 4        | GND1       | Green       |
-| 3        | +5V (VDD)  | Black       |
-| 2        | 29V+       | Blue        |
-| 1        | 29V-       | Yellow      |
+| RJ45 pin | Name       | Original Cable Color | Ethernet cable color (T568B) |
+| -------- | ---------- | -------------------- | ---------------------------- |
+| 8        | RESET SWIM | Brown                | White-Orange                 |
+| 7        | PIN 20     | White                | Orange                       |
+| 6        | RX         | Purple               | White-Green                  |
+| 5        | TX         | Red                  | Blue                         |
+| 4        | GND1       | Green                | White-Blue                   |
+| 3        | +5V (VDD)  | Black                | Green                        |
+| 2        | 29V+       | Blue                 | White-Brown                  |
+| 1        | 29V-       | Yellow               | Brown                        |
 
 #### [HS01B-1](https://www.loctekmotion.com/shop/control-panel/hs05a-1/)
 
@@ -73,17 +73,16 @@ If your control panel is missing, feel free to [create an issue](https://github.
 - **Tested with control box**: unknown
 - **Source**: [nv1t/standing-desk-interceptor](https://github.com/nv1t/standing-desk-interceptor)
   
-| RJ45 pin | Name      | Cable Color |
-| -------- | --------- | ----------- |
-| 8        | +5V (VDD) | Yellow      |
-| 7        | GND       | Blue        |
-| 6        | TX        | Black       |
-| 5        | RX        | Green       |
-| 4        | PIN 20    | Red         |
-| 3        | (unknown) | Purple      |
-| 2        | SWIM      | White       |
-| 1        | RES       | Brown       |
-
+| RJ45 pin | Name      | Original Cable Color  | Ethernet cable color (T568B) |
+| -------- | --------- | --------------------- | ---------------------------- |
+| 8        | +5V (VDD) | Yellow                | Brown                        |
+| 7        | GND       | Blue                  | White-Brown                  |
+| 6        | TX        | Black                 | Green                        |
+| 5        | RX        | Green                 | White-Blue                   |
+| 4        | PIN 20    | Red                   | Blue                         |
+| 3        | (unknown) | Purple                | White-Green                  |
+| 2        | SWIM      | White                 | Orange                       |
+| 1        | RES       | Brown                 | White-Orange                 |
 
 Other control panels / control boxes could be supported in the same way, but you would need to figure the RJ45 pinout mapping. Most control boxes have an extra RJ45 port for serial communication, but otherwise you would need to place your device in between the control panel and the control box.
 
