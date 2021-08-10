@@ -1,14 +1,13 @@
 #include "esphome.h"
 #include <bitset>
 
-class DeskHeightSensor : public PollingComponent, public UARTDevice, public Sensor
+class DeskHeightSensor : public Component, public UARTDevice, public Sensor
 {
 public:
-  DeskHeightSensor(UARTComponent *parent) : PollingComponent(1000), UARTDevice(parent) {}
+  DeskHeightSensor(UARTComponent *parent) : UARTDevice(parent) {}
 
   float value = NULL;
   float lastPublished = -1;
-
   unsigned long history[5];
 
   int msg_len = 0;
@@ -80,8 +79,8 @@ public:
     while (available() > 0)
     {
       byte incomingByte = read();
-      // ESP_LOGD("DEBUG", "Incoming byte is: %04x", incomingByte);
-
+      // ESP_LOGD("DEBUG", "Incoming byte is: %08x", incomingByte);
+      
       // First byte, start of a packet
       if (incomingByte == 0x9b)
       {
@@ -111,13 +110,13 @@ public:
           // Empty height
           if (incomingByte == 0)
           {
-            // ESP_LOGD("DEBUG", "Height 1 is EMPTY -> 0x%02x", incomingByte);
-            // deskSerial.write(command_wakeup, sizeof(command_wakeup));
+             //ESP_LOGD("DEBUG", "Height 1 is EMPTY -> 0x%02x", incomingByte);
+             //deskSerial.write(command_wakeup, sizeof(command_wakeup));
           }
           else
           {
             valid = true;
-            // ESP_LOGD("DEBUG", "Height 1 is: 0x%02x", incomingByte);
+          //   ESP_LOGD("DEBUG", "Height 1 is: 0x%02x", incomingByte);
           }
         }
       }
@@ -127,7 +126,7 @@ public:
       {
         if (valid == true)
         {
-          // ESP_LOGD("DEBUG", "Height 2 is: 0x%02x", incomingByte);
+           //ESP_LOGD("DEBUG", "Height 2 is: 0x%02x", incomingByte);
         }
       }
 
@@ -148,15 +147,11 @@ public:
           }
 
           value = finalHeight;
-          ESP_LOGD("DeskHeightSensor", "Current height is: %f", finalHeight);
+          // ESP_LOGD("DeskHeightSensor", "Current height is: %f", finalHeight);
         }
       }
 
-      // End byte
-      if (incomingByte == 0x9d)
-      {
-      
-      }
+
 
       // Save byte buffer to history arrary
       history[4] = history[3];
@@ -165,16 +160,15 @@ public:
       history[1] = history[0];
       history[0] = incomingByte;
 
-      yield();
-    }
-  }
-
-  void update() override
-  {
-    if (value && value != lastPublished)
-    {
-      publish_state(value);
-      lastPublished = value;
+           // End byte
+      if (incomingByte == 0x9d)
+      {
+        if (value && value != lastPublished)
+        {
+          publish_state(value);
+          lastPublished = value;
+        }
+      }
     }
   }
 };
