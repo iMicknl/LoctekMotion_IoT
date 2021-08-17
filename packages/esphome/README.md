@@ -20,6 +20,24 @@
 | D5      | TX                      | Black                              |
 | D2      | PIN 20                  | Red                                |
 
+## [HS01B-1] with ESP32 as passthrough and keypad support
+
+| ESP32   | Loctek Controller (E5)      | Loctek Motion Cable Color (HS01B-1)|
+| ------- | -----------------------     | ---------------------------------- |
+| GND     | GND                         | Blue                               |
+| GPIO16  | RX                          | Green                              |
+| GPIO17  | TX                          | Black                              |
+| GPIO23  | PIN 20                      | Red                                |
+
+| ESP32   | Loctek keypad (HS01B-1) |Loctek Motion Cable Color (HS01B-1)    |
+| ------- | ----------------------- | ----------------------------------    |
+|         | GND                     | Blue  (Bridged to GND from controller)|
+|         | RX                      | Green (Bridged to RX from controller) |
+| GPIO3   | TX                      | Black                                 |
+| GPIO22  | PIN 20                  | Red                                   |
+
+Note: The rest of the cables can be passed through directly to the controller from the keypad. RX from controller is split between the Keypad and ESP directly
+
 See [README](../../README.md#control-panels) for more details. If your board supports a 5V input, you could use the 5V provided by the control box to power your controller as well:
 
 | ESP8266 | Loctek Motion (HS13A-1) | Loctek Motion (HS01B-1) |
@@ -43,6 +61,8 @@ You can use `flexispot_ek5.yaml` *(HS13A-1)* or `flexispot_e5b.yaml` *(HS01B-1)*
 - Current height via sensor entity
 - M button via switch entity
 - Wake up button via switch entity (currently just used for testing, doesn't seem functional yet)
+- Support for ESP32 (E5b only)
+- Support for keypad (E5b only)
 
 ## Screenshots
 ![ESPHome in Home Assistant](../../images/esphome.png)

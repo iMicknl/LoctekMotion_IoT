@@ -1,0 +1,315 @@
+substitutions:
+  device_name: Flexispot E5B
+  name: flexispot_e5b
+  min_height: "71.0" # Min height + 0.1
+  #min_height: "62.1" # Min height + 0.1  (original one)
+  max_height: "125.1" # Max height - 0.1
+  
+esphome:
+  name: ${name}
+  comment: ${device_name}
+  platform: esp32 # TODO Change to your platform
+  board: esp32dev # TODO Change to your board
+  includes:
+    - desk_height_sensor.h
+    - desk_keypad.h
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "${device_name} Fallback Hotspot"
+    password: !secret ap_fallback_password
+
+captive_portal:
+
+# Enable logging
+logger:
+  level: DEBUG
+  baud_rate: 0
+
+# Enable Home Assistant API
+api:
+  password: !secret ha_api_password
+
+ota:
+  password: !secret ha_api_password
+
+script:
+  - id: screen_timer
+    mode: restart
+    then:
+     # on_start
+     - logger.log: "Executing screen timer command"
+     - switch.turn_on: virtual_screen
+     - delay: 12s  # timer length (keypad screen timeout is 10s + 2s buffer)
+     - if:
+        condition:
+         binary_sensor.is_off : screen
+        then:
+        - switch.turn_off: virtual_screen
+     # on_end
+
+  - id: script_start_command
+    mode: restart
+    then:
+     - logger.log: "Executing Empty command"
+     - if:
+        condition:
+         switch.is_off : virtual_screen
+        then:
+          - script.execute: screen_timer
+          - delay: 480ms
+        else:
+          - script.execute: screen_timer
+    
+uart:
+  - id: desk_uart
+    baud_rate: 9600
+    tx_pin: GPIO17
+    rx_pin: GPIO16
+  - id: keypad_uart
+    baud_rate: 9600
+    tx_pin: GPIO1
+    rx_pin: GPIO3
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
+
+  - platform: uptime
+    name: Uptime
+
+  - platform: custom
+    lambda: |-
+      auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
+      App.register_component(desk_height_sensor);
+      return {desk_height_sensor};
+    sensors:
+      id: "desk_height"
+      name: Desk Height
+      unit_of_measurement: cm
+      accuracy_decimals: 1
+      icon: "mdi:counter"
+      on_value:
+        then:
+          - script.execute: screen_timer
+          # - cover.template.publish:
+          #    id: desk
+          #    position: !lambda |-
+          #        // The sensor outputs values from min_height (cm) to max_height (cm)
+          #        // We need to translate this to 0 - 1 scale.
+          #        float position = (float(x) - float(${min_height})) / (float(${max_height}) - float(${min_height}));
+          #        return position;
+
+  - platform: custom
+    lambda: |-
+      auto desk_keypad_sensor = new DeskKeypad(id(keypad_uart));
+      App.register_component(desk_keypad_sensor);
+      return {desk_keypad_sensor};
+    sensors:
+      id: "desk_command"
+      name: Desk command
+      icon: "mdi:counter"
+      on_value:
+        then:
+          lambda: |-
+            if(!id(keypad_switch).state)
+            {
+              if(id(desk_command).state == 1)
+              {
+                id(desk).open();
+              } else if(id(desk_command).state == 2)
+              {
+                id(desk).close();
+              } else if(id(desk_command).state == 3)
+              {
+                id(switch_preset1).turn_on();
+              } else if(id(desk_command).state == 4)
+              {
+                id(switch_preset2).turn_on();
+              } else if(id(desk_command).state == 5)
+              {
+                id(switch_preset3).turn_on();
+              }  else if(id(desk_command).state == 6)
+              {
+                id(switch_m).turn_on();
+              } else if(id(desk_command).state == 7)
+              {
+                id(switch_alarm).turn_on();
+              } else if(id(desk_command).state == 8)
+              {
+                id(desk).stop();
+              }
+            }
+
+binary_sensor:
+  - platform: gpio
+    name: "Screen"
+    id: "screen"
+    pin: GPIO22
+    internal: false
+    on_press:
+      then:
+        - switch.turn_on: virtual_screen
+    on_release:
+      then:
+        - switch.turn_off: virtual_screen
+
+switch:
+  - platform: template
+    name: "Keypad locked"
+    icon: mdi:key
+    id: "keypad_switch"
+    internal: false
+    restore_state: true
+    assumed_state: false
+    optimistic: true
+
+  - platform: template
+    name: "Preset 1"
+    id: switch_preset1
+    icon: mdi:numeric-1-box
+    turn_on_action:
+     - logger.log: "Executing Preset 1 command"
+     - script.execute: script_start_command
+     - script.wait: script_start_command
+     - uart.write:
+         id: desk_uart
+         data: [0x9b, 0x06, 0x02, 0x04, 0x00, 0xac, 0xa3, 0x9d]
+    internal: false
+
+  - platform: template
+    name: "Preset 2"
+    id: switch_preset2
+    icon: mdi:numeric-2-box
+    turn_on_action:
+     - logger.log: "Executing Preset 2 command"
+     - script.execute: script_start_command
+     - script.wait: script_start_command
+     - uart.write:
+         id: desk_uart
+         data: [0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d]
+    internal: false
+
+  - platform: template
+    name: "Preset 3"
+    id: switch_preset3
+    icon: mdi:numeric-3-box
+    turn_on_action:
+     - logger.log: "Executing Preset 3 command"
+     - script.execute: script_start_command
+     - script.wait: script_start_command
+     - uart.write:
+         id: desk_uart
+         data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
+    internal: false
+
+  - platform: template
+    name: "M"
+    id: switch_m
+    icon: mdi:alpha-m-circle
+    turn_on_action:
+     - logger.log: "Executing Preset 3 command"
+     - script.execute: script_start_command
+     - script.wait: script_start_command
+     - uart.write:
+         id: desk_uart
+         data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
+    internal: false
+
+  - platform: template
+    name: "Alarm"
+    id: switch_alarm
+    icon: mdi:alpha-m-circle
+    turn_on_action:
+     - logger.log: "Executing Alarm command"
+    #  - script.execute: script_start_command
+    #  - script.wait: script_start_command
+    #  - uart.write:
+    #      id: desk_uart
+    #      data: [0x9b, 0x06, 0x02, 0x40, 0x00, 0xac, 0x90, 0x9d]
+    internal: false
+
+  - platform: gpio
+    name: "Virtual Screen"
+    id: "virtual_screen"
+    pin:
+      number: GPIO23
+      mode: OUTPUT
+    restore_mode: ALWAYS_OFF
+    internal: false
+
+  - platform: uart
+    name: "Up"
+    id: switch_up
+    icon: mdi:arrow-up-bold
+    data: [0x9b, 0x06, 0x02, 0x01, 0x00, 0xfc, 0xa0, 0x9d]
+    uart_id: desk_uart
+    internal: false
+
+  - platform: uart
+    name: "Down"
+    id: switch_down
+    icon: mdi:arrow-down-bold
+    data: [0x9b, 0x06, 0x02, 0x02, 0x00, 0x0c, 0xa0, 0x9d]
+    uart_id: desk_uart
+    internal: false
+
+  - platform: uart
+    name: "Empty command"
+    id: switch_empty
+    data: [0x9b, 0x06, 0x02, 0x00, 0x00, 0x6c, 0xa1, 0x9d]
+    uart_id: desk_uart
+    internal: false
+
+cover:
+  - platform: template
+    name: "Desk"
+    id: "desk"
+    assumed_state: true
+    # has_position: true
+    # position_action:
+    #   - logger.log: "Requesting action change"
+
+    # Move desk up
+    open_action:
+      - script.execute: script_start_command
+      - script.wait: script_start_command
+      - while:
+          condition:
+            sensor.in_range:
+              id: desk_height
+              below: ${max_height}
+          then:
+          - logger.log: "Executing up command"
+          # - cover.template.publish:
+          #     id: desk
+          #     current_operation: OPENING
+          - switch.turn_on: switch_up
+          - delay: 108ms
+          
+          
+    
+    # Move desk down
+    close_action:
+      - script.execute: script_start_command
+      - script.wait: script_start_command
+      - while:
+          condition:
+            sensor.in_range:
+              id: desk_height
+              above: ${min_height} 
+          then:
+          - logger.log: "Executing down command"
+          # - cover.template.publish:
+          #     id: desk
+          #     current_operation: CLOSING
+          - switch.turn_on: switch_down
+          - delay: 108ms
+
+   
+    optimistic: true
