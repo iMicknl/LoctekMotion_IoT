@@ -20,7 +20,7 @@
 | D5      | TX                      | Black                              |
 | D2      | PIN 20                  | Red                                |
 
-## [HS01B-1] with ESP32 as passthrough and kepyad support
+## [HS01B-1] with ESP32 as passthrough and keypad support
 
 | ESP32   | Loctek Controller (E5)      | Loctek Motion Cable Color (HS01B-1)|
 | ------- | -----------------------     | ---------------------------------- |
