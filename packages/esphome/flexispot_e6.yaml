@@ -1,6 +1,6 @@
 substitutions:
   device_name: Flexispot E6
-  name: flexispot_e5b
+  name: flexispot_e6
   min_height: "60.1" # Min height + 0.1
   max_height: "122.9" # Max height - 0.1
   
