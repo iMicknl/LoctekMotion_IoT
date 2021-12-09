@@ -23,3 +23,4 @@
   - wake()
   - sit()
   - stand()
+- flushes, enables and disables tx
