@@ -127,3 +127,7 @@ While working on this project, I found out that I am not the only one with this 
 - [VinzSpring / LoctekReverseengineering](https://github.com/VinzSpring/LoctekReverseengineering#assumptions) - Research and Python samples
 
 and a huge thanks to the [Tweakers.net](https://gathering.tweakers.net) community (Dutch), whom helped me to kickstart this project.
+
+
+## Support
+Join our [Discord channel](https://discord.com/invite/C7TNzUZ9Xf)
