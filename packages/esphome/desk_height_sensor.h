@@ -60,7 +60,10 @@ public:
     {
       return 9;
     }
-
+    if (!b[0] && !b[1] && !b[2] && !b[3] && !b[4] && !b[5] && b[6])
+    {
+      return 10;
+    }
     return 0;
   }
 
@@ -138,16 +141,20 @@ public:
           int height1 = hex_to_int(history[1]) * 100;
           int height2 = hex_to_int(history[0]) * 10;
           int height3 = hex_to_int(incomingByte);
-
-          float finalHeight = height1 + height2 + height3;
-
-          if (is_decimal(history[0]))
+          if (height2 == 100) // check if 'number' is a hyphen, return value 10 multiplied by 10
           {
-            finalHeight = finalHeight / 10;
+            value =  lastPublished;
           }
-
-          value = finalHeight;
-          // ESP_LOGD("DeskHeightSensor", "Current height is: %f", finalHeight);
+          else
+          {
+            float finalHeight = height1 + height2 + height3;
+            if (is_decimal(history[0]))
+            {
+              finalHeight = finalHeight / 10;
+            }
+            value = finalHeight;
+            // ESP_LOGD("DeskHeightSensor", "Current height is: %f", finalHeight);
+          }
         }
       }
 
@@ -166,9 +173,9 @@ public:
         if (value && value != lastPublished)
         {
           publish_state(value);
-          lastPublished = value;
-        }
+            lastPublished = value;
+        } 
       }
-    }
+    } 
   }
 };
