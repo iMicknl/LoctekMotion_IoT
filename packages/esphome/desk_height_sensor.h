@@ -143,7 +143,7 @@ public:
           int height3 = hex_to_int(incomingByte);
           if (height2 == 100) // check if 'number' is a hyphen, return value 10 multiplied by 10
           {
-            value =  lastPublished;
+            
           }
           else
           {
