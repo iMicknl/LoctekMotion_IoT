@@ -67,6 +67,8 @@ If your control panel is missing, feel free to [create an issue](https://github.
 | 2        | 29V+       | Blue                 | White-Brown                  |
 | 1        | 29V-       | Yellow               | Brown                        |
 
+Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
+
 #### [HS01B-1](https://www.loctekmotion.com/shop/control-panel/hs05a-1/)
 
 - **Desk model**: Flexispot E5B
@@ -83,6 +85,8 @@ If your control panel is missing, feel free to [create an issue](https://github.
 | 3        | (unknown) | Purple                | White-Green                  |
 | 2        | SWIM      | White                 | Orange                       |
 | 1        | RES       | Brown                 | White-Orange                 |
+
+Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
 
 Other control panels / control boxes could be supported in the same way, but you would need to figure the RJ45 pinout mapping. Most control boxes have an extra RJ45 port for serial communication, but otherwise you would need to place your device in between the control panel and the control box.
 
