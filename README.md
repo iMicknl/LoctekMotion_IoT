@@ -108,16 +108,16 @@ The control box only accepts commands when the 'screen is active'. This can be s
 
 #### Command list
 
-| Command name | Start | Length | Type | Payload   | Checksum  | End  |
-| ------------ | ----- | ------ | ---- | --------- | --------- | ---- |
-| Wake Up      | `9b`  | `06`   | `02` | `00` `00` | `6c` `a1` | `9d` |
-| Up           | `9b`  | `06`   | `02` | `01` `00` | `fc` `a0` | `9d` |
-| Down         | `9b`  | `06`   | `02` | `02` `00` | `0c` `a0` | `9d` |
-| M            | `9b`  | `06`   | `02` | `20` `00` | `ac` `b8` | `9d` |
-| Preset 1     | `9b`  | `06`   | `02` | `04` `00` | `ac` `a3` | `9d` |
-| Preset 2     | `9b`  | `06`   | `02` | `08` `00` | `ac` `a6` | `9d` |
-| Preset 3     | `9b`  | `06`   | `02` | `10` `00` | `ac` `ac` | `9d` |
-| Preset 4     | `9b`  | `06`   | `02` | `00` `01` | `ac` `60` | `9d` |
+| Command name      | Start | Length | Type | Payload   | Checksum  | End  |
+| ----------------- | ----- | ------ | ---- | --------- | --------- | ---- |
+| Wake Up           | `9b`  | `06`   | `02` | `00` `00` | `6c` `a1` | `9d` |
+| Up                | `9b`  | `06`   | `02` | `01` `00` | `fc` `a0` | `9d` |
+| Down              | `9b`  | `06`   | `02` | `02` `00` | `0c` `a0` | `9d` |
+| M                 | `9b`  | `06`   | `02` | `20` `00` | `ac` `b8` | `9d` |
+| Preset 1          | `9b`  | `06`   | `02` | `04` `00` | `ac` `a3` | `9d` |
+| Preset 2          | `9b`  | `06`   | `02` | `08` `00` | `ac` `a6` | `9d` |
+| Preset 3 (stand)  | `9b`  | `06`   | `02` | `10` `00` | `ac` `ac` | `9d` |
+| Preset 4 (sit)    | `9b`  | `06`   | `02` | `00` `01` | `ac` `60` | `9d` |
 
 All bytes combined will become the command to send to the control box. See the [packages](#packages) for sample code.
 
