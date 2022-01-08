@@ -104,7 +104,7 @@ source: [alselectro](https://alselectro.wordpress.com/2015/03/03/8051-tutorials-
 
 ### Execute a command
 
-The control box only accepts commands when the 'screen is active'. This can be simulated by setting `PIN 20` to HIGH.
+The control box only accepts commands when the 'screen is active'. To activate the screen, `PIN 20` needs to be set to HIGH for about 1 second. The screen gets disabled automatically again after some amount of time receiving no commands.
 
 #### Command list
 
