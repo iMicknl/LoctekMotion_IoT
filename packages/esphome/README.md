@@ -4,21 +4,21 @@
 
 ## [HS13A-1](https://www.loctekmotion.com/shop/control-panel/hs13a-1/)
 
-| ESP8266 | Loctek Motion (HS13A-1) | Loctek Motion Cable Color (HS13A-1)|
-| ------- | ----------------------- | ---------------------------------- |
-| GND     | GND                     | Green                              |
-| D6      | RX                      | Purple                             |
-| D5      | TX                      | Red                                |
-| D2      | PIN 20                  | White                              |
+| ESP8266 | Loctek Motion (HS13A-1) | Loctek Motion Cable Color (HS13A-1)|Ethernet cable color (T568B)|
+| ------- | ----------------------- | ---------------------------------- |------------------------|
+| GND     | GND                     | Green                              |White-Blue   |
+| D6      | RX                      | Purple                             | White-Green|
+| D5      | TX                      | Red                                | Blue |
+| D2      | PIN 20                  | White                              | Orange|
 
 ## [HS01B-1](https://www.loctekmotion.com/shop/control-panel/hs05a-1/)
 
-| ESP8266 | Loctek Motion (HS01B-1) | Loctek Motion Cable Color (HS01B-1)|
-| ------- | ----------------------- | ---------------------------------- |
-| GND     | GND                     | Blue                               |
-| D6      | RX                      | Green                              |
-| D5      | TX                      | Black                              |
-| D2      | PIN 20                  | Red                                |
+| ESP8266 | Loctek Motion (HS01B-1) | Loctek Motion Cable Color (HS01B-1)| Ethernet cable color (T568B)|
+| ------- | ----------------------- | ---------------------------------- |-----------------|
+| GND     | GND                     | Blue                               | White-Brown |
+| D6      | RX                      | Green                              | White-Blue |
+| D5      | TX                      | Black                              | Green |
+| D2      | PIN 20                  | Red                                | Blue |
 
 ## [HS01B-1] with ESP32 as passthrough and keypad support
 
