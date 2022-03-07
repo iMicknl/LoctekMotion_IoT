@@ -1,0 +1,198 @@
+# I am using this with my Flexispot E7, i dont have home assistant, so i needed a way to communicate over MQTT
+
+substitutions:
+  device_name: Flexispot
+  name: flexispot
+  min_height: "73.6" # Min height + 0.1
+  max_height: "122.9" # Max height - 0.1
+
+esphome:
+  name: ${name}
+  comment: ${device_name}
+  platform: ESP8266 # TODO Change to your platform
+  board: d1_mini # TODO Change to your board
+  includes:
+    - desk_height_sensor.h
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "${device_name} Fallback Hotspot"
+    password: !secret ap_fallback_password
+
+# Enable MQTT communication. ReadOnly Variables are published immediatly 
+
+mqtt:
+  topic_prefix: Flexispot
+  discovery: false
+  broker: 192.168.10.31 # change ip adress
+  port: 1883
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+  
+  # OnMessage is used for MQTT control
+  # Only a short 
+  
+  on_message:
+     - topic: Flexispot/Sit/command
+       then:
+         - switch.turn_on: switch_sit
+     - topic: Flexispot/Stand/command
+       then:
+         - switch.turn_on: switch_stand 
+     - topic: Flexispot/Preset1/command
+       then:
+         - switch.turn_on: switch_preset1
+     - topic: Flexispot/Preset2/command
+       then:
+         - switch.turn_on: switch_preset2
+     - topic: Flexispot/Wake/command
+       then:
+         - switch.turn_on: switch_wake_up
+     - topic: Flexispot/Switch_M/command
+       then:
+         - switch.turn_on: switch_m
+
+
+
+captive_portal:
+
+# Enable logging
+logger:
+  #level: DEBUG
+  baud_rate: 0
+
+# Enable Home Assistant API
+api:
+  password: !secret ha_api_password
+
+ota:
+  password: !secret ha_api_password
+
+uart:
+  id: desk_uart
+  baud_rate: 9600
+  tx_pin: D5
+  rx_pin: D6
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
+
+  - platform: uptime
+    name: Uptime
+
+  - platform: custom
+    lambda: |-
+      auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
+      App.register_component(desk_height_sensor);
+      return {desk_height_sensor};
+    sensors:
+      id: "desk_height"
+      name: Desk Height
+      unit_of_measurement: cm
+      accuracy_decimals: 1
+      icon: "mdi:counter"
+
+switch:
+  - platform: gpio
+    name: "Virtual Screen"
+    pin:
+      number: D2
+      mode: OUTPUT
+    restore_mode: ALWAYS_ON
+    internal: true
+
+  - platform: uart
+    name: "Preset 1"
+    id: switch_preset1
+    icon: mdi:numeric-1-box
+    data: [0x9b, 0x06, 0x02, 0x04, 0x00, 0xac, 0xa3, 0x9d]
+    uart_id: desk_uart
+
+  - platform: uart
+    name: "Preset 2"
+    id: switch_preset2
+    icon: mdi:numeric-2-box
+    data: [0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d]
+    uart_id: desk_uart
+
+  - platform: uart
+    name: "Sit" # Preset 3 on some control panels
+    id: switch_sit
+    icon: mdi:chair-rolling
+    data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
+    uart_id: desk_uart
+
+  - platform: uart
+    name: "Stand" # Not available for all control panels
+    id: switch_stand
+    icon: mdi:human-handsup
+    data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
+    uart_id: desk_uart
+
+  - platform: uart
+    name: "Up"
+    id: switch_up
+    icon: mdi:arrow-up-bold
+    data: [0x9b, 0x06, 0x02, 0x01, 0x00, 0xfc, 0xa0, 0x9d]
+    uart_id: desk_uart
+    internal: true
+
+  - platform: uart
+    name: "Down"
+    id: switch_down
+    icon: mdi:arrow-down-bold
+    data: [0x9b, 0x06, 0x02, 0x02, 0x00, 0x0c, 0xa0, 0x9d]
+    uart_id: desk_uart
+    internal: true
+
+  - platform: uart
+    name: "M"
+    id: switch_m
+    icon: mdi:alpha-m-circle
+    data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
+    uart_id: desk_uart
+
+  - platform: uart
+    name: "(wake up)" # Not available on all control panels
+    id: switch_wake_up
+    icon: mdi:gesture-tap-button
+    data: [0x9b, 0x06, 0x02, 0x00, 0x00, 0x6c, 0xa1, 0x9d]
+    uart_id: desk_uart
+
+cover:
+  - platform: template
+    # icon: mdi:table-chair
+    # icon: mdi-human-male-height-variant
+    name: "Desk"
+    assumed_state: true
+
+    # Move desk up
+    open_action:
+      - while:
+          condition:
+            sensor.in_range:
+              id: desk_height
+              below: ${max_height}
+          then:
+          - logger.log: "Executing up command"
+          - switch.turn_on: switch_up
+          - delay: 10ms
+    
+    # Move desk down
+    close_action:
+      - while:
+          condition:
+            sensor.in_range:
+              id: desk_height
+              above: ${min_height} 
+          then:
+          - logger.log: "Executing down command"
+          - switch.turn_on: switch_down
+          - delay: 10ms
+    optimistic: true
