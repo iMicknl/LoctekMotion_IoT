@@ -134,4 +134,4 @@ and a huge thanks to the [Tweakers.net](https://gathering.tweakers.net) communit
 
 
 ## Support
-Join our [Discord channel](https://discord.com/invite/C7TNzUZ9Xf)
+Join our [Discord channel](https://discord.gg/C7TNzUZ9Xf)
