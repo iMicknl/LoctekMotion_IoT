@@ -6,13 +6,13 @@ PIN_20 = 12 # GPIO 12
 
 SUPPORTED_COMMANDS = {
     "up": bytearray(b'\x9b\x06\x02\x01\x00\xfc\xa0\x9d'),
-    "down": None,
-    "m": None,
-    "wake_up": None,
-    "preset_1": None,
-    "preset_2": None,
-    "preset_3": None,
-    "preset_4": None,
+    "down": bytearray(b'\x9b\x06\x02\x02\x00\x0c\xa0\x9d'),
+    "m": bytearray(b'\x9b\x06\x02\x20\x00\xac\xb8\x9d'),
+    "wake_up": bytearray(b'\x9b\x06\x02\x00\x00\x6c\xa1\x9d'),
+    "preset_1": bytearray(b'\x9b\x06\x02\x04\x00\xac\xa3\x9d'),
+    "preset_2": bytearray(b'\x9b\x06\x02\x08\x00\xac\xa6\x9d'),
+    "preset_3": bytearray(b'\x9b\x06\x02\x10\x00\xac\xac\x9d'),
+    "preset_4": bytearray(b'\x9b\x06\x02\x00\x01\xac\x60\x9d'),
 }
 
 class LoctekMotion():
