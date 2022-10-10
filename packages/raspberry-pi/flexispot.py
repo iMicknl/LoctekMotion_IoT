@@ -44,10 +44,13 @@ class LoctekMotion():
             print ser.readline()
 
 def main():
-    serial = serial.Serial(SERIAL_PORT, 9600, timeout=500)
-    loctek = LoctekMotion(serial, PIN_20)
-
-    loctek.execute_command("up")
+    try:
+        ser = serial.Serial(SERIAL_PORT, 9600, timeout=500)
+        locktek = LoctekMotion(ser, PIN_20)
+        locktek.execute_command("up")
+    except serial.SerialException as e:
+        print(e)
+        return
 
 if __name__ == "__main__":
     main()
