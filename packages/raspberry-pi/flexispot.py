@@ -35,7 +35,7 @@ class LoctekMotion():
 
         if not command:
             raise Exception("Command not found")
-        
+
         self.serial.write(command)
 
     def current_height(self):
