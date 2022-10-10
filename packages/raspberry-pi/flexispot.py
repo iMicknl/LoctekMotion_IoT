@@ -1,5 +1,6 @@
 import serial
 import RPi.GPIO as GPIO
+import sys
 
 SERIAL_PORT = "/dev/ttyS0" # GPIO14 (TX) and GPIO15 (RX)
 PIN_20 = 12 # GPIO 12
@@ -47,10 +48,20 @@ def main():
     try:
         ser = serial.Serial(SERIAL_PORT, 9600, timeout=500)
         locktek = LoctekMotion(ser, PIN_20)
-        locktek.execute_command("up")
+        command = sys.argv[1]
+        locktek.execute_command(command)
+    # Error handling for serial port
     except serial.SerialException as e:
         print(e)
         return
+    # Error handling for command line arguments
+    except IndexError:
+        program = sys.argv[0]
+        print("Usage: python3",program,"[COMMAND]")
+        print("Supported Commands:")
+        for command in SUPPORTED_COMMANDS:
+            print("\t", command)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
