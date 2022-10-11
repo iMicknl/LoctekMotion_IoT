@@ -39,17 +39,90 @@ class LoctekMotion():
 
         self.serial.write(command)
 
+    def decode_seven_segment(self, byte):
+        binaryByte = bin(byte).replace("0b","").zfill(8)
+        decimal = False
+        if binaryByte[0] == "1":
+            decimal = True
+        if binaryByte[1:] == "0111111":
+            return 0, decimal
+        if binaryByte[1:] == "0000110":
+            return 1, decimal
+        if binaryByte[1:] == "1011011":
+            return 2, decimal
+        if binaryByte[1:] == "1001111":
+            return 3, decimal
+        if binaryByte[1:] == "1100110":
+            return 4, decimal
+        if binaryByte[1:] == "1101101":
+            return 5, decimal
+        if binaryByte[1:] == "1111101":
+            return 6, decimal
+        if binaryByte[1:] == "0000111":
+            return 7, decimal
+        if binaryByte[1:] == "1111111":
+            return 8, decimal
+        if binaryByte[1:] == "1101111":
+            return 9, decimal
+        if binaryByte[1:] == "1000000":
+            return 10, decimal
+        return -1, decimal
+
     def current_height(self):
-        """(not implemented yet)"""
-        while ser.in_waiting:
-            print ser.readline()
+        history = [None] * 5
+        msg_type = 0
+        msg_len = 0
+        valid = False
+        while True:
+            try:
+                # read in each byte
+                data = self.serial.read(1)
+                # 9b starts the data
+                # the value after 9b has the length of the packet
+                if history[0] == 0x9b:
+                    msg_len = data[0]
+                if history[1] == 0x9b:
+                    msg_type = data[0]
+                if history[2] == 0x9b:
+                    if msg_type == 0x12 and msg_len == 7:
+                        if data[0] == 0:
+                            print("height is empty                ", end='\r')
+                        else:
+                            valid = True
+                if history[3] == 0x9b:
+                    if valid == True:
+                         pass
+                if history[4] == 0x9b:
+                    if valid == True and msg_len == 7:
+                        height1, decimal1 = self.decode_seven_segment(history[1])
+                        height1 = height1 * 100
+                        height2, decimal2 = self.decode_seven_segment(history[0])
+                        height2 = height2 * 10
+                        height3, decimal3 = self.decode_seven_segment(data[0])
+                        if height1 < 0 or height2 < 0 or height3 < 0:
+                            print("Display Empty","          ",end='\r')
+                        else:
+                            finalHeight = height1 + height2 + height3
+                            decimal = decimal1 or decimal2 or decimal3
+                            if decimal == True:
+                                finalHeight = finalHeight/10
+                            print("Height:",finalHeight,"       ",end='\r')
+                history[4] = history[3]
+                history[3] = history[2]
+                history[2] = history[1]
+                history[1] = history[0]
+                history[0] = data[0]
+            except Exception as e:
+                print(e)
+                break
 
 def main():
     try:
+        command = sys.argv[1]
         ser = serial.Serial(SERIAL_PORT, 9600, timeout=500)
         locktek = LoctekMotion(ser, PIN_20)
-        command = sys.argv[1]
         locktek.execute_command(command)
+        locktek.current_height()
     # Error handling for serial port
     except serial.SerialException as e:
         print(e)
@@ -62,6 +135,10 @@ def main():
         for command in SUPPORTED_COMMANDS:
             print("\t", command)
         sys.exit(1)
+    except KeyboardInterrupt:
+        sys.exit(1)
+    finally:
+        GPIO.cleanup()
 
 if __name__ == "__main__":
     main()
