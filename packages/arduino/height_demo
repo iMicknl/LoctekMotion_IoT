@@ -101,7 +101,7 @@ void stand() {
 void DecodeHeight()
 {
   float h = DecodeNumber(message_height[0]) * 100.0 + DecodeNumber(message_height[1]) * 10.0 + DecodeNumber(message_height[2]);
-  if(h > 200.0) //popravak zbog decimale, ako ne pocinje sa 1 onda je decimalni broj
+  if(h > 200.0) //if value is > 200 then it is with decimal point so it should be divided by 10
     h = h / 10;
 
   if(height != h)
@@ -115,73 +115,73 @@ void DecodeHeight()
 }
 int DecodeNumber(byte in)
 {
-  int broj;
+  int number;
 
   switch(in)
   {
     case 0x3f:
-      broj = 0;
+      number = 0;
       break;
-    case 0xbf: //0 sa tockom
-      broj = 0;
+    case 0xbf: //0 with decimal
+      number = 0;
       break;
     case 0x06:
-      broj = 1;
+      number = 1;
       break;
-    case 0x86: //1 sa tockom
-      broj = 1;
+    case 0x86: //1 with decimal
+      number = 1;
       break;
     case 0x5b:
-      broj = 2;
+      number = 2;
       break;
-    case 0xdb: //2 sa tockom
-      broj = 2;
+    case 0xdb: //2 with decimal
+      number = 2;
       break;
     case 0x4f:
-      broj = 3;
+      number = 3;
       break;
-    case 0xcf: //3 sa tockom
-      broj = 3;
+    case 0xcf: //3 with decimal
+      number = 3;
       break;
     case 0x66:
-      broj = 4;
+      number = 4;
       break;
-    case 0xe6: //4 sa tockom
-      broj = 4;
+    case 0xe6: //4 with decimal
+      number = 4;
       break;
     case 0x6d:
-      broj = 5;
+      number = 5;
       break;
-    case 0xed: //5 sa tockom
-      broj = 5;
+    case 0xed: //5 with decimal
+      number = 5;
       break;
     case 0x7d:
-      broj = 6;
+      number = 6;
       break;
-    case 0xfd: //6 sa tockom
-      broj = 6;
+    case 0xfd: //6 with decimal
+      number = 6;
       break;
     case 0x07:
-      broj = 7;
+      number = 7;
       break;
-    case 0x87: //7 sa tockom
+    case 0x87: //7 with decimal
       broj = 7;
       break;
     case 0x7f:
-      broj = 8;
+      number = 8;
       break;
-    case 0xff: //8 sa tockom
-      broj = 8;
+    case 0xff: //8 with decimal
+      number = 8;
       break;
     case 0x6f:
-      broj = 9;
+      number = 9;
       break;
-    case 0xef: //9 sa tockom
-      broj = 9;
+    case 0xef: //9 with decimal
+      number = 9;
       break;
   }
 
-  return broj;
+  return number;
 }
 
 void loop()
