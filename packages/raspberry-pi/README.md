@@ -34,4 +34,10 @@ Browse to the folder where you placed the `flexispot.py` file.
 
 `source venv/bin/activate`
 
-`python3 flexispot.py`
+`python3 flexispot.py up`
+
+## Usage
+Example usage: `python3 flexispot.py [COMMAND]`
+- `python3 flexispot.py up`
+- `python3 flexispot.py down`
+- `python3 flexispot.py preset_1`
