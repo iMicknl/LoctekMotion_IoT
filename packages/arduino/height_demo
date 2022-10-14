@@ -1,0 +1,216 @@
+// developed by foxytocin
+// website https://anfuchs.de
+// based on code from iMicknl
+
+#include <SoftwareSerial.h>
+
+#define displayPin20 4 // D2 GPIO4
+#define rxPin 12 // D5 GPIO12
+#define txPin 14 // D6 GPIO14 
+
+SoftwareSerial sSerial(rxPin, txPin); // RX, TX
+int packet_pos = 0; //position in packet
+int packet_len = 0; //packet lenght
+int packet_type = 0; //type of packet
+byte message_height[3]; //message containing height code
+float height = 0.0;
+
+// Supported Commands
+const byte wakeup[] = { 0x9b, 0x06, 0x02, 0x00, 0x00, 0x6c, 0xa1, 0x9d };
+const byte command_up[] = { 0x9b, 0x06, 0x02, 0x01, 0x00, 0xfc, 0xa0, 0x9d };
+const byte command_down[] = { 0x9b, 0x06, 0x02, 0x02, 0x00, 0x0c, 0xa0, 0x9d };
+const byte command_m[] =  {0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d };
+const byte command_preset_1[] = { 0x9b, 0x06, 0x02, 0x04, 0x00, 0xac, 0xa3, 0x9d };
+const byte command_preset_2[] = { 0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d };
+const byte command_preset_3[] = { 0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d };
+const byte command_preset_4[] = { 0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d };
+
+
+void setup() {
+  Serial.begin(115200);   // Debug serial
+  sSerial.begin(9600);    // Flexispot E8
+
+  pinMode(displayPin20, OUTPUT);
+  digitalWrite(displayPin20, LOW);
+
+  // Executes a demo
+  demo();
+}
+
+
+void demo() {
+
+  // Calls sit-preset and waits 20 seconds
+  sit();
+  delay(20000);
+
+  // Calls stand-preset and waits 20 seconds
+  stand();
+  delay(20000);
+
+  // Wakeup the table to retrieve the current height
+  // At the moment this is only represented as HEX value
+  wake();
+}
+
+
+void turnon() {
+  // Turn desk in operating mode by setting controller pin20 to HIGH
+  Serial.println("sending turn on command");
+  digitalWrite(displayPin20, HIGH);
+  delay(1000);
+  digitalWrite(displayPin20, LOW);
+}
+
+
+void wake() {
+  turnon();
+
+  // This will allow us to receive the current height
+  Serial.println("sending wakeup command");
+  sSerial.flush();
+  sSerial.enableTx(true);
+  sSerial.write(wakeup, sizeof(wakeup));
+  sSerial.enableTx(false);
+}
+
+
+void sit() {
+  turnon();
+
+  // This send the preset_4 command to trigger the sit position
+  Serial.println("sending sit preset (preset_4)");
+  sSerial.flush();
+  sSerial.enableTx(true);
+  sSerial.write(command_preset_4, sizeof(command_preset_4));
+  sSerial.enableTx(false);
+}
+
+
+void stand() {
+  turnon();
+
+  // This send the preset_3 command to trigger the stand position
+  Serial.println("sending stand preset (preset_3)");
+  sSerial.flush();
+  sSerial.enableTx(true);
+  sSerial.write(command_preset_3, sizeof(command_preset_3));
+  sSerial.enableTx(false);
+}
+
+void DecodeHeight()
+{
+  float h = DecodeNumber(message_height[0]) * 100.0 + DecodeNumber(message_height[1]) * 10.0 + DecodeNumber(message_height[2]);
+  if(h > 200.0) //popravak zbog decimale, ako ne pocinje sa 1 onda je decimalni broj
+    h = h / 10;
+
+  if(height != h)
+  {
+    height = h;
+    
+    Serial.print("Height: ");
+    Serial.print(height);
+    Serial.println();
+  }  
+}
+int DecodeNumber(byte in)
+{
+  int broj;
+
+  switch(in)
+  {
+    case 0x3f:
+      broj = 0;
+      break;
+    case 0xbf: //0 sa tockom
+      broj = 0;
+      break;
+    case 0x06:
+      broj = 1;
+      break;
+    case 0x86: //1 sa tockom
+      broj = 1;
+      break;
+    case 0x5b:
+      broj = 2;
+      break;
+    case 0xdb: //2 sa tockom
+      broj = 2;
+      break;
+    case 0x4f:
+      broj = 3;
+      break;
+    case 0xcf: //3 sa tockom
+      broj = 3;
+      break;
+    case 0x66:
+      broj = 4;
+      break;
+    case 0xe6: //4 sa tockom
+      broj = 4;
+      break;
+    case 0x6d:
+      broj = 5;
+      break;
+    case 0xed: //5 sa tockom
+      broj = 5;
+      break;
+    case 0x7d:
+      broj = 6;
+      break;
+    case 0xfd: //6 sa tockom
+      broj = 6;
+      break;
+    case 0x07:
+      broj = 7;
+      break;
+    case 0x87: //7 sa tockom
+      broj = 7;
+      break;
+    case 0x7f:
+      broj = 8;
+      break;
+    case 0xff: //8 sa tockom
+      broj = 8;
+      break;
+    case 0x6f:
+      broj = 9;
+      break;
+    case 0xef: //9 sa tockom
+      broj = 9;
+      break;
+  }
+
+  return broj;
+}
+
+void loop()
+{
+  while (sSerial.available())
+  {
+    unsigned long in = sSerial.read();   
+
+    // Start of packet
+    if(in == 0x9B) //start of packet
+    {
+      packet_pos = 0; //first position
+      continue;
+    }
+    else if(in == 0x9D) //end of packet
+    {
+      if(packet_type == 18) //if message is height
+      {
+        DecodeHeight();
+      }
+    }
+    else
+      packet_pos++;
+
+    if(packet_pos == 1) //position 1 = lenght of packet
+      packet_len = (int)in;
+    else if(packet_pos == 2) //position 2 = type of packet
+      packet_type = (int)in;
+    else if(packet_type == 18 && packet_pos >= 3 && packet_pos <= 5) //if packet type is height (0x12) and position is 3-5
+      message_height[packet_pos - 3] = in;    
+  }
+}
