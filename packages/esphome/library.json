@@ -1,0 +1,27 @@
+{
+  "name": "LoctekMotion_IoT_esphome",
+  "version": "1.0.0",
+  "description": "Turn your LoctekMotion/FlexiSpot desk into a smart desk",
+  "keywords": "esp8266, esp32, home-assistant, smart-desk, standing-desk, flexispot, loctek, loctekmotion, flexispot-desks",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iMicknl/LoctekMotion_IoT.git"
+  },
+  "authors": [
+    {
+      "name": "Mick Vleeshouwer",
+      "email": "mick@imick.nl",
+      "url": "https://www.imick.nl",
+      "maintainer": true
+    },
+    {
+      "name": "Chris Nesbitt-Smith",
+      "email": "chris@cns.me.uk",
+      "url": "https://cns.me",
+      "maintainer": false
+    }
+  ],
+  "license": "MIT",
+  "frameworks": "*",
+  "platforms": "*"
+}

@@ -1,0 +1,20 @@
+version: 1
+force:
+  major: 1
+  existing: true
+wording:
+  patch:
+    - bump
+    - update
+    - initial
+    - tweak
+  minor:
+    - change
+    - improve
+    - implement
+    - fix
+  major:
+    - breaking
+  release:
+    - release-candidate
+    - add-rc

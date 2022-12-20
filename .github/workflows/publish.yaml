@@ -1,0 +1,61 @@
+name: Publisher
+on: 
+  push:
+    branches:
+      - main
+
+jobs:
+  semver:
+    name: Generate semantic version number
+    outputs:
+      semantic_version: ${{ steps.semver.outputs.semantic_version }}
+    runs-on: ubuntu-latest
+    steps:  
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+      - id: semver
+        uses: lukaszraczylo/semver-generator@1.4.18
+        with:
+          config_file: .github/semver.yaml
+          repository_local: true
+      - uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: ${{ steps.semver.outputs.semantic_version}}
+          prerelease: false
+          title: ${{ steps.semver.outputs.semantic_version}}
+          files: "*"
+
+  arduino:
+    name: Arduino Publish
+    needs: [semver]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: 
+          - arduino
+          - esphome
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+      - run: pip install platformio==6.1.5
+      - name: Bump version in manifest
+        run: cat <<< $(jq ".version = \"${SEMVER}\"" library.json ) > library.json
+        working-directory: packages/${{ matrix.package }}
+        env:
+          SEMVER: ${{ needs.semver.outputs.semantic_version}}
+      - run: cat library.json
+        working-directory: packages/${{ matrix.package }}
+      - run: pio package publish --non-interactive --no-notify
+        working-directory: packages/${{ matrix.package }}
+        env:
+          PLATFORMIO_AUTH_TOKEN: ${{ secrets.PLATFORMIO_TOKEN }}
+
+  # python:
+  #   name: Pypi Publish
+  #   needs: [semver]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: actions/setup-python@v4
