@@ -41,8 +41,9 @@ In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I u
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="#hs13a-1"><img src="https://www.loctekmotion.com/wp-content/uploads/2019/03/HS13A-1-control-panel.jpg" width="180px;" alt=""/><br /><sub><b>HS13A-1</b></sub></a><br /></td>
-    <td align="center"><a href="#hs01b-1"><img src="https://www.loctekmotion.com/wp-content/uploads/2019/02/HS01B-1-control-panel.jpg" width="180px;" alt=""/><br /><sub><b>HS01B-1</b></sub></a><br /></td>
+    <td align="center"><a href="#hs13b-1"><br /><sub><b>HS13B-1</b></sub></a></td>
+    <td align="center"><a href="#hs13a-1"><br /><sub><b>HS13A-1</b></sub></a></td>
+    <td align="center"><a href="#hs01b-1"><br /><sub><b>HS01B-1</b></sub></a></td>
   </tr>
 </table>
 <!-- markdownlint-enable -->
@@ -69,7 +70,7 @@ If your control panel is missing, feel free to [create an issue](https://github.
 
 Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
 
-#### [HS13A-1](https://www.loctekmotion.com/shop/control-panel/hs13a-1/)
+#### HS13A-1
 
 - **Desk model**: Flexispot EK5
 - **Tested with control box**: CB38M2B(IB)-1
@@ -88,7 +89,7 @@ Note that RX and TX is defined like this on receiver (control panel) side. So RX
 
 Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
 
-#### [HS01B-1](https://www.loctekmotion.com/shop/control-panel/hs05a-1/)
+#### HS01B-1
 
 - **Desk model**: Flexispot E5B
 - **Tested with control box**: CB38M2A-1
