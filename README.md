@@ -50,6 +50,25 @@ In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I u
 
 If your control panel is missing, feel free to [create an issue](https://github.com/iMicknl/LoctekMotion_IoT/issues/new) to discuss the possibilities or create a PR to add your research to this overview.  
 
+#### HS13B-1
+
+- **Desk model**: Flexispot E7
+- **Tested with control box**: CB38M2J(IB)-1
+- **Source**: Printed on the PCB of the control box.
+  
+| RJ45 pin | Name       | Original Cable Color | Ethernet cable color (T568B) |
+| -------- | ---------- | -------------------- | ---------------------------- |
+| 8        | RESET      | Brown                | White-Orange                 |
+| 7        | SWIM       | White                | Orange                       |
+| 6        | EMPTY      | Purple               | White-Green                  |
+| 5        | PIN 20     | Red                  | Blue                         |
+| 4        | RX         | Green                | White-Blue                   |
+| 3        | TX         | Black                | Green                        |
+| 2        | GND        | Blue                 | White-Brown                  |
+| 1        | +5V (VDD)  | Yellow               | Brown                        |
+
+Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
+
 #### [HS13A-1](https://www.loctekmotion.com/shop/control-panel/hs13a-1/)
 
 - **Desk model**: Flexispot EK5
