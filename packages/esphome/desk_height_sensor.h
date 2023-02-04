@@ -116,6 +116,11 @@ public:
              //ESP_LOGD("DEBUG", "Height 1 is EMPTY -> 0x%02x", incomingByte);
              //deskSerial.write(command_wakeup, sizeof(command_wakeup));
           }
+          else if (hex_to_int(incomingByte) == 0)
+          {
+             //ESP_LOGD("DEBUG", "Invalid height 1 -> 0x%02x", incomingByte);
+             //deskSerial.write(command_wakeup, sizeof(command_wakeup));
+          }
           else
           {
             valid = true;
