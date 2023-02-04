@@ -41,8 +41,9 @@ In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I u
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="#hs13a-1"><img src="https://www.loctekmotion.com/wp-content/uploads/2019/03/HS13A-1-control-panel.jpg" width="180px;" alt=""/><br /><sub><b>HS13A-1</b></sub></a><br /></td>
-    <td align="center"><a href="#hs01b-1"><img src="https://www.loctekmotion.com/wp-content/uploads/2019/02/HS01B-1-control-panel.jpg" width="180px;" alt=""/><br /><sub><b>HS01B-1</b></sub></a><br /></td>
+    <td align="center"><a href="#hs13b-1"><br /><sub><b>HS13B-1</b></sub></a></td>
+    <td align="center"><a href="#hs13a-1"><br /><sub><b>HS13A-1</b></sub></a></td>
+    <td align="center"><a href="#hs01b-1"><br /><sub><b>HS01B-1</b></sub></a></td>
   </tr>
 </table>
 <!-- markdownlint-enable -->
@@ -50,7 +51,26 @@ In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I u
 
 If your control panel is missing, feel free to [create an issue](https://github.com/iMicknl/LoctekMotion_IoT/issues/new) to discuss the possibilities or create a PR to add your research to this overview.  
 
-#### [HS13A-1](https://www.loctekmotion.com/shop/control-panel/hs13a-1/)
+#### HS13B-1
+
+- **Desk model**: Flexispot E7
+- **Tested with control box**: CB38M2J(IB)-1
+- **Source**: Printed on the PCB of the control box.
+  
+| RJ45 pin | Name       | Original Cable Color | Ethernet cable color (T568B) |
+| -------- | ---------- | -------------------- | ---------------------------- |
+| 8        | RESET      | Brown                | White-Orange                 |
+| 7        | SWIM       | White                | Orange                       |
+| 6        | EMPTY      | Purple               | White-Green                  |
+| 5        | PIN 20     | Red                  | Blue                         |
+| 4        | RX         | Green                | White-Blue                   |
+| 3        | TX         | Black                | Green                        |
+| 2        | GND        | Blue                 | White-Brown                  |
+| 1        | +5V (VDD)  | Yellow               | Brown                        |
+
+Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
+
+#### HS13A-1
 
 - **Desk model**: Flexispot EK5
 - **Tested with control box**: CB38M2B(IB)-1
@@ -69,7 +89,7 @@ If your control panel is missing, feel free to [create an issue](https://github.
 
 Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
 
-#### [HS01B-1](https://www.loctekmotion.com/shop/control-panel/hs05a-1/)
+#### HS01B-1
 
 - **Desk model**: Flexispot E5B
 - **Tested with control box**: CB38M2A-1
