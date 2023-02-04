@@ -6,7 +6,7 @@ class DeskHeightSensor : public Component, public UARTDevice, public Sensor
 public:
   DeskHeightSensor(UARTComponent *parent) : UARTDevice(parent) {}
 
-  float value = NULL;
+  float value = 0;
   float lastPublished = -1;
   unsigned long history[5];
 
