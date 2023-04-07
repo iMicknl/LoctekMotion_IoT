@@ -2,16 +2,26 @@
 
 >ESPHome is a system to control your ESP8266/ESP32 by simple yet powerful configuration files and control them remotely through Home Automation systems.
 
-## [HS13A-1](https://www.loctekmotion.com/shop/control-panel/hs13a-1/)
+## HS13B-1
+
+| ESP8266 | Loctek Motion (HS13B-1) | Loctek Motion Cable Color (HS13B-1)|Ethernet cable color (T568B)|
+| ------- | ----------------------- | ---------------------------------- |------------------------|
+| GND     | GND                     | Blue                               | White-Brown |
+| D6      | RX                      | Green                              | White-Blue |
+| D5      | TX                      | Black                              | Green |
+| D2      | PIN 20                  | Red                                | Blue |
+
+
+## HS13A-1
 
 | ESP8266 | Loctek Motion (HS13A-1) | Loctek Motion Cable Color (HS13A-1)|Ethernet cable color (T568B)|
 | ------- | ----------------------- | ---------------------------------- |------------------------|
-| GND     | GND                     | Green                              |White-Blue   |
+| GND     | GND                     | Green                              | White-Blue |
 | D6      | RX                      | Purple                             | White-Green|
 | D5      | TX                      | Red                                | Blue |
 | D2      | PIN 20                  | White                              | Orange|
 
-## [HS01B-1](https://www.loctekmotion.com/shop/control-panel/hs05a-1/)
+## HS01B-1
 
 | ESP8266 | Loctek Motion (HS01B-1) | Loctek Motion Cable Color (HS01B-1)| Ethernet cable color (T568B)|
 | ------- | ----------------------- | ---------------------------------- |-----------------|
@@ -52,7 +62,7 @@ See [README](../../README.md#control-panels) for more details. If your board sup
 
 Please refer to the [ESPHome documentation](https://esphome.io/guides/getting_started_command_line.html).
 
-You can use `flexispot_ek5.yaml` *(HS13A-1)* or `flexispot_e5b.yaml` *(HS01B-1)* as a boilerplate for your own implementation. This implementation has been created for the ESP8266 nodemcu, but can easily be adopted for other platforms and boards.
+You can use `flexispot_ek5.yaml` *(HS13A-1, HS13B-1)* or `flexispot_e5b.yaml` *(HS01B-1)* as a boilerplate for your own implementation. This implementation has been created for the ESP8266 nodemcu, but can easily be adopted for other platforms and boards.
 
 ## Features
 
