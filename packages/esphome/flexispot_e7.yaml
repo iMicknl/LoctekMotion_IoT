@@ -186,32 +186,32 @@ switch:
   #   data: [0x9b, 0x06, 0x02, 0x00, 0x00, 0x6c, 0xa1, 0x9d]
   #   uart_id: desk_uart
 
-cover:
-  - platform: template
-    name: "Desk"
-    assumed_state: true
+# cover: #Up Arrow does not work for some reason but still leaving in for others
+#   - platform: template
+#     name: "Desk"
+#     assumed_state: true
 
-    # Move desk up
-    open_action:
-      - while:
-          condition:
-            sensor.in_range:
-              id: desk_height
-              below: ${max_height}
-          then:
-          - logger.log: "Executing up command"
-          - switch.turn_on: switch_up
-          - delay: 10ms
+#     # Move desk up
+#     open_action:
+#       - while:
+#           condition:
+#             sensor.in_range:
+#               id: desk_height
+#               below: ${max_height}
+#           then:
+#           - logger.log: "Executing up command"
+#           - switch.turn_on: switch_up
+#           - delay: 10ms
     
-    # Move desk down
-    close_action:
-      - while:
-          condition:
-            sensor.in_range:
-              id: desk_height
-              above: ${min_height} 
-          then:
-          - logger.log: "Executing down command"
-          - switch.turn_on: switch_down
-          - delay: 10ms
-    optimistic: true
+#     # Move desk down
+#     close_action:
+#       - while:
+#           condition:
+#             sensor.in_range:
+#               id: desk_height
+#               above: ${min_height} 
+#           then:
+#           - logger.log: "Executing down command"
+#           - switch.turn_on: switch_down
+#           - delay: 10ms
+#     optimistic: true
