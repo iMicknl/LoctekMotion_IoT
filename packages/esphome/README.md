@@ -11,6 +11,12 @@
 | D5      | TX                      | Black                              | Green |
 | D2      | PIN 20                  | Red                                | Blue |
 
+| ESP32   | Loctek Controller (E7)      | Loctek Motion Cable Color (HS13B-1)|
+| ------- | -----------------------     | ---------------------------------- |
+| GND     | GND                         | Blue                               |
+| GPIO16  | RX                          | Green                              |
+| GPIO17  | TX                          | Black                              |
+| GPIO23  | PIN 20                      | Red                                |
 
 ## HS13A-1
 
@@ -71,7 +77,7 @@ You can use `flexispot_ek5.yaml` *(HS13A-1, HS13B-1)* or `flexispot_e5b.yaml` *(
 - Current height via sensor entity
 - M button via switch entity
 - Wake up button via switch entity (currently just used for testing, doesn't seem functional yet)
-- Support for ESP32 (E5b only)
+- Support for ESP32 (E5b & E7)
 - Support for keypad (E5b only)
 
 ## Screenshots
