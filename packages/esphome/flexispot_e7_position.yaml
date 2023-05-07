@@ -1,0 +1,366 @@
+# This example implements position control and feedback
+# Tested with Flexispot E7:
+#  Display: HS13B-1
+#  Controller: CB38M2E(IB)-1
+
+substitutions:
+  devicename: flexispot-desk-control
+  min_height: "58.0" # Min height + 0.1
+  max_height: "122.9" # Max height - 0.1
+  min_button_height: "70.0" # Min height + 0.1
+  max_button_height: "122.9" # Max height - 0.1
+
+esphome:
+  name: ${devicename}
+  friendly_name: ${devicename}
+  includes:
+    - desk_height_sensor.h
+  on_boot:
+    priority: -100
+    then:
+      - wait_until:
+          api.connected
+      # force screen update to get height at api connect
+      - switch.turn_on: switch_1_2
+      - delay: 50ms
+      - switch.turn_off: switch_1_2
+
+esp8266:
+  board: d1_mini
+
+# Disable logging over serial
+logger:
+  # INFO is needed or ESP8266 is overloaded with sending debug messages
+  # desk will stutter on move with out this
+  level: INFO
+  baud_rate: 0
+
+# Enable Home Assistant API
+#api:
+#  encryption:
+#    key: "your key"
+
+#ota:
+#  password: "your password"
+
+wifi: !secret wifi
+
+uart:
+  - id: desk_uart
+    baud_rate: 9600
+    tx_pin: D5
+    rx_pin: D6
+
+sensor:
+  - platform: wifi_signal
+    name: "${devicename} WiFi Signal"
+    update_interval: 60s
+
+  - platform: uptime
+    name: Uptime
+
+  - platform: custom
+    lambda: |-
+      auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
+      App.register_component(desk_height_sensor);
+      return {desk_height_sensor};
+    sensors:
+      id: "desk_height"
+      name: Desk Height
+      unit_of_measurement: cm
+      accuracy_decimals: 1
+      icon: "mdi:counter"
+      on_value:
+        then:
+          - script.execute:
+              id: desk_check_move
+              height: !lambda return float(x);
+
+switch:
+  - platform: gpio
+    name: "Virtual Screen"
+    id: virtual_screen
+    pin:
+      number: D2
+      mode: OUTPUT
+    restore_mode: ALWAYS_OFF
+    internal: true
+
+  - platform: template
+    name: "Stop"
+    id: switch_stop
+    icon: mdi:stop
+    turn_on_action:
+      then:
+        - switch.turn_off: switch_stop
+        - script.execute: desk_stop
+
+  - platform: uart
+    name: "Preset 1"
+    id: switch_preset1
+    icon: mdi:numeric-1-box
+    data: [0x9b, 0x06, 0x02, 0x04, 0x00, 0xac, 0xa3, 0x9d]
+    uart_id: desk_uart
+    on_turn_on:
+      then:
+        - script.execute: desk_stop
+
+  - platform: uart
+    name: "Preset 2"
+    id: switch_preset2
+    icon: mdi:numeric-2-box
+    data: [0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d]
+    uart_id: desk_uart
+    on_turn_on:
+      then:
+        - script.execute: desk_stop
+
+  - platform: uart
+    name: "Sit" # Preset 3 on some control panels
+    id: switch_sit
+    icon: mdi:chair-rolling
+    data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
+    uart_id: desk_uart
+    on_turn_on:
+      then:
+        - script.execute: desk_stop
+
+  - platform: uart
+    name: "Stand" # Not available for all control panels
+    id: switch_stand
+    icon: mdi:human-handsup
+    data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
+    uart_id: desk_uart
+    on_turn_on:
+      then:
+        - script.execute: desk_stop
+
+  - platform: uart
+    name: "Up"
+    id: switch_up
+    icon: mdi:arrow-up-bold
+    data: [0x9b, 0x06, 0x02, 0x01, 0x00, 0xfc, 0xa0, 0x9d]
+    uart_id: desk_uart
+    send_every: 100ms
+    internal: true
+
+  - platform: uart
+    name: "Down"
+    id: switch_down
+    icon: mdi:arrow-down-bold
+    data: [0x9b, 0x06, 0x02, 0x02, 0x00, 0x0c, 0xa0, 0x9d]
+    uart_id: desk_uart
+    send_every: 100ms
+    internal: true
+
+  - platform: uart
+    name: "M"
+    id: switch_m
+    icon: mdi:alpha-m-circle
+    data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
+    uart_id: desk_uart
+    internal: true
+
+  - platform: uart
+    name: "(wake up)" # Not available on all control panels
+    id: switch_wake_up
+    icon: mdi:gesture-tap-button
+    data: [0x9b, 0x06, 0x02, 0x00, 0x00, 0x6c, 0xa1, 0x9d]
+    uart_id: desk_uart
+
+  - platform: uart
+    name: "Child Lock"
+    id: switch_lock
+    icon: mdi:account-lock
+    data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
+    uart_id: desk_uart
+    send_every: 100ms
+    on_turn_on:
+      - delay: 5000ms
+      - switch.turn_off: switch_lock
+    internal: true
+
+  - platform: uart
+    name: "1 + 2" # Not available for all control panels // Could be used as wake up ?
+    id: switch_1_2
+    icon: mdi:counter
+    data: [0x9b, 0x06, 0x02, 0x0c, 0x01, 0xac, 0x65, 0x9d]
+    uart_id: desk_uart
+    send_every: 100ms
+    on_turn_on:
+      - delay: 5000ms
+      - switch.turn_off: switch_1_2
+    internal: true
+
+  - platform: uart
+    name: "M + sitting" # While holding it shows some numbers / M+sitting
+    id: switch_m_sitting
+    icon: mdi:script
+    data: [0x9b, 0x06, 0x02, 0x20, 0x01, 0x6c, 0x79, 0x9d]
+    uart_id: desk_uart
+    send_every: 100ms
+    on_turn_on:
+      - delay: 15500ms
+      - switch.turn_off: switch_m_sitting
+    internal: true
+
+cover:
+  - platform: template
+    id: desk_cover
+    icon: mdi:table-chair
+    # icon: mdi-human-male-height-variant
+    name: "Desk"
+    assumed_state: true
+    has_position: true
+
+    # Move desk up
+    open_action:
+      - if:
+          condition:
+            lambda: |-
+              return id(desk_height).state < float(${max_button_height});
+          then:
+            - script.execute:
+                id: desk_move
+                target_height: !lambda return float(${max_button_height});
+
+    # Move desk down
+    close_action:
+      - if:
+          condition:
+            lambda: |-
+              return id(desk_height).state > float(${min_button_height});
+          then:
+            - script.execute:
+                id: desk_move
+                target_height: !lambda return float(${min_button_height});
+
+    # Stop move
+    stop_action:
+      - script.execute:
+          id: desk_stop
+
+    position_action:
+      then:
+        - script.execute:
+            id: desk_move
+            target_height: !lambda |-
+              float height = ((float(${max_height}) - float(${min_height})) * float(pos)) +  float(${min_height});
+              return height;
+
+    optimistic: false
+
+globals:
+  - id: desk_target_height
+    type: float
+    restore_value: no
+    initial_value: "-1.0"
+  - id: desk_moving
+    type: int
+    restore_value: no
+    initial_value: "0"
+
+script:
+
+  - id: desk_stop
+    then:
+      - logger.log:
+          level: INFO
+          format: "Executing desk_stop command desk_height: %.1f target_height: %.1f"
+          args: [ 'id(desk_height).state', 'id(desk_target_height)' ]
+
+      - switch.turn_off: switch_up
+      - switch.turn_off: switch_down
+
+      - if:
+          condition:
+            lambda: return id(desk_moving) == -1;
+          then:
+            - delay: 50ms
+            - switch.turn_on: switch_up
+            - delay: 10ms
+            - switch.turn_off: switch_up
+
+      - if:
+          condition:
+            lambda: return id(desk_moving) == 1;
+          then:
+            - delay: 50ms
+            - switch.turn_on: switch_down
+            - delay: 10ms
+            - switch.turn_off: switch_down
+
+      - switch.turn_on: switch_wake_up
+      - lambda: |-
+          id(desk_moving) = 0;
+      - cover.template.publish:
+          id: desk_cover
+          current_operation: IDLE
+          position: !lambda |-
+            float position = (float(id(desk_height).state) - float(${min_height})) / (float(${max_height}) - float(${min_height}));
+            if(position < 0) return 0;
+            if(position > 1) return 1;
+            return position;
+
+  - id: desk_check_move
+    parameters:
+      height: float
+    then:
+      - if:
+          condition:
+            lambda: return id(desk_moving) == 1 && height > std::min(id(desk_target_height), float(${max_height}));
+          then:
+            - script.execute: desk_stop
+      - if:
+          condition:
+            lambda: return id(desk_moving) == -1 && height < std::max(id(desk_target_height), float(${min_height}));
+          then:
+            - script.execute: desk_stop
+
+      - cover.template.publish:
+          id: desk_cover
+          position: !lambda |-
+            float position = (float(id(desk_height).state) - float(${min_height})) / (float(${max_height}) - float(${min_height}));
+            if(position < 0) return 0;
+            if(position > 1) return 1;
+            return position;
+
+  - id: desk_move
+    parameters:
+      target_height: float
+    then:
+      - logger.log:
+          level: INFO
+          format: "Executing desk_move command desk_height: %.1f target_height: %.1f"
+          args: [ 'id(desk_height).state', 'target_height' ]
+      - if:
+          condition:
+            lambda: return id(desk_height).state < target_height;
+          then:
+            - if:
+                condition:
+                  lambda: return id(desk_moving) == -1;
+                then:
+                  - script.execute: desk_stop
+            - lambda: |-
+                id(desk_target_height) = target_height;
+                id(desk_moving) = 1;
+            - cover.template.publish:
+                id: desk_cover
+                current_operation: OPENING
+            - switch.turn_off: switch_down
+            - switch.turn_on: switch_up
+          else:
+            - if:
+                condition:
+                  lambda: return id(desk_moving) == 1;
+                then:
+                  - script.execute: desk_stop
+            - lambda: |-
+                id(desk_target_height) = target_height;
+                id(desk_moving) = -1;
+            - cover.template.publish:
+                id: desk_cover
+                current_operation: CLOSING
+            - switch.turn_off: switch_up
+            - switch.turn_on: switch_down
