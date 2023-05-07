@@ -1,0 +1,217 @@
+substitutions:
+  device_name: Flexispot E7
+  name: flexispote7
+  min_height: "73.6" # Min height + 0.1
+  max_height: "122.9" # Max height - 0.1
+
+esphome:
+  name: ${name}
+  comment: ${device_name}
+  platform: ESP32 # TODO Change to your platform
+  board: nodemcu-32s # TODO Change to your board
+  includes:
+    - desk_height_sensor.h
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "${device_name} Fallback Hotspot"
+    password: !secret ap_fallback_password
+
+
+captive_portal:    
+
+# Enable logging
+logger:
+  #level: DEBUG
+  baud_rate: 0
+
+# Enable Home Assistant API
+api:
+  password: !secret ha_api_password
+
+ota:
+  password: !secret ha_api_password
+
+uart:
+  - id: desk_uart
+    baud_rate: 9600
+    tx_pin: GPIO17
+    rx_pin: GPIO16
+
+script:
+  - id: screen_timer
+    mode: restart
+    then:
+     # on_start
+     - logger.log: "Executing screen timer command"
+     - switch.turn_on: virtual_screen
+     - delay: 12s  # timer length (keypad screen timeout is 10s + 2s buffer)
+     - switch.turn_off: virtual_screen
+     # on_end
+
+  - id: script_start_command
+    mode: restart
+    then:
+     - logger.log: "Executing Empty command"
+     - if:
+        condition:
+         switch.is_off : virtual_screen
+        then:
+          - script.execute: screen_timer
+          - delay: 480ms
+        else:
+          - script.execute: screen_timer
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
+
+  - platform: uptime
+    name: Uptime
+
+  - platform: custom
+    lambda: |-
+      auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
+      App.register_component(desk_height_sensor);
+      return {desk_height_sensor};
+    sensors:
+      id: "desk_height"
+      name: Desk Height
+      unit_of_measurement: cm
+      accuracy_decimals: 1
+      icon: "mdi:counter"
+      on_value:
+        then:
+          - script.execute: screen_timer
+
+switch:
+  - platform: template
+    name: "Preset 1"
+    id: switch_preset1
+    icon: mdi:numeric-1-box
+    turn_on_action:
+     - logger.log: "Executing Preset 1 command"
+     - script.execute: script_start_command
+     - script.wait: script_start_command
+     - uart.write:
+         id: desk_uart
+         data: [0x9b, 0x06, 0x02, 0x04, 0x00, 0xac, 0xa3, 0x9d]
+    internal: false
+
+  - platform: template
+    name: "Preset 2"
+    id: switch_preset2
+    icon: mdi:numeric-2-box
+    turn_on_action:
+     - logger.log: "Executing Preset 2 command"
+     - script.execute: script_start_command
+     - script.wait: script_start_command
+     - uart.write:
+         id: desk_uart
+         data: [0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d]
+    internal: false
+
+  - platform: template
+    name: "Stand"
+    id: switch_preset3
+    icon: mdi:numeric-3-box
+    turn_on_action:
+     - logger.log: "Executing Preset 3 command"
+     - script.execute: script_start_command
+     - script.wait: script_start_command
+     - uart.write:
+         id: desk_uart
+         data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
+    internal: false
+
+  - platform: template
+    name: "Sit"
+    id: switch_preset4
+    icon: mdi:numeric-4-box
+    turn_on_action:
+     - logger.log: "Executing Preset 4 command"
+     - script.execute: script_start_command
+     - script.wait: script_start_command
+     - uart.write:
+         id: desk_uart
+         data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
+    internal: false
+
+  - platform: template
+    name: "M"
+    id: switch_m
+    icon: mdi:alpha-m-circle
+    turn_on_action:
+     - logger.log: "Executing M command"
+     - script.execute: script_start_command
+     - script.wait: script_start_command
+     - uart.write:
+         id: desk_uart
+         data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
+    internal: false
+
+  - platform: gpio # Does not seem to wake the screen as i would expect since its assigned to pin 20 that should give the singnal needed to wake the screen however the other actions already wake the screen as is so maybe not a big deal
+    name: "Virtual Screen"
+    id: "virtual_screen"
+    pin:
+      number: 23
+    restore_mode: ALWAYS_OFF
+    internal: false
+
+  - platform: uart
+    name: "Up"
+    id: switch_up
+    icon: mdi:arrow-up-bold
+    data: [0x9b, 0x06, 0x02, 0x01, 0x00, 0xfc, 0xa0, 0x9d]
+    uart_id: desk_uart
+    internal: false
+
+  - platform: uart
+    name: "Down"
+    id: switch_down
+    icon: mdi:arrow-down-bold
+    data: [0x9b, 0x06, 0x02, 0x02, 0x00, 0x0c, 0xa0, 0x9d]
+    uart_id: desk_uart
+    internal: false
+
+  # - platform: uart
+  #   name: "(wake up)" # Not available on all control panels
+  #   id: switch_wake_up
+  #   icon: mdi:gesture-tap-button
+  #   data: [0x9b, 0x06, 0x02, 0x00, 0x00, 0x6c, 0xa1, 0x9d]
+  #   uart_id: desk_uart
+
+cover:
+  - platform: template
+    name: "Desk"
+    assumed_state: true
+
+    # Move desk up
+    open_action:
+      - while:
+          condition:
+            sensor.in_range:
+              id: desk_height
+              below: ${max_height}
+          then:
+          - logger.log: "Executing up command"
+          - switch.turn_on: switch_up
+          - delay: 10ms
+    
+    # Move desk down
+    close_action:
+      - while:
+          condition:
+            sensor.in_range:
+              id: desk_height
+              above: ${min_height} 
+          then:
+          - logger.log: "Executing down command"
+          - switch.turn_on: switch_down
+          - delay: 10ms
+    optimistic: true
