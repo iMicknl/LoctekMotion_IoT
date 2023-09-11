@@ -266,6 +266,20 @@ switch:
     uart_id: desk_uart
     internal: false
 
+    #MANUAL RESET
+    #HOLD THE DOWN BUTTON UNTIL THE TABLE REACHES ITS LOWEST HEIGHT AND REBOUNDS
+    #MIGHT NEED TO BE RUN MULTIPLE TIMES DEPENDING ON THE HEIGHT
+  - platform: uart
+    name: "${device_name} Factory Reset" # Hold Down 5secs
+    id: switch_factory_reset
+    icon: mdi:factory
+    data: [0x9b, 0x06, 0x02, 0x02, 0x00, 0x0c, 0xa0, 0x9d]
+    uart_id: desk_uart
+    send_every: 1ms
+    on_turn_on:
+      - delay: 5000ms
+      - switch.turn_off: switch_factory_reset
+
 cover:
   - platform: template
     name: "Desk"
