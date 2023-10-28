@@ -91,8 +91,8 @@ Note that RX and TX is defined like this on receiver (control panel) side. So RX
 
 #### HS01B-1
 
-- **Desk model**: Flexispot E5B
-- **Tested with control box**: CB38M2A-1
+- **Desk model**: Flexispot E5B, PrimeCables ET101-BK-G3 (ET201-7SW remote board)
+- **Tested with control box**: CB38M2A-1, CB28M1B-1
 - **Source**: [nv1t/standing-desk-interceptor](https://github.com/nv1t/standing-desk-interceptor)
   
 | RJ45 pin | Name      | Original Cable Color  | Ethernet cable color (T568B) |
