@@ -3,13 +3,17 @@ substitutions:
   name: office-desk-flexispot-ek5
   min_height: "73.5" # cm
   max_height: "123" # cm
+  ssid: !secret wifi_ssid
+  wifi_password: !secret wifi_password
+  ap_fallback_password: "MnANX95MWad1"
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  encryption_key: !secret encryption_key
   
 esphome:
   name: ${name}
   friendly_name: ${device_name}
   comment: Used to control your ${device_name} standing desk via Home Assistant.
-  includes:
-    - desk_height_sensor.h
     
   # Wake Desk by sending the "M" command
   # This will pull the current height after boot
@@ -17,6 +21,10 @@ esphome:
     priority: -10
     then:
       - button.press: button_m
+
+external_components:
+  source: github://iMicknl/LoctekMotion_IoT@v2
+  components: [ loctekmotion_desk_height_sensor ]
 
 esp32:
   board: esp32dev
@@ -29,26 +37,26 @@ logger:
 # Enable Home Assistant API
 api:
   encryption:
-    key: !secret encryption_key
+    key: ${encryption_key}
 
 ota:
 
 wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
+  ssid: ${ssid)
+  password: ${wifi_password}
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: ${device_name} Fallback Hotspot
-    password: "MnANX95MWad1"
+    password: ${ap_fallback_password}
 
 captive_portal:
 
 uart:
   id: desk_uart
   baud_rate: 9600
-  tx_pin: GPIO17 # TXD 2
-  rx_pin: GPIO16 # RXD 2
+  tx_pin: ${tx_pin} # TXD 2
+  rx_pin: ${rx_pin} # RXD 2
 
 sensor:
   - platform: wifi_signal
@@ -214,22 +222,17 @@ cover:
     device_class: blind # makes it easier to integrate with Google/Alexa
     has_position: true
     position_action:
-      - logger.log:
-          format: "Requesting position change to: %f "
-          args: [ 'pos' ]
       - if:
           condition:
             - lambda: !lambda |-
                 return pos > id(desk_cover).position;
           then:
-            - logger.log: "Position should move up"
             - cover.open: desk_cover
             - wait_until:
                 lambda: |-
                   return id(desk_cover).position  >= pos;
             - cover.stop: desk_cover
           else:
-            - logger.log: "Position should move down"
             - cover.close: desk_cover
             - wait_until:
                 lambda: |-
@@ -264,14 +267,12 @@ number:
             - lambda: !lambda |-
                 return x > id(desk_height).state;
           then:
-            - logger.log: "Position should move up"
             - cover.open: desk_cover
             - wait_until:
                 lambda: |-
                   return id(desk_height).state  >= x;
             - cover.stop: desk_cover
           else:
-            - logger.log: "Position should move down"
             - cover.close: desk_cover
             - wait_until:
                 lambda: |-

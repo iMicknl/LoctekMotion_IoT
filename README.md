@@ -95,16 +95,16 @@ Note that RX and TX is defined like this on receiver (control panel) side. So RX
 - **Tested with control box**: CB38M2A-1
 - **Source**: [nv1t/standing-desk-interceptor](https://github.com/nv1t/standing-desk-interceptor)
   
-| RJ45 pin | Name      | Original Cable Color  | Ethernet cable color (T568B) |
-| -------- | --------- | --------------------- | ---------------------------- |
-| 8        | +5V (VDD) | Yellow                | Brown                        |
-| 7        | GND       | Blue                  | White-Brown                  |
-| 6        | TX        | Black                 | Green                        |
-| 5        | RX        | Green                 | White-Blue                   |
-| 4        | PIN 20    | Red                   | Blue                         |
-| 3        | (unknown) | Purple                | White-Green                  |
-| 2        | SWIM      | White                 | Orange                       |
-| 1        | RES       | Brown                 | White-Orange                 |
+| RJ45 pin | Name      | 
+| -------- | --------- | 
+| 8        | +5V (VDD) | 
+| 7        | GND       | 
+| 6        | TX        |
+| 5        | RX        | 
+| 4        | PIN 20    |
+| 3        | (unknown) | 
+| 2        | SWIM      |
+| 1        | RES       |
 
 Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
 
@@ -121,6 +121,12 @@ Make sure you set the baud rate to 9600. For most LoctekMotion desks, the contro
 ![](https://alselectro.files.wordpress.com/2015/03/image-27.png)
 
 source: [alselectro](https://alselectro.wordpress.com/2015/03/03/8051-tutorials-3-interfacing-7-segment-display/)
+
+
+### Known issues
+- Number entity may overshoot. For more accurate positioning, use the provided presets.
+- Some
+
 
 ### Execute a command
 
