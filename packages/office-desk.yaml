@@ -23,7 +23,7 @@ esphome:
       - button.press: button_m
 
 external_components:
-  source: github://iMicknl/LoctekMotion_IoT@v2
+  source: github://iMicknl/LoctekMotion_IoT@v2.1
   components: [ loctekmotion_desk_height_sensor ]
 
 esp32:
