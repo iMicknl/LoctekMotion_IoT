@@ -105,6 +105,7 @@ switch:
     data: [0x9b, 0x06, 0x02, 0x01, 0x00, 0xfc, 0xa0, 0x9d]
     uart_id: desk_uart
     send_every: 108ms
+    internal: true
 
   - platform: uart
     name: "Down"
@@ -113,6 +114,7 @@ switch:
     data: [0x9b, 0x06, 0x02, 0x02, 0x00, 0x0c, 0xa0, 0x9d]
     uart_id: desk_uart
     send_every: 108ms
+    internal: true
 
   - platform: uart
     name: "Alarm off"
@@ -257,9 +259,6 @@ number:
     lambda: !lambda |-
       return id(desk_height).state;
     set_action:
-      - logger.log:
-          format: "Requesting position change to: %x "
-          args: [ 'x' ]
       - if:
           condition:
             - lambda: !lambda |-
