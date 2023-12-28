@@ -44,6 +44,7 @@ In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I u
     <td align="center"><a href="#hs13b-1"><br /><sub><b>HS13B-1</b></sub></a></td>
     <td align="center"><a href="#hs13a-1"><br /><sub><b>HS13A-1</b></sub></a></td>
     <td align="center"><a href="#hs01b-1"><br /><sub><b>HS01B-1</b></sub></a></td>
+    <td align="center"><a href="#hcb223a-1"><br /><sub><b>HCB223A-1</b></sub></a></td>
   </tr>
 </table>
 <!-- markdownlint-enable -->
@@ -105,6 +106,25 @@ Note that RX and TX is defined like this on receiver (control panel) side. So RX
 | 3        | (unknown) | Purple                | White-Green                  |
 | 2        | SWIM      | White                 | Orange                       |
 | 1        | RES       | Brown                 | White-Orange                 |
+
+Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
+
+#### HCB223A-1
+
+- **Desk model**: Flexispot E5 with "4 presets keypad" (on website) EC5B-V2 (printed on box)
+- **Integrated hand switch and control box**
+- **Source**: Embossed on the case of the hand switch control box and printed on the PCB.
+
+| RJ45 pin | Name      | Original Cable Color  | Ethernet cable color (T568B) |
+| -------- | --------- | --------------------- | ---------------------------- |
+| 8        | +5V (VDD) | Yellow                | Brown                        |
+| 7        | GND       | Blue                  | White-Brown                  |
+| 6        | TX        | Black                 | Green                        |
+| 5        | RX        | Green                 | White-Blue                   |
+| 4        | (unknown) | Red                   | Blue                         |
+| 3        | (unknown) | Purple                | White-Green                  |
+| 2        | (unknown) | White                 | Orange                       |
+| 1        | (unknown) | Brown                 | White-Orange                 |
 
 Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
 

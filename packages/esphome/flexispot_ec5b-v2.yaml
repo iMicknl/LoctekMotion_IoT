@@ -1,0 +1,227 @@
+substitutions:
+  device_name: "Flexispot EC5B-V2"
+  name: "flexispot-ec5b-v2"
+  min_height: "24.7"
+  max_height: "43.0"
+  # real min height from desk         24.6
+  # real max height from product page 49.2
+  # my max height 43
+
+# Notes:
+# controller model: HCB223A-1
+# place desk_height_sensor.h in esphome /config/flexispot-ec5b-v2
+# https://github.com/iMicknl/LoctekMotion_IoT/tree/main/packages/esphome
+
+esphome:
+  name: ${name}
+  comment: ${device_name}
+  includes:
+    - standing-desk/desk_height_sensor.h
+  on_boot:
+    then:
+      - lambda: id(desk_height).publish_state(24.7); # TODO Set to min height
+
+esp32:            # TODO Change to your platform
+  board: esp32dev # TODO Change to your board
+  framework:
+    type: arduino    
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+# Enable logging
+# set baud rate to 0 to disable hardware serial logging
+# this is important for using hardware serial port
+logger:
+  baud_rate: 0
+
+# Enable Home Assistant API
+api:
+  encryption: 
+    key: !secret enc_key
+
+ota:
+  password: !secret ota_password
+
+uart:
+  - id: desk_uart
+    baud_rate: 9600
+    tx_pin: GPIO1 # TODO Find correct GPIO
+    rx_pin: GPIO3 # TODO Find correct GPIO
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
+
+  - platform: uptime
+    name: Uptime
+
+  - platform: custom
+    lambda: |-
+      auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
+      App.register_component(desk_height_sensor);
+      return {desk_height_sensor};
+    sensors:
+      id: "desk_height"
+      name: Desk Height
+      unit_of_measurement: in
+      accuracy_decimals: 1
+      icon: "mdi:counter"
+
+switch:
+  # currently not connected - can't get this to work
+  - platform: gpio
+    name: "Virtual Screen"
+    pin:
+      number: GPIO21 # TODO FIND CORRECT GPIO
+      mode: OUTPUT
+    restore_mode: ALWAYS_OFF
+    internal: true
+
+  - platform: uart
+    name: "Preset 1"
+    id: switch_preset1
+    icon: mdi:numeric-1-box
+    data: [0x9b, 0x06, 0x02, 0x04, 0x00, 0xac, 0xa3, 0x9d]
+    uart_id: desk_uart
+
+  - platform: uart
+    name: "Preset 2"
+    id: switch_preset2
+    icon: mdi:numeric-2-box
+    data: [0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d]
+    uart_id: desk_uart
+
+  - platform: uart
+    name: "Preset 3"
+    id: switch_preset3
+    icon: mdi:numeric-3-box
+    data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
+    uart_id: desk_uart
+
+  - platform: uart
+    name: "Preset 4"
+    id: switch_preset4
+    icon: mdi:numeric-4-box
+    data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
+    uart_id: desk_uart
+
+  - platform: uart
+    name: "Up"
+    id: switch_up
+    icon: mdi:arrow-up-bold
+    data: [0x9b, 0x06, 0x02, 0x01, 0x00, 0xfc, 0xa0, 0x9d]
+    uart_id: desk_uart
+    internal: true
+
+  - platform: uart
+    name: "Down"
+    id: switch_down
+    icon: mdi:arrow-down-bold
+    data: [0x9b, 0x06, 0x02, 0x02, 0x00, 0x0c, 0xa0, 0x9d]
+    uart_id: desk_uart
+    internal: true
+
+#  - platform: uart
+#    name: "M"
+#    id: switch_m
+#    icon: mdi:alpha-m-circle
+#    data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
+#    uart_id: desk_uart
+
+  - platform: uart
+    name: "(wake up)" # Not available on all control panels
+    id: switch_wake_up
+    icon: mdi:gesture-tap-button
+    data: [0x9b, 0x06, 0x02, 0x00, 0x00, 0x6c, 0xa1, 0x9d]
+    uart_id: desk_uart
+
+cover:
+  - platform: template
+    # TODO choose your icon
+    icon: mdi:desk
+    # icon: mdi:table-chair
+    # icon: mdi-human-male-height-variant
+    name: "Desk"
+    id: desk_cover
+
+    assumed_state: true
+    has_position: true
+    
+    # set current position percent
+    lambda: return (float(id(desk_height).state) - float(${min_height})) / (float(${max_height}) - float(${min_height}));
+
+    # target height mode
+    position_action:
+      # find if we are going up or down
+      - if:
+          condition:
+            lambda: return float(id(desk_cover).position) < pos;
+          then:
+          - while:
+              condition:
+                # if going up, offset current position to 2 percent higher than reality and loop
+                lambda: return (float(id(desk_cover).position) + 0.02) < pos;
+              then:
+                - cover.template.publish:
+                    id: desk_cover
+                    current_operation: OPENING
+                #- logger.log: "Executing up command"
+                - switch.turn_on: switch_up
+                - delay: 10ms
+          else:
+            - while:
+                condition:
+                  # if going down, offset current position to 2 percent lower than reality and loop
+                  lambda: return (float(id(desk_cover).position) - 0.02) > pos;
+                then:
+                  - cover.template.publish:
+                      id: desk_cover
+                      current_operation: CLOSING
+                  - switch.turn_on: switch_down
+                  - delay: 10ms
+      # clear the command queue with wake up command - https://github.com/iMicknl/LoctekMotion_IoT/issues/42#issuecomment-1416823108
+      - switch.turn_on: switch_wake_up
+      # publish idle status
+      - cover.template.publish:
+          id: desk_cover
+          current_operation: IDLE
+
+    # Move desk to top
+    open_action:
+      - while:
+          condition:
+            sensor.in_range:
+              id: desk_height
+              below: ${max_height}
+          then:
+          - switch.turn_on: switch_up
+          - delay: 100ms
+      # clear the command queue with wake up command - https://github.com/iMicknl/LoctekMotion_IoT/issues/42#issuecomment-1416823108
+      - switch.turn_on: switch_wake_up
+      - cover.template.publish:
+          id: desk_cover
+          state: OPEN
+          current_operation: IDLE
+
+    # Move desk to bottom
+    close_action:
+      - while:
+          condition:
+            sensor.in_range:
+              id: desk_height
+              above: ${min_height}
+          then:
+          - switch.turn_on: switch_down
+          - delay: 100ms
+      # clear the command queue with wake up command - https://github.com/iMicknl/LoctekMotion_IoT/issues/42#issuecomment-1416823108
+      - switch.turn_on: switch_wake_up
+      - cover.template.publish:
+          id: desk_cover
+          state: CLOSED
+          current_operation: IDLE
+
+    # set to false to ensure that height is calculated during each move time
+    optimistic: false
