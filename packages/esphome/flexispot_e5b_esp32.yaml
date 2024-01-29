@@ -165,7 +165,7 @@ switch:
     icon: mdi:key
     id: "keypad_switch"
     internal: false
-    restore_state: true
+    restore_mode: RESTORE_DEFAULT_OFF
     assumed_state: false
     optimistic: true
 
