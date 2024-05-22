@@ -15,17 +15,15 @@ esphome:
   name: ${name}
   friendly_name: ${device_name}
   comment: Used to control your ${device_name} standing desk via Home Assistant.
-    
+  includes:
+    - flexispot/desk_height_sensor.h
+
   # Wake Desk by sending the "M" command
   # This will pull the current height after boot
   on_boot:
     priority: -10
     then:
       - button.press: button_m
-
-external_components:
-  source: github://iMicknl/LoctekMotion_IoT@v2.1
-  components: [ loctekmotion_desk_height_sensor ]
 
 esp32:
   board: esp32dev
