@@ -15,7 +15,7 @@ esphome:
   name: ${name}
   friendly_name: ${device_name}
   comment: Used to control your ${device_name} standing desk via Home Assistant.
-    
+
   # Wake Desk by sending the "M" command
   # This will pull the current height after boot
   on_boot:
@@ -24,8 +24,8 @@ esphome:
       - button.press: button_m
 
 external_components:
-  source: github://iMicknl/LoctekMotion_IoT@v2.1
-  components: [ loctekmotion_desk_height_sensor ]
+  source: github://iMicknl/LoctekMotion_IoT@v2.2
+  components: [ loctekmotion_desk_height ]
 
 esp32:
   board: esp32dev
@@ -67,35 +67,26 @@ sensor:
   - platform: uptime
     name: Uptime
 
-  - platform: custom
-    lambda: |-
-      auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
-      App.register_component(desk_height_sensor);
-      return {desk_height_sensor};
-    sensors:
-      id: "desk_height"
-      name: Desk Height
-      unit_of_measurement: cm
-      accuracy_decimals: 1
-      icon: "mdi:counter"
-      state_class: "measurement"
-      on_value_range:
-      - below: ${min_height}
-        then:
-          - switch.turn_off: switch_down
-      - above: ${max_height}
-        then:
-          - switch.turn_off: switch_up
-      on_value:
-        then:
-          - cover.template.publish:
-              id: desk_cover
-              position: !lambda |-
-                  // The sensor outputs values from min_height (cm) to max_height (cm)
-                  // We need to translate this to 0 - 1 scale.
-                  float position = (float(x) - float(${min_height})) / (float(${max_height}) - float(${min_height}));
-                  return position;
-          - component.update: set_desk_height
+  - platform: loctekmotion_desk_height
+    id: "desk_height"
+    name: Desk Height
+    on_value_range:
+    - below: ${min_height}
+      then:
+        - switch.turn_off: switch_down
+    - above: ${max_height}
+      then:
+        - switch.turn_off: switch_up
+    on_value:
+      then:
+        - cover.template.publish:
+            id: desk_cover
+            position: !lambda |-
+                // The sensor outputs values from min_height (cm) to max_height (cm)
+                // We need to translate this to 0 - 1 scale.
+                float position = (float(x) - float(${min_height})) / (float(${max_height}) - float(${min_height}));
+                return position;
+        - component.update: set_desk_height
 
 switch:
   - platform: gpio
