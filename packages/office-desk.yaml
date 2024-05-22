@@ -6,10 +6,11 @@ substitutions:
   ssid: !secret wifi_ssid
   wifi_password: !secret wifi_password
   ap_fallback_password: "MnANX95MWad1"
-  tx_pin: GPIO17
-  rx_pin: GPIO16
+  tx_pin: GPIO17 # TXD 2
+  rx_pin: GPIO16 # RXD 2
+  screen_pin: GPIO23
   encryption_key: !secret encryption_key
-  
+
 esphome:
   name: ${name}
   friendly_name: ${device_name}
@@ -53,10 +54,10 @@ wifi:
 captive_portal:
 
 uart:
-  id: desk_uart
-  baud_rate: 9600
-  tx_pin: ${tx_pin} # TXD 2
-  rx_pin: ${rx_pin} # RXD 2
+  - id: desk_uart
+    baud_rate: 9600
+    tx_pin: ${tx_pin}
+    rx_pin: ${rx_pin}
 
 sensor:
   - platform: wifi_signal
@@ -65,7 +66,7 @@ sensor:
 
   - platform: uptime
     name: Uptime
-  
+
   - platform: custom
     lambda: |-
       auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
@@ -100,7 +101,7 @@ switch:
   - platform: gpio
     name: "Virtual Screen" # PIN20
     pin:
-      number: GPIO23
+      number: ${screen_pin}
       mode: OUTPUT
     restore_mode: ALWAYS_ON
     entity_category: "config"
