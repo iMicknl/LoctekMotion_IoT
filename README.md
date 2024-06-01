@@ -14,11 +14,11 @@ This repository will help you to connect your desk to the internet via the seria
 
 > Use the information in this repository at your own risk and with caution. Tinkering with electronics always has risks.
 
-| Name                                  | Description                                                                |
-| ------------------------------------- | -------------------------------------------------------------------------- |
-| [Arduino](packages/arduino)           | Custom code to control your desk via an ESP32/ESP8266 module via MQTT.     |
-| [ESPHome](packages/esphome)           | Control your desk via an ESP32/ESP8266 module connected to Home Assistant. |
-| [Raspberry Pi](packages/raspberry-pi) | Custom code to control your desk via a Raspberry Pi via Python.            |
+| Name                                 | Description                                                                                                          |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| [ESPHome](packages/office-desk.yaml) | Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant. |
+
+The V1 packages, including the Arduino and Raspberry Pi ones, can be found in the `archive` directory.
 
 For more packaged solutions, see [similar projects](#similar-projects--research). Pull requests are welcome.
 
