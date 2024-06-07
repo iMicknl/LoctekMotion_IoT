@@ -125,7 +125,6 @@ source: [alselectro](https://alselectro.wordpress.com/2015/03/03/8051-tutorials-
 
 ### Known issues
 - Number entity may overshoot. For more accurate positioning, use the provided presets.
-- Some
 
 
 ### Execute a command
