@@ -9,7 +9,7 @@ substitutions:
   tx_pin: D5 # =GPIO14
   rx_pin: D6 # =GPIO12
   screen_pin: D2 # =GPIO4
-  encryption_key: "your_encryption_key"
+  encryption_key: "eW91cl9lbmNyeXB0aW9uX2tleQ=="
 
 external_components:
   - source:
