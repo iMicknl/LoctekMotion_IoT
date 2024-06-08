@@ -2,7 +2,6 @@
 #include "esphome/core/helpers.h"
 #include "esphome/core/log.h"
 #include <bitset>
-#include <cstdint>
 
 namespace esphome {
 namespace loctekmotion_desk_height {
@@ -10,8 +9,7 @@ namespace loctekmotion_desk_height {
 static const char *const TAG = "loctekmotion_desk_height.sensor";
 
 // ========== UTILITY METHODS ==========
-
-int hex_to_int(std::uint8_t s) {
+int hex_to_int(byte s) {
   std::bitset<8> b(s);
 
   if (b[0] && b[1] && b[2] && b[3] && b[4] && b[5] && !b[6]) {
@@ -50,12 +48,12 @@ int hex_to_int(std::uint8_t s) {
   return 0;
 }
 
-bool is_decimal(std::uint8_t b) { return (b & 0x80) == 0x80; }
+bool is_decimal(byte b) { return (b & 0x80) == 0x80; }
 
 // ========== INTERNAL METHODS ==========
 void DeskHeightSensor::loop() {
   while (this->available() > 0) {
-    std::uint8_t incomingByte = this->read();
+    byte incomingByte = this->read();
     // ESP_LOGD("DEBUG", "Incoming byte is: %08x", incomingByte);
 
     // First byte, start of a packet
