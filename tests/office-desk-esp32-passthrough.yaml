@@ -9,7 +9,7 @@ substitutions:
   tx_pin: GPIO17 # TXD 2
   rx_pin: GPIO16 # RXD 2
   screen_pin: GPIO23
-  encryption_key: "eW91cl9lbmNyeXB0aW9uX2tleQ=="
+  encryption_key: "iOZqtvw31Yy6sasRl5h2DElG2VDlqW2WjJEKObVN8bg="
 
 external_components:
   - source:
