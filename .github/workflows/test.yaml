@@ -7,7 +7,7 @@ on:
 
 jobs:
   tests:
-    name: "Validate ${{ matrix.version }} YAML configuration"
+    name: "${{ matrix.version }}"
     runs-on: "ubuntu-latest"
 
     strategy:
