@@ -1,0 +1,36 @@
+name: Compile and validate YAML configuration
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  tests:
+    name: "Validate ${{ matrix.version }} YAML configuration"
+    runs-on: "ubuntu-latest"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ["esp32", "esp8266", "esp32-passthrough", "esp8266-passthrough"]
+
+    steps:
+      - uses: "actions/checkout@v4"
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: "Install Python dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: "Compile  ${{ matrix.version }}"
+        run: esphome compile tests/office-desk-${{ matrix.version }}.yaml
