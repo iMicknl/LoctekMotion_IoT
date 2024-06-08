@@ -29,5 +29,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
+      - name: "Validate  ${{ matrix.version }}"
+        run: esphome config tests/office-desk-${{ matrix.version }}.yaml
+
       - name: "Compile  ${{ matrix.version }}"
         run: esphome compile tests/office-desk-${{ matrix.version }}.yaml
