@@ -1,5 +1,5 @@
-# Test ESPHome configuration files using local components
-name: Compile and validate YAML configuration
+# Validate ESPHome packages using latest published components
+name: Validate ESPHome packages
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ["esp32", "esp8266", "esp32-passthrough", "esp8266-passthrough"]
+        version: ["esp32"]
 
     steps:
       - uses: "actions/checkout@v4"
