@@ -3,7 +3,7 @@ name: Linting tools via pre-commit
 on:
   pull_request:
   push:
-    branches: [main, test-me-*]
+    branches: [main]
 
 jobs:
   main:

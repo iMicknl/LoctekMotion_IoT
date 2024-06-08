@@ -1,12 +1,9 @@
 name: Compile and validate YAML configuration
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
+  push:
+    branches: [main]
 
 jobs:
   tests:
