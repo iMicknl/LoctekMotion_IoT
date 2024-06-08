@@ -6,7 +6,7 @@
 
 #define displayPin20 4 // D2 GPIO4
 #define rxPin 12 // D5 GPIO12
-#define txPin 14 // D6 GPIO14 
+#define txPin 14 // D6 GPIO14
 
 SoftwareSerial sSerial(rxPin, txPin); // RX, TX
 int packet_pos = 0; //position in packet
@@ -107,11 +107,11 @@ void DecodeHeight()
   if(height != h)
   {
     height = h;
-    
+
     Serial.print("Height: ");
     Serial.print(height);
     Serial.println();
-  }  
+  }
 }
 int DecodeNumber(byte in)
 {
@@ -188,7 +188,7 @@ void loop()
 {
   while (sSerial.available())
   {
-    unsigned long in = sSerial.read();   
+    unsigned long in = sSerial.read();
 
     // Start of packet
     if(in == 0x9B) //start of packet
@@ -211,6 +211,6 @@ void loop()
     else if(packet_pos == 2) //position 2 = type of packet
       packet_type = (int)in;
     else if(packet_type == 18 && packet_pos >= 3 && packet_pos <= 5) //if packet type is height (0x12) and position is 3-5
-      message_height[packet_pos - 3] = in;    
+      message_height[packet_pos - 3] = in;
   }
 }

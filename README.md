@@ -49,14 +49,14 @@ In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I u
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 
-If your control panel is missing, feel free to [create an issue](https://github.com/iMicknl/LoctekMotion_IoT/issues/new) to discuss the possibilities or create a PR to add your research to this overview.  
+If your control panel is missing, feel free to [create an issue](https://github.com/iMicknl/LoctekMotion_IoT/issues/new) to discuss the possibilities or create a PR to add your research to this overview.
 
 #### HS13B-1
 
 - **Desk model**: Flexispot E7
 - **Tested with control box**: CB38M2J(IB)-1
 - **Source**: Printed on the PCB of the control box.
-  
+
 | RJ45 pin | Name       | Original Cable Color | Ethernet cable color (T568B) |
 | -------- | ---------- | -------------------- | ---------------------------- |
 | 8        | RESET      | Brown                | White-Orange                 |
@@ -75,7 +75,7 @@ Note that RX and TX is defined like this on receiver (control panel) side. So RX
 - **Desk model**: Flexispot EK5
 - **Tested with control box**: CB38M2B(IB)-1
 - **Source**: Printed on the PCB of the control box.
-  
+
 | RJ45 pin | Name       | Original Cable Color | Ethernet cable color (T568B) |
 | -------- | ---------- | -------------------- | ---------------------------- |
 | 8        | RESET SWIM | Brown                | White-Orange                 |
@@ -94,15 +94,15 @@ Note that RX and TX is defined like this on receiver (control panel) side. So RX
 - **Desk model**: Flexispot E5B
 - **Tested with control box**: CB38M2A-1
 - **Source**: [nv1t/standing-desk-interceptor](https://github.com/nv1t/standing-desk-interceptor)
-  
-| RJ45 pin | Name      | 
-| -------- | --------- | 
-| 8        | +5V (VDD) | 
-| 7        | GND       | 
+
+| RJ45 pin | Name      |
+| -------- | --------- |
+| 8        | +5V (VDD) |
+| 7        | GND       |
 | 6        | TX        |
-| 5        | RX        | 
+| 5        | RX        |
 | 4        | PIN 20    |
-| 3        | (unknown) | 
+| 3        | (unknown) |
 | 2        | SWIM      |
 | 1        | RES       |
 
@@ -112,7 +112,7 @@ Other control panels / control boxes could be supported in the same way, but you
 
 ### Retrieve current height
 
-Based upon the great work of [minifloat](https://www.mikrocontroller.net/topic/493524), it became clear that the control panel utilises a [7-segment display](https://en.wikipedia.org/wiki/Seven-segment_display). Fortunately, this is very common in such devices and thus there is a lot of [documentation](https://lastminuteengineers.com/seven-segment-arduino-tutorial/) on this topic. 
+Based upon the great work of [minifloat](https://www.mikrocontroller.net/topic/493524), it became clear that the control panel utilises a [7-segment display](https://en.wikipedia.org/wiki/Seven-segment_display). Fortunately, this is very common in such devices and thus there is a lot of [documentation](https://lastminuteengineers.com/seven-segment-arduino-tutorial/) on this topic.
 
 The control box sends the height as 4-bit hexadecimal, which is decoded in the control panel to drive the 7-segment display. The second number on the display also supports an optional decimal point ("8 segment").
 
@@ -151,7 +151,7 @@ All bytes combined will become the command to send to the control box. See the [
 While working on this project, I found out that I am not the only one with this idea. There are a few repositories on GitHub with great research which helped me kickstart this project. ❤️
 
 - [grssmnn / ha-flexispot-standing-desk](https://github.com/grssmnn/ha-flexispot-standing-desk) - Home Assistant integration via MQTT (micropython)
-- [Dude88 / loctek_IOT_box](https://github.com/Dude88/loctek_IOT_box) - Arduino code to control via Alexa and MQTT 
+- [Dude88 / loctek_IOT_box](https://github.com/Dude88/loctek_IOT_box) - Arduino code to control via Alexa and MQTT
 - [nv1t / standing-desk-interceptor](https://github.com/nv1t/standing-desk-interceptor) - Research on intercepting commands from Flexispot desks
 - [VinzSpring / LoctekReverseengineering](https://github.com/VinzSpring/LoctekReverseengineering#assumptions) - Research and Python samples
 
