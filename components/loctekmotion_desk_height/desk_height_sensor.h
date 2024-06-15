@@ -22,10 +22,10 @@ public:
 protected:
   float value = 0;
   float lastPublished = -1;
-  unsigned long history[5];
+  uint8_t history[5];
 
-  int msg_len = 0;
-  unsigned long msg_type;
+  uint8_t msg_len = 0;
+  uint8_t msg_type;
   bool valid = false;
 };
 
