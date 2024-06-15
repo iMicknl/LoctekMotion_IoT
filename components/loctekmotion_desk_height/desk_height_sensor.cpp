@@ -54,7 +54,7 @@ bool is_decimal(uint8_t b) { return (b & 0x80) == 0x80; }
 void DeskHeightSensor::loop() {
   uint8_t incomingByte;
   while (this->available() > 0) {
-    if (this->read_byte(incomingByte)) {
+    if (this->read_byte(&incomingByte)) {
       // ESP_LOGD("DEBUG", "Incoming byte is: %08x", incomingByte);
 
       // First byte, start of a packet
