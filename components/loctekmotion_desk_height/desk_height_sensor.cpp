@@ -66,7 +66,7 @@ void DeskHeightSensor::loop() {
 
       // Second byte defines the message length
       if (this->history[0] == 0x9b) {
-        this->msg_len = (int)incomingByte;
+        this->msg_len = incomingByte;
       }
 
       // Third byte is message type
