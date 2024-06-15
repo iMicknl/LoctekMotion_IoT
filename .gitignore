@@ -1,2 +1,5 @@
 venv
 .esphome
+
+*.pyc
+__pycache__/

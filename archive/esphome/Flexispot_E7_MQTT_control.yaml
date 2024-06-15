@@ -23,7 +23,7 @@ wifi:
     ssid: "${device_name} Fallback Hotspot"
     password: !secret ap_fallback_password
 
-# Enable MQTT communication. ReadOnly Variables are published immediatly 
+# Enable MQTT communication. ReadOnly Variables are published immediatly
 
 mqtt:
   topic_prefix: Flexispot
@@ -32,17 +32,17 @@ mqtt:
   port: 1883
   username: !secret mqtt_username
   password: !secret mqtt_password
-  
+
   # OnMessage is used for MQTT control
-  # Only a short 
-  
+  # Only a short
+
   on_message:
      - topic: Flexispot/Sit/command
        then:
          - switch.turn_on: switch_sit
      - topic: Flexispot/Stand/command
        then:
-         - switch.turn_on: switch_stand 
+         - switch.turn_on: switch_stand
      - topic: Flexispot/Preset1/command
        then:
          - switch.turn_on: switch_preset1
@@ -183,14 +183,14 @@ cover:
           - logger.log: "Executing up command"
           - switch.turn_on: switch_up
           - delay: 10ms
-    
+
     # Move desk down
     close_action:
       - while:
           condition:
             sensor.in_range:
               id: desk_height
-              above: ${min_height} 
+              above: ${min_height}
           then:
           - logger.log: "Executing down command"
           - switch.turn_on: switch_down

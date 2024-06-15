@@ -4,7 +4,7 @@ substitutions:
   min_height: "71.0" # Min height + 0.1
   #min_height: "62.1" # Min height + 0.1  (original one)
   max_height: "125.1" # Max height - 0.1
-  
+
 esphome:
   name: ${name}
   comment: ${device_name}
@@ -64,7 +64,7 @@ script:
           - delay: 480ms
         else:
           - script.execute: screen_timer
-    
+
 uart:
   - id: desk_uart
     baud_rate: 9600
@@ -291,9 +291,9 @@ cover:
           #     current_operation: OPENING
           - switch.turn_on: switch_up
           - delay: 108ms
-          
-          
-    
+
+
+
     # Move desk down
     close_action:
       - script.execute: script_start_command
@@ -302,7 +302,7 @@ cover:
           condition:
             sensor.in_range:
               id: desk_height
-              above: ${min_height} 
+              above: ${min_height}
           then:
           - logger.log: "Executing down command"
           # - cover.template.publish:
@@ -311,5 +311,5 @@ cover:
           - switch.turn_on: switch_down
           - delay: 108ms
 
-   
+
     optimistic: true
