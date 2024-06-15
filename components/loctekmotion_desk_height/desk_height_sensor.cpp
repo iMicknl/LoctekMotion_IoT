@@ -115,7 +115,8 @@ void DeskHeightSensor::loop() {
               finalHeight = finalHeight / 10;
             }
             this->value = finalHeight;
-            // ESP_LOGD("DeskHeightSensor", "Current height is: %f", finalHeight);
+            // ESP_LOGD("DeskHeightSensor", "Current height is: %f",
+            // finalHeight);
           }
         }
       }
