@@ -24,7 +24,7 @@ protected:
   float lastPublished = -1;
   uint8_t history[5];
 
-  int msg_len = 0;
+  uint8_t msg_len = 0;
   uint8_t msg_type;
   bool valid = false;
 };
