@@ -2,7 +2,6 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
 	"name": "Python 3",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/python:1-3.12-bullseye",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
@@ -13,17 +12,20 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "pip3 install --user -r requirements.txt && pre-commit install",
+
+	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"ms-vscode.cpptools-extension-pack",
-				"GitHub.copilot-chat"
+				"GitHub.copilot-chat",
+				"ESPHome.esphome-vscode",
+				"redhat.vscode-yaml",
+				"ms-python.python",
+				"ms-vscode.cpptools",
+				"ms-vscode.cpptools-extension-pack"
 			]
 		}
-	},
-
-	// Configure tool-specific properties.
-	// "customizations": {},
+	}
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
