@@ -11,6 +11,12 @@
 | D5      | TX                      | Black                              | Green |
 | D2      | PIN 20                  | Red                                | Blue |
 
+| ESP32   | Loctek Controller (E7)      | Loctek Motion Cable Color (HS13B-1)|
+| ------- | -----------------------     | ---------------------------------- |
+| GND     | GND                         | Blue                               |
+| GPIO16  | RX                          | Green                              |
+| GPIO17  | TX                          | Black                              |
+| GPIO23  | PIN 20                      | Red                                |
 
 ## HS13A-1
 
@@ -62,7 +68,7 @@ See [README](../../README.md#control-panels) for more details. If your board sup
 
 Please refer to the [ESPHome documentation](https://esphome.io/guides/getting_started_command_line.html).
 
-You can use `flexispot_ek5.yaml` *(HS13A-1, HS13B-1)* or `flexispot_e5b.yaml` *(HS01B-1)* as a boilerplate for your own implementation. This implementation has been created for the ESP8266 nodemcu, but can easily be adopted for other platforms and boards.
+You can use `flexispot_ek5.yaml` *(HS13A-1, HS13B-1)*/ `flexispot_e7.yaml` *(HS13B-1) ESP32* or `flexispot_e5b.yaml` *(HS01B-1)* as a boilerplate for your own implementation. This implementation has been created for the ESP8266 nodemcu, but can easily be adopted for other platforms and boards.
 
 ## Features
 
@@ -71,7 +77,7 @@ You can use `flexispot_ek5.yaml` *(HS13A-1, HS13B-1)* or `flexispot_e5b.yaml` *(
 - Current height via sensor entity
 - M button via switch entity
 - Wake up button via switch entity (currently just used for testing, doesn't seem functional yet)
-- Support for ESP32 (E5b only)
+- Support for ESP32 (E5b & E7)
 - Support for keypad (E5b only)
 
 ## Screenshots
