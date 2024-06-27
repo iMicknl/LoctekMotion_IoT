@@ -108,7 +108,7 @@ public:
       if (history[2] == 0x9b)
       {
 
-        if (msg_type == 0x12 && msg_len == 7)
+        if (msg_type == 0x12 && (msg_len == 7 || msg_len == 10))
         {
           // Empty height
           if (incomingByte == 0)
