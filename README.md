@@ -30,9 +30,14 @@ If you are interested in the internals of the LoctecMotion desk system, have a l
 
 At the time of writing, LoctekMotion sells [11 different control panels](https://www.loctekmotion.com/product/control-panel/). The features can differ per model, but it looks like the serial interface is pretty similar for the more advanced models.
 
-The tables below will show a mapping of the RJ45 pinout to the pinout used by the control panel. Please note that all RJ45 pins are described in the following way;
+The tables below will show a mapping of the RJ45 pinout to the pinout used by the control panel. Please note that all RJ45 pins are described in the following way:
 
 ![RJ-45 connector layout](images/RJ-45_connector.jpg)
+
+The most common [color convention](https://www.showmecables.com/blog/post/rj45-pinout)
+for wiring RJ45 for network cables is:
+
+![RJ45 T568B colors](images/RJ45-Pinout-T568B.jpg)
 
 In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I used a [RJ45 to RS232 adapter](https://www.allekabels.nl/rs232-kabel/4568/1041186/rj45-naar-rs232.html) with DuPont cables (jump wires), but you simply can cut and split an ethernet cable as well.
 
@@ -59,16 +64,17 @@ If your control panel is missing, feel free to [create an issue](https://github.
 
 | RJ45 pin | Name       | Original Cable Color | Ethernet cable color (T568B) |
 | -------- | ---------- | -------------------- | ---------------------------- |
-| 8        | RESET      | Brown                | White-Orange                 |
-| 7        | SWIM       | White                | Orange                       |
-| 6        | EMPTY      | Purple               | White-Green                  |
-| 5        | PIN 20     | Red                  | Blue                         |
-| 4        | RX         | Green                | White-Blue                   |
-| 3        | TX         | Black                | Green                        |
-| 2        | GND        | Blue                 | White-Brown                  |
-| 1        | +5V (VDD)  | Yellow               | Brown                        |
+| 1        | RESET      | Brown                | White-Orange                 |
+| 2        | SWIM       | White                | Orange                       |
+| 3        | EMPTY      | Purple               | White-Green                  |
+| 4        | PIN 20     | Red                  | Blue                         |
+| 5        | RX         | Green                | White-Blue                   |
+| 6        | TX         | Black                | Green                        |
+| 7        | GND        | Blue                 | White-Brown                  |
+| 8        | +5V (VDD)  | Yellow               | Brown                        |
 
-Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
+Note that RX and TX is defined like this on receiver (control panel) side.
+So the custom controller also uses RX to receive data and TX to send data.
 
 #### HS13A-1
 
@@ -78,16 +84,17 @@ Note that RX and TX is defined like this on receiver (control panel) side. So RX
 
 | RJ45 pin | Name       | Original Cable Color | Ethernet cable color (T568B) |
 | -------- | ---------- | -------------------- | ---------------------------- |
-| 8        | RESET SWIM | Brown                | White-Orange                 |
-| 7        | PIN 20     | White                | Orange                       |
-| 6        | RX         | Purple               | White-Green                  |
-| 5        | TX         | Red                  | Blue                         |
-| 4        | GND1       | Green                | White-Blue                   |
-| 3        | +5V (VDD)  | Black                | Green                        |
-| 2        | 29V+       | Blue                 | White-Brown                  |
-| 1        | 29V-       | Yellow               | Brown                        |
+| 1        | RESET SWIM | Brown                | White-Orange                 |
+| 2        | PIN 20     | White                | Orange                       |
+| 3        | RX         | Purple               | White-Green                  |
+| 4        | TX         | Red                  | Blue                         |
+| 5        | GND1       | Green                | White-Blue                   |
+| 6        | +5V (VDD)  | Black                | Green                        |
+| 7        | 29V+       | Blue                 | White-Brown                  |
+| 8        | 29V-       | Yellow               | Brown                        |
 
-Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
+Note that RX and TX is defined like this on receiver (control panel) side.
+So the custom controller also uses RX to receive data and TX to send data.
 
 #### HS01B-1
 
@@ -106,7 +113,8 @@ Note that RX and TX is defined like this on receiver (control panel) side. So RX
 | 2        | SWIM      |
 | 1        | RES       |
 
-Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
+Note that RX and TX is defined like this on receiver (control panel) side.
+So the custom controller also uses RX to receive data and TX to send data.
 
 Other control panels / control boxes could be supported in the same way, but you would need to figure the RJ45 pinout mapping. Most control boxes have an extra RJ45 port for serial communication, but otherwise you would need to place your device in between the control panel and the control box.
 
