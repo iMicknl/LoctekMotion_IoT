@@ -11,8 +11,12 @@ esphome:
   platform: esp32 # TODO Change to your platform
   board: esp32dev # TODO Change to your board
   includes:
-    - desk_height_sensor.h
     - desk_keypad.h
+
+external_components:
+  - source: components
+    components:
+      - loctek
 
 wifi:
   ssid: !secret wifi_ssid
@@ -83,14 +87,11 @@ sensor:
   - platform: uptime
     name: Uptime
 
-  - platform: custom
-    lambda: |-
-      auto desk_height_sensor = new DeskHeightSensor(id(desk_uart));
-      App.register_component(desk_height_sensor);
-      return {desk_height_sensor};
-    sensors:
+  - platform: loctek
+    uart_id: desk_uart
+    height:
       id: "desk_height"
-      name: Desk Height
+      name: Height
       unit_of_measurement: cm
       accuracy_decimals: 1
       icon: "mdi:counter"
