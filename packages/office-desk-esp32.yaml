@@ -12,7 +12,7 @@ substitutions:
   encryption_key: "iOZqtvw31Yy6sasRl5h2DElG2VDlqW2WjJEKObVN8bg="
 
 external_components:
-  source: github://iMicknl/LoctekMotion_IoT@v2
+  source: github://iMicknl/LoctekMotion_IoT
   components: [ loctekmotion_desk_height ]
 
 esp32:

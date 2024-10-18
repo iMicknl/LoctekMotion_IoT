@@ -18,9 +18,30 @@ This repository will help you to connect your desk to the internet via the seria
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
 | [ESPHome](packages/office-desk.yaml) | Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant. |
 
-The V1 packages, including the Arduino and Raspberry Pi ones, can be found in the `archive` directory.
+The v1 packages, including the Arduino and Raspberry Pi ones, can be found in the [`archive`](./archive/) directory.
 
 For more packaged solutions, see [similar projects](#similar-projects--research). Pull requests are welcome.
+
+## Getting started
+
+Please follow the [ESPHome documentation](https://esphome.io/guides/getting_started_command_line.html) for the basics of ESPHome. You can use the provided [`office-desk-esp32.yaml`](https://github.com/iMicknl/LoctekMotion_IoT/blob/main/packages/office-desk-esp32.yaml) as a boilerplate for your own implementation. This implementation has been created for the ESP32 nodemcu, but can easily be adopted for other platforms and boards.
+
+If you don't have an extra RJ45 port on your desk controller, you will need to use a pass-through solution. At the moment this hasn't been implemented in the latest version, but you can look at the [archive](./archive/esphome/README.md) for the v1 implementation.
+
+## Pin-out
+| RJ45 pin | Name      |  ESP32 |
+| -------- | --------- | --------- | 
+| 8        | +5V (VDD) |  VIN |
+| 7        | GND       | GND |
+| 6        | TX        | TX2 (GPIO17) |
+| 5        | RX        |  RX2 (GPIO16) |
+| 4        | PIN 20    | D23 (GPIO23) |
+| 3        | (unknown) |  |
+| 2        | SWIM      | |
+| 1        | RES       | |
+
+## Known issues
+- Number entity may overshoot. For more accurate positioning, use the provided presets.
 
 ## Research
 
@@ -129,10 +150,6 @@ Make sure you set the baud rate to 9600. For most LoctekMotion desks, the contro
 ![](https://alselectro.files.wordpress.com/2015/03/image-27.png)
 
 source: [alselectro](https://alselectro.wordpress.com/2015/03/03/8051-tutorials-3-interfacing-7-segment-display/)
-
-
-### Known issues
-- Number entity may overshoot. For more accurate positioning, use the provided presets.
 
 
 ### Execute a command
