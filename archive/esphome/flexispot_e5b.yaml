@@ -3,7 +3,7 @@ substitutions:
   name: flexispot_e5b
   min_height: "73.6" # Min height + 0.1
   max_height: "122.9" # Max height - 0.1
-  
+
 esphome:
   name: ${name}
   comment: ${device_name}
@@ -139,14 +139,14 @@ cover:
           - logger.log: "Executing up command"
           - switch.turn_on: switch_up
           - delay: 10ms
-    
+
     # Move desk down
     close_action:
       - while:
           condition:
             sensor.in_range:
               id: desk_height
-              above: ${min_height} 
+              above: ${min_height}
           then:
           - logger.log: "Executing down command"
           - switch.turn_on: switch_down

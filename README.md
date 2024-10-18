@@ -14,11 +14,11 @@ This repository will help you to connect your desk to the internet via the seria
 
 > Use the information in this repository at your own risk and with caution. Tinkering with electronics always has risks.
 
-| Name                                  | Description                                                                |
-| ------------------------------------- | -------------------------------------------------------------------------- |
-| [Arduino](packages/arduino)           | Custom code to control your desk via an ESP32/ESP8266 module via MQTT.     |
-| [ESPHome](packages/esphome)           | Control your desk via an ESP32/ESP8266 module connected to Home Assistant. |
-| [Raspberry Pi](packages/raspberry-pi) | Custom code to control your desk via a Raspberry Pi via Python.            |
+| Name                                 | Description                                                                                                          |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| [ESPHome](packages/office-desk.yaml) | Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant. |
+
+The V1 packages, including the Arduino and Raspberry Pi ones, can be found in the `archive` directory.
 
 For more packaged solutions, see [similar projects](#similar-projects--research). Pull requests are welcome.
 
@@ -30,9 +30,14 @@ If you are interested in the internals of the LoctecMotion desk system, have a l
 
 At the time of writing, LoctekMotion sells [11 different control panels](https://www.loctekmotion.com/product/control-panel/). The features can differ per model, but it looks like the serial interface is pretty similar for the more advanced models.
 
-The tables below will show a mapping of the RJ45 pinout to the pinout used by the control panel. Please note that all RJ45 pins are described in the following way;
+The tables below will show a mapping of the RJ45 pinout to the pinout used by the control panel. Please note that all RJ45 pins are described in the following way:
 
 ![RJ-45 connector layout](images/RJ-45_connector.jpg)
+
+The most common [color convention](https://www.showmecables.com/blog/post/rj45-pinout)
+for wiring RJ45 for network cables is:
+
+![RJ45 T568B colors](images/RJ45-Pinout-T568B.jpg)
 
 In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I used a [RJ45 to RS232 adapter](https://www.allekabels.nl/rs232-kabel/4568/1041186/rj45-naar-rs232.html) with DuPont cables (jump wires), but you simply can cut and split an ethernet cable as well.
 
@@ -49,70 +54,73 @@ In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I u
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 
-If your control panel is missing, feel free to [create an issue](https://github.com/iMicknl/LoctekMotion_IoT/issues/new) to discuss the possibilities or create a PR to add your research to this overview.  
+If your control panel is missing, feel free to [create an issue](https://github.com/iMicknl/LoctekMotion_IoT/issues/new) to discuss the possibilities or create a PR to add your research to this overview.
 
 #### HS13B-1
 
 - **Desk model**: Flexispot E7
 - **Tested with control box**: CB38M2J(IB)-1
 - **Source**: Printed on the PCB of the control box.
-  
+
 | RJ45 pin | Name       | Original Cable Color | Ethernet cable color (T568B) |
 | -------- | ---------- | -------------------- | ---------------------------- |
-| 8        | RESET      | Brown                | White-Orange                 |
-| 7        | SWIM       | White                | Orange                       |
-| 6        | EMPTY      | Purple               | White-Green                  |
-| 5        | PIN 20     | Red                  | Blue                         |
-| 4        | RX         | Green                | White-Blue                   |
-| 3        | TX         | Black                | Green                        |
-| 2        | GND        | Blue                 | White-Brown                  |
-| 1        | +5V (VDD)  | Yellow               | Brown                        |
+| 1        | RESET      | Brown                | White-Orange                 |
+| 2        | SWIM       | White                | Orange                       |
+| 3        | EMPTY      | Purple               | White-Green                  |
+| 4        | PIN 20     | Red                  | Blue                         |
+| 5        | RX         | Green                | White-Blue                   |
+| 6        | TX         | Black                | Green                        |
+| 7        | GND        | Blue                 | White-Brown                  |
+| 8        | +5V (VDD)  | Yellow               | Brown                        |
 
-Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
+Note that RX and TX is defined like this on receiver (control panel) side.
+So the custom controller also uses RX to receive data and TX to send data.
 
 #### HS13A-1
 
 - **Desk model**: Flexispot EK5
 - **Tested with control box**: CB38M2B(IB)-1
 - **Source**: Printed on the PCB of the control box.
-  
+
 | RJ45 pin | Name       | Original Cable Color | Ethernet cable color (T568B) |
 | -------- | ---------- | -------------------- | ---------------------------- |
-| 8        | RESET SWIM | Brown                | White-Orange                 |
-| 7        | PIN 20     | White                | Orange                       |
-| 6        | RX         | Purple               | White-Green                  |
-| 5        | TX         | Red                  | Blue                         |
-| 4        | GND1       | Green                | White-Blue                   |
-| 3        | +5V (VDD)  | Black                | Green                        |
-| 2        | 29V+       | Blue                 | White-Brown                  |
-| 1        | 29V-       | Yellow               | Brown                        |
+| 1        | RESET SWIM | Brown                | White-Orange                 |
+| 2        | PIN 20     | White                | Orange                       |
+| 3        | RX         | Purple               | White-Green                  |
+| 4        | TX         | Red                  | Blue                         |
+| 5        | GND1       | Green                | White-Blue                   |
+| 6        | +5V (VDD)  | Black                | Green                        |
+| 7        | 29V+       | Blue                 | White-Brown                  |
+| 8        | 29V-       | Yellow               | Brown                        |
 
-Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
+Note that RX and TX is defined like this on receiver (control panel) side.
+So the custom controller also uses RX to receive data and TX to send data.
 
 #### HS01B-1
 
 - **Desk model**: Flexispot E5B
 - **Tested with control box**: CB38M2A-1
 - **Source**: [nv1t/standing-desk-interceptor](https://github.com/nv1t/standing-desk-interceptor)
-  
-| RJ45 pin | Name      | Original Cable Color  | Ethernet cable color (T568B) |
-| -------- | --------- | --------------------- | ---------------------------- |
-| 8        | +5V (VDD) | Yellow                | Brown                        |
-| 7        | GND       | Blue                  | White-Brown                  |
-| 6        | TX        | Black                 | Green                        |
-| 5        | RX        | Green                 | White-Blue                   |
-| 4        | PIN 20    | Red                   | Blue                         |
-| 3        | (unknown) | Purple                | White-Green                  |
-| 2        | SWIM      | White                 | Orange                       |
-| 1        | RES       | Brown                 | White-Orange                 |
 
-Note that RX and TX is defined like this on receiver (control panel) side. So RX can be used to receive data, TX to send data.
+| RJ45 pin | Name      |
+| -------- | --------- |
+| 8        | +5V (VDD) |
+| 7        | GND       |
+| 6        | TX        |
+| 5        | RX        |
+| 4        | PIN 20    |
+| 3        | (unknown) |
+| 2        | SWIM      |
+| 1        | RES       |
+
+Note that RX and TX is defined like this on receiver (control panel) side.
+So the custom controller also uses RX to receive data and TX to send data.
 
 Other control panels / control boxes could be supported in the same way, but you would need to figure the RJ45 pinout mapping. Most control boxes have an extra RJ45 port for serial communication, but otherwise you would need to place your device in between the control panel and the control box.
 
 ### Retrieve current height
 
-Based upon the great work of [minifloat](https://www.mikrocontroller.net/topic/493524), it became clear that the control panel utilises a [7-segment display](https://en.wikipedia.org/wiki/Seven-segment_display). Fortunately, this is very common in such devices and thus there is a lot of [documentation](https://lastminuteengineers.com/seven-segment-arduino-tutorial/) on this topic. 
+Based upon the great work of [minifloat](https://www.mikrocontroller.net/topic/493524), it became clear that the control panel utilises a [7-segment display](https://en.wikipedia.org/wiki/Seven-segment_display). Fortunately, this is very common in such devices and thus there is a lot of [documentation](https://lastminuteengineers.com/seven-segment-arduino-tutorial/) on this topic.
 
 The control box sends the height as 4-bit hexadecimal, which is decoded in the control panel to drive the 7-segment display. The second number on the display also supports an optional decimal point ("8 segment").
 
@@ -121,6 +129,11 @@ Make sure you set the baud rate to 9600. For most LoctekMotion desks, the contro
 ![](https://alselectro.files.wordpress.com/2015/03/image-27.png)
 
 source: [alselectro](https://alselectro.wordpress.com/2015/03/03/8051-tutorials-3-interfacing-7-segment-display/)
+
+
+### Known issues
+- Number entity may overshoot. For more accurate positioning, use the provided presets.
+
 
 ### Execute a command
 
@@ -146,7 +159,7 @@ All bytes combined will become the command to send to the control box. See the [
 While working on this project, I found out that I am not the only one with this idea. There are a few repositories on GitHub with great research which helped me kickstart this project. ❤️
 
 - [grssmnn / ha-flexispot-standing-desk](https://github.com/grssmnn/ha-flexispot-standing-desk) - Home Assistant integration via MQTT (micropython)
-- [Dude88 / loctek_IOT_box](https://github.com/Dude88/loctek_IOT_box) - Arduino code to control via Alexa and MQTT 
+- [Dude88 / loctek_IOT_box](https://github.com/Dude88/loctek_IOT_box) - Arduino code to control via Alexa and MQTT
 - [nv1t / standing-desk-interceptor](https://github.com/nv1t/standing-desk-interceptor) - Research on intercepting commands from Flexispot desks
 - [VinzSpring / LoctekReverseengineering](https://github.com/VinzSpring/LoctekReverseengineering#assumptions) - Research and Python samples
 

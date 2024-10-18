@@ -1,0 +1,30 @@
+substitutions:
+  device_name: Flexispot EK5
+  name: office-desk-flexispot-ek5
+  min_height: "73.5" # cm
+  max_height: "123" # cm
+  ssid: "your_wifi_ssid"
+  wifi_password: "your_wifi_password"
+  ap_fallback_password: "your_ap_fallback_password"
+  tx_pin: D5 # =GPIO14
+  rx_pin: D6 # =GPIO12
+  screen_pin: D2 # =GPIO4
+  encryption_key: "iOZqtvw31Yy6sasRl5h2DElG2VDlqW2WjJEKObVN8bg="
+
+external_components:
+  - source:
+      type: local
+      path: ../components
+
+esp8266:
+  board: d1_mini
+  framework:
+    version: recommended
+
+esphome:
+  name: ${name}
+  friendly_name: ${device_name}
+  comment: Used to control your ${device_name} standing desk via Home Assistant.
+
+
+# TODO

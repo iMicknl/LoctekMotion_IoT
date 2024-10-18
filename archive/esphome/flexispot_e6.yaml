@@ -1,7 +1,7 @@
 substitutions:
-  device_name: Flexispot EK5
-  name: flexispot_ek5
-  min_height: "73.6" # Min height + 0.1
+  device_name: Flexispot E6
+  name: flexispot_e6
+  min_height: "60.1" # Min height + 0.1
   max_height: "122.9" # Max height - 0.1
 
 esphome:
@@ -21,7 +21,6 @@ wifi:
     ssid: "${device_name} Fallback Hotspot"
     password: !secret ap_fallback_password
 
-
 captive_portal:
 
 # Enable logging
@@ -37,10 +36,10 @@ ota:
   password: !secret ha_api_password
 
 uart:
-  id: desk_uart
-  baud_rate: 9600
-  tx_pin: D5
-  rx_pin: D6
+  - id: desk_uart
+    baud_rate: 9600
+    tx_pin: D5
+    rx_pin: D6
 
 sensor:
   - platform: wifi_signal
@@ -68,7 +67,7 @@ switch:
     pin:
       number: D2
       mode: OUTPUT
-    restore_mode: ALWAYS_OFF
+    restore_mode: ALWAYS_ON
     internal: true
 
   - platform: uart
@@ -86,16 +85,9 @@ switch:
     uart_id: desk_uart
 
   - platform: uart
-    name: "Sit" # Preset 3 on some control panels
-    id: switch_sit
-    icon: mdi:chair-rolling
-    data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
-    uart_id: desk_uart
-
-  - platform: uart
-    name: "Stand" # Not available for all control panels
-    id: switch_stand
-    icon: mdi:human-handsup
+    name: "Preset 3"
+    id: switch_preset3
+    icon: mdi:numeric-3-box
     data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
     uart_id: desk_uart
 
@@ -147,14 +139,14 @@ cover:
           - logger.log: "Executing up command"
           - switch.turn_on: switch_up
           - delay: 10ms
-    
+
     # Move desk down
     close_action:
       - while:
           condition:
             sensor.in_range:
               id: desk_height
-              above: ${min_height} 
+              above: ${min_height}
           then:
           - logger.log: "Executing down command"
           - switch.turn_on: switch_down
