@@ -42,6 +42,7 @@ api:
     key: ${encryption_key}
 
 ota:
+  platform: esphome
 
 wifi:
   ssid: ${ssid}
