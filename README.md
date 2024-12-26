@@ -30,7 +30,7 @@ If you don't have an extra RJ45 port on your desk controller, you will need to u
 
 ## Pin-out
 | RJ45 pin | Name      |  ESP32 |
-| -------- | --------- | --------- | 
+| -------- | --------- | --------- |
 | 8        | +5V (VDD) |  VIN |
 | 7        | GND       | GND |
 | 6        | TX        | TX2 (GPIO17) |
