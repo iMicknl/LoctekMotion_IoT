@@ -10,6 +10,14 @@ substitutions:
   rx_pin: GPIO16 # RXD 2
   screen_pin: GPIO23
   encryption_key: "iOZqtvw31Yy6sasRl5h2DElG2VDlqW2WjJEKObVN8bg="
+  preset_1_name: "Preset 1"
+  preset_1_icon: "mdi:numeric-1-box"
+  preset_2_name: "Preset 2"
+  preset_2_icon: "mdi:numeric-2-box"
+  preset_3_name: "Preset 3"
+  preset_3_icon: "mdi:numeric-3-box"
+  preset_4_name: "Preset 4"
+  preset_4_icon: "mdi:numeric-4-box"
 
 external_components:
   source: github://iMicknl/LoctekMotion_IoT
@@ -144,36 +152,36 @@ switch:
 
 button:
   - platform: template
-    name: "Preset 1"
-    icon: mdi:numeric-1-box
+    name: ${preset_1_name}
+    icon: ${preset_1_icon}
     on_press:
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x04, 0x00, 0xac, 0xa3, 0x9d]
 
   - platform: template
-    name: "Preset 2"
-    icon: mdi:numeric-2-box
+    name: ${preset_2_name}
+    icon: ${preset_2_icon}
     on_press:
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d]
 
   - platform: template
-    name: "Sit" # Preset 3 on some control panels
-    icon: mdi:chair-rolling
-    on_press:
-      - uart.write:
-          id: desk_uart
-          data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
-
-  - platform: template
-    name: "Stand" # Preset 4 on some control panels
-    icon: mdi:human-handsup
+    name: ${preset_3_name} # Preset 3 on some control panels
+    icon: ${preset_3_icon}
     on_press:
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
+
+  - platform: template
+    name: ${preset_4_name} # Preset 4 on some control panels
+    icon: ${preset_4_icon}
+    on_press:
+      - uart.write:
+          id: desk_uart
+          data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
 
   - platform: template
     name: "Memory"
