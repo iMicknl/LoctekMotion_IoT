@@ -16,7 +16,7 @@ This repository will help you to connect your desk to the internet via the seria
 
 | Name                                 | Description                                                                                                          |
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| [ESPHome](packages/office-desk.yaml) | Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant. |
+| [ESPHome](packages/office-desk-esp32.yaml) | Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant. |
 
 The v1 packages, including the Arduino and Raspberry Pi ones, can be found in the [`archive`](./archive/) directory.
 
