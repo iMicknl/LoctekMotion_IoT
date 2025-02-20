@@ -34,6 +34,7 @@ api:
   password: !secret ha_api_password
 
 ota:
+  platform: esphome
   password: !secret ha_api_password
 
 uart:
