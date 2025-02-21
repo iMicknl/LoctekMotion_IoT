@@ -10,38 +10,50 @@ Most of the models Flexispot sells are using components from LoctekMotion. [Loct
 This repository will help you to connect your desk to the internet via the serial communication ports (RJ45), for example for use with [Home Assistant](https://www.home-assistant.io/). Think of scenarios like controlling your desk via voice or creating notifications when you sit for too long.
 (or just because it is cool 🤓)
 
+## Features
+
+- Control your desk (up, down, stop) using a cover entity
+- Manage 4 presets with button entities
+- Monitor desk height with a sensor entity
+- Adjust desk height in cm using a number entity *(experimental)*
+-
+### Known issues
+
+- Number entity may overshoot. The desk moves until the height sensor matches the requested height, which may cause overshooting due to reporting delays. Use the desk controller presets for accurate positioning.
+
 ## Packages
 
 > Use the information in this repository at your own risk and with caution. Tinkering with electronics always has risks.
 
-| Name                                 | Description                                                                                                          |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| Name                                       | Description                                                                                                          |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
 | [ESPHome](packages/office-desk-esp32.yaml) | Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant. |
 
-The v1 packages, including the Arduino and Raspberry Pi ones, can be found in the [`archive`](./archive/) directory.
-
-For more packaged solutions, see [similar projects](#similar-projects--research). Pull requests are welcome.
+The v1 packages, including Arduino, Raspberry Pi, older ESPHome packages, and different pin-outs, are available in the [`archive`](./archive/) directory.
+For alternative solutions, refer to [similar projects / research](#similar-projects--research).
 
 ## Getting started
 
 Please follow the [ESPHome documentation](https://esphome.io/guides/getting_started_command_line.html) for the basics of ESPHome. You can use the provided [`office-desk-esp32.yaml`](https://github.com/iMicknl/LoctekMotion_IoT/blob/main/packages/office-desk-esp32.yaml) as a boilerplate for your own implementation. This implementation has been created for the ESP32 nodemcu, but can easily be adopted for other platforms and boards.
 
-If you don't have an extra RJ45 port on your desk controller, you will need to use a pass-through solution. At the moment this hasn't been implemented in the latest version, but you can look at the [archive](./archive/esphome/README.md) for the v1 implementation.
+> [!NOTE]
+> If your desk controller lacks an extra RJ45 port, you'll need a pass-through solution. This feature is not yet available in version 2 of this component. However, you can refer to the [archive](./archive/esphome/README.md) for the v1 implementation.
 
 ## Pin-out
-| RJ45 pin | Name      |  ESP32 |
-| -------- | --------- | --------- |
-| 8        | +5V (VDD) |  VIN |
-| 7        | GND       | GND |
-| 6        | TX        | TX2 (GPIO17) |
-| 5        | RX        |  RX2 (GPIO16) |
-| 4        | PIN 20    | D23 (GPIO23) |
-| 3        | (unknown) |  |
-| 2        | SWIM      | |
-| 1        | RES       | |
 
-## Known issues
-- Number entity may overshoot. For more accurate positioning, use the provided presets.
+| RJ45 pin | Name      | ESP32        |
+| -------- | --------- | ------------ |
+| 8        | +5V (VDD) | VIN          |
+| 7        | GND       | GND          |
+| 6        | TX        | TX2 (GPIO17) |
+| 5        | RX        | RX2 (GPIO16) |
+| 4        | PIN 20    | D23 (GPIO23) |
+| 3        | (unknown) |              |
+| 2        | SWIM      |              |
+| 1        | RES       |              |
+
+This pin-out should be compatible with all control panels featuring an RJ45 port for serial communication. If it doesn't work for your setup, consider trying an alternative pin-out from the [archive](./archive/esphome/README.md).
+
 
 ## Research
 
@@ -83,16 +95,16 @@ If your control panel is missing, feel free to [create an issue](https://github.
 - **Tested with control box**: CB38M2J(IB)-1
 - **Source**: Printed on the PCB of the control box.
 
-| RJ45 pin | Name       | Original Cable Color | Ethernet cable color (T568B) |
-| -------- | ---------- | -------------------- | ---------------------------- |
-| 1        | RESET      | Brown                | White-Orange                 |
-| 2        | SWIM       | White                | Orange                       |
-| 3        | EMPTY      | Purple               | White-Green                  |
-| 4        | PIN 20     | Red                  | Blue                         |
-| 5        | RX         | Green                | White-Blue                   |
-| 6        | TX         | Black                | Green                        |
-| 7        | GND        | Blue                 | White-Brown                  |
-| 8        | +5V (VDD)  | Yellow               | Brown                        |
+| RJ45 pin | Name      | Original Cable Color | Ethernet cable color (T568B) |
+| -------- | --------- | -------------------- | ---------------------------- |
+| 1        | RESET     | Brown                | White-Orange                 |
+| 2        | SWIM      | White                | Orange                       |
+| 3        | EMPTY     | Purple               | White-Green                  |
+| 4        | PIN 20    | Red                  | Blue                         |
+| 5        | RX        | Green                | White-Blue                   |
+| 6        | TX        | Black                | Green                        |
+| 7        | GND       | Blue                 | White-Brown                  |
+| 8        | +5V (VDD) | Yellow               | Brown                        |
 
 Note that RX and TX is defined like this on receiver (control panel) side.
 So the custom controller also uses RX to receive data and TX to send data.
@@ -158,16 +170,16 @@ The control box only accepts commands when the 'screen is active'. To activate t
 
 #### Command list
 
-| Command name      | Start | Length | Type | Payload   | Checksum  | End  |
-| ----------------- | ----- | ------ | ---- | --------- | --------- | ---- |
-| Wake Up           | `9b`  | `06`   | `02` | `00` `00` | `6c` `a1` | `9d` |
-| Up                | `9b`  | `06`   | `02` | `01` `00` | `fc` `a0` | `9d` |
-| Down              | `9b`  | `06`   | `02` | `02` `00` | `0c` `a0` | `9d` |
-| M                 | `9b`  | `06`   | `02` | `20` `00` | `ac` `b8` | `9d` |
-| Preset 1          | `9b`  | `06`   | `02` | `04` `00` | `ac` `a3` | `9d` |
-| Preset 2          | `9b`  | `06`   | `02` | `08` `00` | `ac` `a6` | `9d` |
-| Preset 3 (stand)  | `9b`  | `06`   | `02` | `10` `00` | `ac` `ac` | `9d` |
-| Preset 4 (sit)    | `9b`  | `06`   | `02` | `00` `01` | `ac` `60` | `9d` |
+| Command name     | Start | Length | Type | Payload   | Checksum  | End  |
+| ---------------- | ----- | ------ | ---- | --------- | --------- | ---- |
+| Wake Up          | `9b`  | `06`   | `02` | `00` `00` | `6c` `a1` | `9d` |
+| Up               | `9b`  | `06`   | `02` | `01` `00` | `fc` `a0` | `9d` |
+| Down             | `9b`  | `06`   | `02` | `02` `00` | `0c` `a0` | `9d` |
+| M                | `9b`  | `06`   | `02` | `20` `00` | `ac` `b8` | `9d` |
+| Preset 1         | `9b`  | `06`   | `02` | `04` `00` | `ac` `a3` | `9d` |
+| Preset 2         | `9b`  | `06`   | `02` | `08` `00` | `ac` `a6` | `9d` |
+| Preset 3 (stand) | `9b`  | `06`   | `02` | `10` `00` | `ac` `ac` | `9d` |
+| Preset 4 (sit)   | `9b`  | `06`   | `02` | `00` `01` | `ac` `60` | `9d` |
 
 All bytes combined will become the command to send to the control box. See the [packages](#packages) for sample code.
 
