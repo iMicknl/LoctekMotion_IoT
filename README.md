@@ -53,15 +53,15 @@ Please follow the [ESPHome documentation](https://esphome.io/guides/getting_star
 
 This pin-out should be compatible with all control panels featuring an RJ45 port for serial communication. If it doesn't work for your setup, consider trying an alternative pin-out from the [archive](./archive/esphome/README.md).
 
-### Components
+Use the provided pin-out to connect your ESP32 to the desk controller's RJ45 port using an ethernet cable. If you're not experienced with electronics and soldering, consider using an RJ45 Adapter Board from sites like Aliexpress, connected with Dupont cables to your ESP32.
 
-- [ESP32 NodeMCU]
-
+![example setup](images/rj45-adapter-board.png)
 
 ### Troubleshooting
 
 **My height sensor is not providing the right value**
-[TODO add debug statements]
+- [TODO add how to add debug statements]
+- If your cover entity has up/down buttons grayed out due to height sensor issues, you can change the internal parameter from "true" to "false" for the Up/Down switch in the YAML configuration.
 
 ## Research
 
