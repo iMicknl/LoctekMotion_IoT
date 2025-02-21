@@ -1,9 +1,12 @@
 ![Flexispot Desk with automation logos](images/header.png)
 (*image source: [Windows Central](https://www.windowscentral.com/flexispot-e5-standing-desk-review)*)
 
+> [!WARNING]
+> Use the information in this repository at your own risk and with caution. Tinkering with electronics always has risks.
+
 ## Turn your LoctekMotion/FlexiSpot desk into a smart desk
 
-Recently, I acquired a new standing desk from FlexiSpot. During assembly, I noticed that the control panel had an RJ45 cable and a second RJ45 port, which sparked my interest. Can I connect my desk to the internet?
+When I assembled my FlexiSpot standing desk, I noticed the control panel had an RJ45 cable and a second RJ45 port. This sparked my interest: can I connect my desk to the internet?
 
 Most Flexispot models utilize components from LoctekMotion, a manufacturer specializing in lifting columns for height-adjustable desks. Although LoctekMotion previously advertised a [Bluetooth receiver](https://www.loctekmotion.com/shop/accessories/bt-desk-app/) for their control boxes, I haven't been able to obtain one.
 
@@ -21,9 +24,6 @@ This repository will guide you on connecting your desk to Home Assistant and oth
 - Number entity may overshoot. The desk moves until the height sensor matches the requested height, which may cause overshooting due to reporting delays. Use the desk controller presets for accurate positioning.
 
 ## Packages
-
-> [!WARNING]
-> Use the information in this repository at your own risk and with caution. Tinkering with electronics always has risks.
 
 | Name                                       | Description                                                                                                          |
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
