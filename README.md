@@ -59,9 +59,9 @@ Use the provided pin-out to connect your ESP32 to the desk controller's RJ45 por
 
 ### Troubleshooting
 
-**My height sensor is not providing the right value**
-- [TODO add how to add debug statements]
-- If your cover entity has up/down buttons grayed out due to height sensor issues, you can change the internal parameter from "true" to "false" for the Up/Down switch in the YAML configuration.
+**My height sensor is not providing the correct value**
+- Uncomment the debug line for UART in the ESPHome configuration to see the raw data coming from the desk controller. This will help you collect information to troubleshoot the issue. See [debugging UART](https://esphome.io/components/uart.html#debugging).
+- If your cover entity has up/down buttons grayed out due to height sensor issues, you can change the internal parameter from `true` to `false` for the Up/Down switch in the YAML configuration.
 
 ## Research
 
