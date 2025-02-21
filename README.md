@@ -38,7 +38,7 @@ Please follow the [ESPHome documentation](https://esphome.io/guides/getting_star
 > [!NOTE]
 > If your desk controller lacks an extra RJ45 port, you'll need a pass-through solution. This feature is not yet available in version 2 of this component. However, you can refer to the [archive](./archive/esphome/README.md) for the v1 implementation.
 
-## Pin-out
+### Pin-out
 
 | RJ45 pin | Name      | ESP32        |
 | -------- | --------- | ------------ |
@@ -53,16 +53,30 @@ Please follow the [ESPHome documentation](https://esphome.io/guides/getting_star
 
 This pin-out should be compatible with all control panels featuring an RJ45 port for serial communication. If it doesn't work for your setup, consider trying an alternative pin-out from the [archive](./archive/esphome/README.md).
 
+### Components
+
+- [ESP32 NodeMCU]
+
+
+### Troubleshooting
+
+**My height sensor is not providing the right value**
+[TODO add debug statements]
 
 ## Research
 
 If you are interested in the internals of the LoctecMotion desk system, have a look at the research below which is composed of my own findings combined with findings of [similar projects](#similar-projects--research).
+
+<details>
+
+<summary>Full research</summary>
 
 ### Control Panels
 
 At the time of writing, LoctekMotion sells [11 different control panels](https://www.loctekmotion.com/product/control-panel/). The features can differ per model, but it looks like the serial interface is pretty similar for the more advanced models.
 
 The tables below will show a mapping of the RJ45 pinout to the pinout used by the control panel. Please note that all RJ45 pins are described in the following way:
+
 
 ![RJ-45 connector layout](images/RJ-45_connector.jpg)
 
@@ -181,6 +195,8 @@ The control box only accepts commands when the 'screen is active'. To activate t
 | Preset 4 (sit)   | `9b`  | `06`   | `02` | `00` `01` | `ac` `60` | `9d` |
 
 All bytes combined will become the command to send to the control box. See the [packages](#packages) for sample code.
+
+</details>
 
 ## Similar projects / research
 
