@@ -198,17 +198,21 @@ All bytes combined will become the command to send to the control box. See the [
 
 </details>
 
-## Similar projects / research
+### Similar projects
 
-While working on this project, I found out that I am not the only one with this idea. There are a few repositories on GitHub with great research which helped me kickstart this project. ❤️
+While working on this project, I found that many others have done similar work. Several GitHub repositories with great research have been very helpful in starting this project. ❤️
 
 - [grssmnn / ha-flexispot-standing-desk](https://github.com/grssmnn/ha-flexispot-standing-desk) - Home Assistant integration via MQTT (micropython)
 - [Dude88 / loctek_IOT_box](https://github.com/Dude88/loctek_IOT_box) - Arduino code to control via Alexa and MQTT
 - [nv1t / standing-desk-interceptor](https://github.com/nv1t/standing-desk-interceptor) - Research on intercepting commands from Flexispot desks
 - [VinzSpring / LoctekReverseengineering](https://github.com/VinzSpring/LoctekReverseengineering#assumptions) - Research and Python samples
 
-and a huge thanks to the [Tweakers.net](https://gathering.tweakers.net) community (Dutch), whom helped me to kickstart this project.
+Special thanks to the [Tweakers.net](https://gathering.tweakers.net) community (Dutch) for helping kickstart this project.
 
+## Contributions
+
+We welcome contributions from the community! If you have ideas, suggestions, or improvements, please feel free to open an issue or submit a pull request.
 
 ## Support
-Join our [Discord channel](https://discord.gg/C7TNzUZ9Xf)
+
+Join our [Discord channel](https://discord.gg/C7TNzUZ9Xf) for a chat with like-minded people or to get help with your project.
