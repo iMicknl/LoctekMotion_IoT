@@ -3,12 +3,11 @@
 
 ## Turn your LoctekMotion/FlexiSpot desk into a smart desk
 
-Recently I acquired a new standing desk from FlexiSpot. During assembly I noticed that the control panel had a RJ45 cable and a second RJ45 port, which sparked my interest. Can we connect my desk to the internet?
+Recently, I acquired a new standing desk from FlexiSpot. During assembly, I noticed that the control panel had an RJ45 cable and a second RJ45 port, which sparked my interest. Can I connect my desk to the internet?
 
-Most of the models Flexispot sells are using components from LoctekMotion. [LoctekMotion](https://www.loctekmotion.com/) is a manufacturer of lifting columns for height adjustable standing desks. On their website they mention a [bluetooth receiver](https://www.loctekmotion.com/shop/accessories/bt-desk-app/) that can be inserted to the control box, but I haven't been able to find this.
+Most Flexispot models utilize components from LoctekMotion, a manufacturer specializing in lifting columns for height-adjustable desks. Although LoctekMotion previously advertised a [Bluetooth receiver](https://www.loctekmotion.com/shop/accessories/bt-desk-app/) for their control boxes, I haven't been able to obtain one.
 
-This repository will help you to connect your desk to the internet via the serial communication ports (RJ45), for example for use with [Home Assistant](https://www.home-assistant.io/). Think of scenarios like controlling your desk via voice or creating notifications when you sit for too long.
-(or just because it is cool 🤓)
+This repository will guide you on connecting your desk to Home Assistant and other systems using the serial communication ports (RJ45). Imagine controlling your desk with your voice or receiving notifications when you've been sitting too long. Or, just do it because it's cool 🤓.
 
 ## Features
 
@@ -16,21 +15,21 @@ This repository will help you to connect your desk to the internet via the seria
 - Manage 4 presets with button entities
 - Monitor desk height with a sensor entity
 - Adjust desk height in cm using a number entity *(experimental)*
--
-### Known issues
+
+#### Known issues
 
 - Number entity may overshoot. The desk moves until the height sensor matches the requested height, which may cause overshooting due to reporting delays. Use the desk controller presets for accurate positioning.
 
 ## Packages
 
+> [!WARNING]
 > Use the information in this repository at your own risk and with caution. Tinkering with electronics always has risks.
 
 | Name                                       | Description                                                                                                          |
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
 | [ESPHome](packages/office-desk-esp32.yaml) | Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant. |
 
-The v1 packages, including Arduino, Raspberry Pi, older ESPHome packages, and different pin-outs, are available in the [`archive`](./archive/) directory.
-For alternative solutions, refer to [similar projects / research](#similar-projects--research).
+The v1 packages, including Arduino, Raspberry Pi, older ESPHome packages, and different pin-outs, are available in the [`archive`](./archive/) directory. For alternative solutions, refer to [similar projects / research](#similar-projects--research).
 
 ## Getting started
 
