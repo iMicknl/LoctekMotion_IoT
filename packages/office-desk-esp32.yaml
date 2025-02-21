@@ -60,6 +60,7 @@ uart:
     baud_rate: 9600
     tx_pin: ${tx_pin}
     rx_pin: ${rx_pin}
+    # debug:
 
 sensor:
   - platform: wifi_signal

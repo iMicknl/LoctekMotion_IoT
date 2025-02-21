@@ -1,13 +1,19 @@
 version: 2
 updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: daily
+      time: "08:00"
+
   - package-ecosystem: "devcontainers"
     directory: "/"
     schedule:
       interval: daily
       time: "08:00"
 
-  - package-ecosystem: pip
+  - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: daily
       time: "08:00"

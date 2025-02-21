@@ -1,51 +1,75 @@
 ![Flexispot Desk with automation logos](images/header.png)
 (*image source: [Windows Central](https://www.windowscentral.com/flexispot-e5-standing-desk-review)*)
 
+> [!WARNING]
+> Be careful. Tinkering with electronics can be risky. Use this guide at your own risk.
+
 ## Turn your LoctekMotion/FlexiSpot desk into a smart desk
 
-Recently I acquired a new standing desk from FlexiSpot. During assembly I noticed that the control panel had a RJ45 cable and a second RJ45 port, which sparked my interest. Can we connect my desk to the internet?
+When I assembled my FlexiSpot standing desk, I noticed the control panel had an RJ45 cable and a second RJ45 port. This sparked my interest: can I connect my desk to the internet?
 
-Most of the models Flexispot sells are using components from LoctekMotion. [LoctekMotion](https://www.loctekmotion.com/) is a manufacturer of lifting columns for height adjustable standing desks. On their website they mention a [bluetooth receiver](https://www.loctekmotion.com/shop/accessories/bt-desk-app/) that can be inserted to the control box, but I haven't been able to find this.
+Most Flexispot models utilize components from LoctekMotion, a manufacturer specializing in lifting columns for height-adjustable desks. Although LoctekMotion previously advertised a [Bluetooth receiver](https://www.loctekmotion.com/shop/accessories/bt-desk-app/) for their control boxes, I haven't been able to obtain one.
 
-This repository will help you to connect your desk to the internet via the serial communication ports (RJ45), for example for use with [Home Assistant](https://www.home-assistant.io/). Think of scenarios like controlling your desk via voice or creating notifications when you sit for too long.
-(or just because it is cool 🤓)
+This repository will guide you on connecting your desk to Home Assistant and other systems using the serial communication ports (RJ45). Imagine controlling your desk with your voice or receiving notifications when you've been sitting too long. Or, just do it because it's cool 🤓.
+
+## Features
+
+- Control your desk (up, down, stop) using a cover entity
+- Manage 4 presets with button entities
+- Monitor desk height with a sensor entity
+- Adjust desk height in cm using a number entity *(experimental)*
+
+#### Known issues
+
+- Number entity may overshoot. The desk moves until the height sensor matches the requested height, which may cause overshooting due to reporting delays. Use the desk controller presets for accurate positioning.
 
 ## Packages
 
-> Use the information in this repository at your own risk and with caution. Tinkering with electronics always has risks.
+| Name                                       | Description                                                                                                          |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| [ESPHome](packages/office-desk-esp32.yaml) | Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant. |
 
-| Name                                 | Description                                                                                                          |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| [ESPHome](packages/office-desk.yaml) | Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant. |
-
-The v1 packages, including the Arduino and Raspberry Pi ones, can be found in the [`archive`](./archive/) directory.
-
-For more packaged solutions, see [similar projects](#similar-projects--research). Pull requests are welcome.
+For v1 packages (Arduino, Raspberry Pi, older ESPHome packages, and different pin-outs), visit the [`archive`](./archive/) directory. For alternative solutions, see [similar projects](#similar-projects).
 
 ## Getting started
 
 Please follow the [ESPHome documentation](https://esphome.io/guides/getting_started_command_line.html) for the basics of ESPHome. You can use the provided [`office-desk-esp32.yaml`](https://github.com/iMicknl/LoctekMotion_IoT/blob/main/packages/office-desk-esp32.yaml) as a boilerplate for your own implementation. This implementation has been created for the ESP32 nodemcu, but can easily be adopted for other platforms and boards.
 
-If you don't have an extra RJ45 port on your desk controller, you will need to use a pass-through solution. At the moment this hasn't been implemented in the latest version, but you can look at the [archive](./archive/esphome/README.md) for the v1 implementation.
+> [!NOTE]
+> If your desk controller lacks an extra RJ45 port, you'll need a pass-through solution. This feature is not yet available in version 2 of this component. However, you can refer to the [archive](./archive/esphome/README.md) for the v1 implementation.
 
-## Pin-out
-| RJ45 pin | Name      |  ESP32 |
-| -------- | --------- | --------- |
-| 8        | +5V (VDD) |  VIN |
-| 7        | GND       | GND |
+### Pin-out
+
+| RJ45 pin | Name      | ESP32        |
+| -------- | --------- | ------------ |
+| 8        | +5V (VDD) | VIN          |
+| 7        | GND       | GND          |
 | 6        | TX        | TX2 (GPIO17) |
-| 5        | RX        |  RX2 (GPIO16) |
+| 5        | RX        | RX2 (GPIO16) |
 | 4        | PIN 20    | D23 (GPIO23) |
-| 3        | (unknown) |  |
-| 2        | SWIM      | |
-| 1        | RES       | |
+| 3        | (unknown) |              |
+| 2        | SWIM      |              |
+| 1        | RES       |              |
 
-## Known issues
-- Number entity may overshoot. For more accurate positioning, use the provided presets.
+This pin-out should be compatible with all control panels featuring an RJ45 port for serial communication. If it doesn't work for your setup, consider trying an alternative pin-out from the [archive](./archive/esphome/README.md).
+
+Use the provided pin-out to connect your ESP32 to the desk controller's RJ45 port using an ethernet cable. If you're not experienced with electronics and soldering, consider using an RJ45 Adapter Board from sites like Aliexpress, connected with Dupont cables to your ESP32.
+
+![example setup](images/rj45-adapter-board.png)
+
+### Troubleshooting
+
+**My height sensor is not providing the correct value**
+- Uncomment the debug line for UART in the ESPHome configuration to see the raw data coming from the desk controller. This will help you collect information to troubleshoot the issue. See [debugging UART](https://esphome.io/components/uart.html#debugging).
+- If your cover entity has up/down buttons grayed out due to height sensor issues, you can change the internal parameter for the up/down switch from `true` to `false`in the YAML configuration.
 
 ## Research
 
-If you are interested in the internals of the LoctecMotion desk system, have a look at the research below which is composed of my own findings combined with findings of [similar projects](#similar-projects--research).
+If you are interested in the internals of the LoctecMotion desk system, have a look at the research below which is composed of my own findings combined with findings of [similar projects](#similar-projects).
+
+<details>
+
+<summary>Full research</summary>
 
 ### Control Panels
 
@@ -75,7 +99,9 @@ In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I u
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 
-If your control panel is missing, feel free to [create an issue](https://github.com/iMicknl/LoctekMotion_IoT/issues/new) to discuss the possibilities or create a PR to add your research to this overview.
+> [!NOTE]
+> Eventually, we discovered that a single pin-out should work for all control panels. It seems multiple mappings can be used, but the most common one is the one used for the HS13B-1 control panel.
+
 
 #### HS13B-1
 
@@ -83,16 +109,16 @@ If your control panel is missing, feel free to [create an issue](https://github.
 - **Tested with control box**: CB38M2J(IB)-1
 - **Source**: Printed on the PCB of the control box.
 
-| RJ45 pin | Name       | Original Cable Color | Ethernet cable color (T568B) |
-| -------- | ---------- | -------------------- | ---------------------------- |
-| 1        | RESET      | Brown                | White-Orange                 |
-| 2        | SWIM       | White                | Orange                       |
-| 3        | EMPTY      | Purple               | White-Green                  |
-| 4        | PIN 20     | Red                  | Blue                         |
-| 5        | RX         | Green                | White-Blue                   |
-| 6        | TX         | Black                | Green                        |
-| 7        | GND        | Blue                 | White-Brown                  |
-| 8        | +5V (VDD)  | Yellow               | Brown                        |
+| RJ45 pin | Name      | Original Cable Color | Ethernet cable color (T568B) |
+| -------- | --------- | -------------------- | ---------------------------- |
+| 1        | RESET     | Brown                | White-Orange                 |
+| 2        | SWIM      | White                | Orange                       |
+| 3        | EMPTY     | Purple               | White-Green                  |
+| 4        | PIN 20    | Red                  | Blue                         |
+| 5        | RX        | Green                | White-Blue                   |
+| 6        | TX        | Black                | Green                        |
+| 7        | GND       | Blue                 | White-Brown                  |
+| 8        | +5V (VDD) | Yellow               | Brown                        |
 
 Note that RX and TX is defined like this on receiver (control panel) side.
 So the custom controller also uses RX to receive data and TX to send data.
@@ -158,30 +184,36 @@ The control box only accepts commands when the 'screen is active'. To activate t
 
 #### Command list
 
-| Command name      | Start | Length | Type | Payload   | Checksum  | End  |
-| ----------------- | ----- | ------ | ---- | --------- | --------- | ---- |
-| Wake Up           | `9b`  | `06`   | `02` | `00` `00` | `6c` `a1` | `9d` |
-| Up                | `9b`  | `06`   | `02` | `01` `00` | `fc` `a0` | `9d` |
-| Down              | `9b`  | `06`   | `02` | `02` `00` | `0c` `a0` | `9d` |
-| M                 | `9b`  | `06`   | `02` | `20` `00` | `ac` `b8` | `9d` |
-| Preset 1          | `9b`  | `06`   | `02` | `04` `00` | `ac` `a3` | `9d` |
-| Preset 2          | `9b`  | `06`   | `02` | `08` `00` | `ac` `a6` | `9d` |
-| Preset 3 (stand)  | `9b`  | `06`   | `02` | `10` `00` | `ac` `ac` | `9d` |
-| Preset 4 (sit)    | `9b`  | `06`   | `02` | `00` `01` | `ac` `60` | `9d` |
+| Command name     | Start | Length | Type | Payload   | Checksum  | End  |
+| ---------------- | ----- | ------ | ---- | --------- | --------- | ---- |
+| Wake Up          | `9b`  | `06`   | `02` | `00` `00` | `6c` `a1` | `9d` |
+| Up               | `9b`  | `06`   | `02` | `01` `00` | `fc` `a0` | `9d` |
+| Down             | `9b`  | `06`   | `02` | `02` `00` | `0c` `a0` | `9d` |
+| M                | `9b`  | `06`   | `02` | `20` `00` | `ac` `b8` | `9d` |
+| Preset 1         | `9b`  | `06`   | `02` | `04` `00` | `ac` `a3` | `9d` |
+| Preset 2         | `9b`  | `06`   | `02` | `08` `00` | `ac` `a6` | `9d` |
+| Preset 3 (stand) | `9b`  | `06`   | `02` | `10` `00` | `ac` `ac` | `9d` |
+| Preset 4 (sit)   | `9b`  | `06`   | `02` | `00` `01` | `ac` `60` | `9d` |
 
 All bytes combined will become the command to send to the control box. See the [packages](#packages) for sample code.
 
-## Similar projects / research
+</details>
 
-While working on this project, I found out that I am not the only one with this idea. There are a few repositories on GitHub with great research which helped me kickstart this project. ❤️
+### Similar projects
+
+While working on this project, I found that many others have done similar work. Several GitHub repositories with great research have been very helpful in starting this project. ❤️
 
 - [grssmnn / ha-flexispot-standing-desk](https://github.com/grssmnn/ha-flexispot-standing-desk) - Home Assistant integration via MQTT (micropython)
 - [Dude88 / loctek_IOT_box](https://github.com/Dude88/loctek_IOT_box) - Arduino code to control via Alexa and MQTT
 - [nv1t / standing-desk-interceptor](https://github.com/nv1t/standing-desk-interceptor) - Research on intercepting commands from Flexispot desks
 - [VinzSpring / LoctekReverseengineering](https://github.com/VinzSpring/LoctekReverseengineering#assumptions) - Research and Python samples
 
-and a huge thanks to the [Tweakers.net](https://gathering.tweakers.net) community (Dutch), whom helped me to kickstart this project.
+Special thanks to the [Tweakers.net](https://gathering.tweakers.net) community (Dutch) for helping kickstart this project.
 
+## Contributions
+
+We welcome contributions from the community! If you have ideas, suggestions, or improvements, please feel free to open an issue or submit a pull request.
 
 ## Support
-Join our [Discord channel](https://discord.gg/C7TNzUZ9Xf)
+
+Join our [Discord channel](https://discord.gg/C7TNzUZ9Xf) for a chat with like-minded people or to get help with your project.
