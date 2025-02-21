@@ -29,7 +29,7 @@ This repository will guide you on connecting your desk to Home Assistant and oth
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
 | [ESPHome](packages/office-desk-esp32.yaml) | Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant. |
 
-The v1 packages, including Arduino, Raspberry Pi, older ESPHome packages, and different pin-outs, are available in the [`archive`](./archive/) directory. For alternative solutions, refer to [similar projects / research](#similar-projects--research).
+For v1 packages (Arduino, Raspberry Pi, older ESPHome packages, and different pin-outs), visit the [`archive`](./archive/) directory. For alternative solutions, see [similar projects](#similar-projects).
 
 ## Getting started
 
