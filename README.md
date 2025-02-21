@@ -65,7 +65,7 @@ This pin-out should be compatible with all control panels featuring an RJ45 port
 
 ## Research
 
-If you are interested in the internals of the LoctecMotion desk system, have a look at the research below which is composed of my own findings combined with findings of [similar projects](#similar-projects--research).
+If you are interested in the internals of the LoctecMotion desk system, have a look at the research below which is composed of my own findings combined with findings of [similar projects](#similar-projects).
 
 <details>
 
@@ -76,7 +76,6 @@ If you are interested in the internals of the LoctecMotion desk system, have a l
 At the time of writing, LoctekMotion sells [11 different control panels](https://www.loctekmotion.com/product/control-panel/). The features can differ per model, but it looks like the serial interface is pretty similar for the more advanced models.
 
 The tables below will show a mapping of the RJ45 pinout to the pinout used by the control panel. Please note that all RJ45 pins are described in the following way:
-
 
 ![RJ-45 connector layout](images/RJ-45_connector.jpg)
 
@@ -100,7 +99,9 @@ In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I u
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 
-If your control panel is missing, feel free to [create an issue](https://github.com/iMicknl/LoctekMotion_IoT/issues/new) to discuss the possibilities or create a PR to add your research to this overview.
+> [!NOTE]
+> Eventually, we discovered that a single pin-out should work for all control panels. It seems multiple mappings can be used, but the most common one is the one used for the HS13B-1 control panel.
+
 
 #### HS13B-1
 
