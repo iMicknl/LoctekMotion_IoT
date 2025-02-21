@@ -2,7 +2,7 @@
 (*image source: [Windows Central](https://www.windowscentral.com/flexispot-e5-standing-desk-review)*)
 
 > [!WARNING]
-> Use the information in this repository at your own risk and with caution. Tinkering with electronics always has risks.
+> Be careful. Tinkering with electronics can be risky. Use this guide at your own risk.
 
 ## Turn your LoctekMotion/FlexiSpot desk into a smart desk
 
