@@ -57,6 +57,22 @@ Use the provided pin-out to connect your ESP32 to the desk controller's RJ45 por
 
 ![example setup](images/rj45-adapter-board.png)
 
+
+### Optional: Custom Enclosure for a Clean Setup
+
+To keep your setup clean and well-protected, a custom enclosure for the ESP32 DevKit with Ethernet breakout is available. It ensures secure housing, optimal cable management, and a stable wired connection.
+
+Features ✅:
+- Secure housing – Protects the ESP32 and Ethernet breakout
+- Optimized cable management – Keeps wiring neat and organized
+- Ventilation slots – Prevents overheating
+- Easy mounting – Designed for a hassle-free installation
+- Compact design – Fits seamlessly into any setup
+
+![image](images/enclosure/Attached-to-desk.JPEG)
+
+🔗 Download the enclosure model at [makerworld.com](https://makerworld.com/de/models/1220796-flexispot-smartdesk-enclosure-esp32-devkit-lan#profileId-1237633).
+
 ### Troubleshooting
 
 **My height sensor is not providing the correct value**
