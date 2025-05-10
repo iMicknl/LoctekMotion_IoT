@@ -40,16 +40,16 @@ Please follow the [ESPHome documentation](https://esphome.io/guides/getting_star
 
 ### Pin-out
 
-| RJ45 pin | Name      | ESP32        |
-| -------- | --------- | ------------ |
-| 8        | +5V (VDD) | VIN          |
-| 7        | GND       | GND          |
-| 6        | TX        | TX2 (GPIO17) |
-| 5        | RX        | RX2 (GPIO16) |
-| 4        | PIN 20    | D23 (GPIO23) |
-| 3        | (unknown) |              |
-| 2        | SWIM      |              |
-| 1        | RES       |              |
+| RJ45 pin                                                                                                                                                                             | Name      | ESP32        |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------- | ------------ |
+| 8 <div style="background: #7a5221; width: 10px; height: 10px; border: 1px solid black; display: inline-block;" title="Brown"></div>                                                  | +5V (VDD) | VIN          |
+| 7 <div style="background: linear-gradient(to right, white 50%, #7a5221 50%); width: 10px; height: 10px; border: 1px solid black; display: inline-block;" title="White Brown"></div>  | GND       | GND          |
+| 6 <div style="background: #51b948; width: 10px; height: 10px; border: 1px solid black; display: inline-block;" title="Green"></div>                                                  | TX        | TX2 (GPIO17) |
+| 5 <div style="background: linear-gradient(to right, white 50%, #35499f 50%); width: 10px; height: 10px; border: 1px solid black; display: inline-block;" title="White Blue"></div>   | RX        | RX2 (GPIO16) |
+| 4 <div style="background: #35499f; width: 10px; height: 10px; border: 1px solid black; display: inline-block;" title="Blue"></div>                                                   | PIN 20    | D23 (GPIO23) |
+| 3 <div style="background: linear-gradient(to right, white 50%, #51b948 50%); width: 10px; height: 10px; border: 1px solid black; display: inline-block;" title="White Green"></div>  | (unknown) |              |
+| 2 <div style="background: #f68121; width: 10px; height: 10px; border: 1px solid black; display: inline-block;" title="Orange"></div>                                                 | SWIM      |              |
+| 1 <div style="background: linear-gradient(to right, white 50%, #f68121 50%); width: 10px; height: 10px; border: 1px solid black; display: inline-block;" title="White Orange"></div> | RES       |              |
 
 This pin-out should be compatible with all control panels featuring an RJ45 port for serial communication. If it doesn't work for your setup, consider trying an alternative pin-out from the [archive](./archive/esphome/README.md).
 
