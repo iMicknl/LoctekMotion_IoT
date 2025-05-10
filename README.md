@@ -40,16 +40,16 @@ Please follow the [ESPHome documentation](https://esphome.io/guides/getting_star
 
 ### Pin-out
 
-| RJ45 pin | Name      | ESP32        |
-| -------- | --------- | ------------ |
-| 8        | +5V (VDD) | VIN          |
-| 7        | GND       | GND          |
-| 6        | TX        | TX2 (GPIO17) |
-| 5        | RX        | RX2 (GPIO16) |
-| 4        | PIN 20    | D23 (GPIO23) |
-| 3        | (unknown) |              |
-| 2        | SWIM      |              |
-| 1        | RES       |              |
+| RJ45 pin ([T-568B](./images//RJ45-Pinout-T568B.jpg)) | Name      | [ESP32](./packages/office-desk-esp32.yaml#L9-L11) | [ESP32-C3](./packages/office-desk-esp32c3.yaml#L9-L11) |
+| ---------------------------------------------------- | --------- | ------------------------------------------------- | ------------------------------------------------------ |
+| 8 🟫                                                 | +5V (VDD) | VIN                                               | VIN                                                    |
+| 7 ⬜️🟫                                              | GND       | GND                                               | GND                                                    |
+| 6 🟩                                                 | TX        | TX2 (GPIO17)                                      | TX (GPIO21)                                            |
+| 5 ⬜🟦                                               | RX        | RX2 (GPIO16)                                      | RX (GPIO20)                                            |
+| 4 🟦                                                 | PIN 20    | D23 (GPIO23)                                      | GPIO10                                                 |
+| 3 ⬜🟩                                               | (unknown) |                                                   |                                                        |
+| 2 🟧                                                 | SWIM      |                                                   |                                                        |
+| 1 ⬜🟧                                               | RES       |                                                   |                                                        |
 
 This pin-out should be compatible with all control panels featuring an RJ45 port for serial communication. If it doesn't work for your setup, consider trying an alternative pin-out from the [archive](./archive/esphome/README.md).
 
