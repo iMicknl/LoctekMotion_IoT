@@ -57,7 +57,8 @@ Use the provided pin-out to connect your ESP32 to the desk controller's RJ45 por
 
 #### Pass-Through Configuations
 
-If your desk controller lacks an extra RJ45 port, you'll need a pass-through solution. This involves additionally connecting the RJ45 of the Keypad to the pins bellow.
+If your desk controller lacks an extra RJ45 port, you'll need a pass-through solution. This requires connecting the RJ45 of the keypad to the pins below.
+
 | KeyPad RJ45 pin | Name      | Connection
 | -------- | --------- | ------------
 | 8        | +5V (VDD) |  VIN  (Split)
