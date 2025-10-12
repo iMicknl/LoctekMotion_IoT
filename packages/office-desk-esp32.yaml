@@ -77,9 +77,11 @@ sensor:
     - below: ${min_height}
       then:
         - switch.turn_off: switch_down
+        - button.press: button_wake_screen
     - above: ${max_height}
       then:
         - switch.turn_off: switch_up
+        - button.press: button_wake_screen
     on_value:
       then:
         - cover.template.publish:
@@ -236,6 +238,7 @@ cover:
     stop_action:
       - switch.turn_off: switch_up
       - switch.turn_off: switch_down
+      - button.press: button_wake_screen
     open_action:
       - switch.turn_off: switch_down
       - switch.turn_on: switch_up
