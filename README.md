@@ -70,8 +70,9 @@ If your desk controller lacks an extra RJ45 port, you'll need a pass-through sol
 | 2        | SWIM      |  (Pass-Through)
 | 1        | RES       |  (Pass-Through)
 
-The pins marked Split are to be connected to the ESP32 pin, the desk controller and to the keypad. The pins marked pass-through are to be connected directly between the controller and the keypad.
-Note: the current implentation does not utilise PIN20 however, this could be utilised to sense if the screen is on if desired.
+The pins marked 'split' are to be connected to the ESP32 pin, the desk controller and to the keypad. The pins marked pass-through are to be connected directly between the controller and the keypad.
+
+Note: the current implementation does not utilize PIN20 however, this could be utilized to sense if the screen is on if desired.
 
 ![Pass-Through Pinout](images/Pass-through_pinout.png)
 
