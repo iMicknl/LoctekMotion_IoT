@@ -111,6 +111,9 @@ switch:
     uart_id: desk_uart
     send_every: 108ms
     internal: true
+    on_turn_on:
+      - button.press: button_wake_screen
+      - delay: 200ms
 
   - platform: uart
     name: "Down"
@@ -120,6 +123,9 @@ switch:
     uart_id: desk_uart
     send_every: 108ms
     internal: true
+    on_turn_on:
+      - button.press: button_wake_screen
+      - delay: 200ms
 
   - platform: uart
     name: "Alarm off"
@@ -150,6 +156,8 @@ button:
     name: "Preset 1"
     icon: mdi:numeric-1-box
     on_press:
+      - button.press: button_wake_screen
+      - delay: 200ms
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x04, 0x00, 0xac, 0xa3, 0x9d]
@@ -158,6 +166,8 @@ button:
     name: "Preset 2"
     icon: mdi:numeric-2-box
     on_press:
+      - button.press: button_wake_screen
+      - delay: 200ms
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d]
@@ -166,6 +176,8 @@ button:
     name: "Sit" # Preset 3 on some control panels
     icon: mdi:chair-rolling
     on_press:
+      - button.press: button_wake_screen
+      - delay: 200ms
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
@@ -174,6 +186,8 @@ button:
     name: "Stand" # Preset 4 on some control panels
     icon: mdi:human-handsup
     on_press:
+      - button.press: button_wake_screen
+      - delay: 200ms
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
