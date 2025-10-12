@@ -103,7 +103,7 @@ sensor:
     id: "desk_command"
     name: Desk Command
     uart_id: keypad_uart
-    on_value_range:
+    on_value_range: # The sensor outputs values 1 to 8 depending on the button pressed.
       - above: 1
         below: 1
         then:
@@ -134,7 +134,7 @@ sensor:
           - button.press: button_alarm
       - above: 8
         below: 8
-        then:
+        then: # When a button is released value 8 is sent, switches which send recurring data must be stopped.
           - switch.turn_off: switch_up
           - switch.turn_off: switch_down
           - button.press: button_wake_screen
