@@ -6,9 +6,9 @@
 namespace esphome {
 namespace loctekmotion_desk_command {
 
-class DeskCommandSensor :   public sensor::Sensor,
-                            public Component,
-                            public uart::UARTDevice {
+class DeskCommandSensor : public sensor::Sensor,
+                          public Component,
+                          public uart::UARTDevice {
 public:
   float get_setup_priority() const override {
     return esphome::setup_priority::DATA;
