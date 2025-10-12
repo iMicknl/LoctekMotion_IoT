@@ -25,18 +25,16 @@ This repository will guide you on connecting your desk to Home Assistant and oth
 
 ## Packages
 
-| Name                                       | Description                                                                                                          |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| [ESPHome](packages/office-desk-esp32.yaml) | Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant. |
+| Name                                                           | Description                                                                                                                    |
+| ------------------------------------------                     | --------------------------------------------------------------------------------------------------------------------           |
+| [ESPHome](packages/office-desk-esp32.yaml)                     | Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant.           |
+| [ESPHome Pass-through](packages/pass-through-desk-esp32.yaml)  | Control desks which have only 1 ethernet port using passthorugh configuration via an ESP32 module connected to Home Assistant. |
 
 For v1 packages (Arduino, Raspberry Pi, older ESPHome packages, and different pin-outs), visit the [`archive`](./archive/) directory. For alternative solutions, see [similar projects](#similar-projects).
 
 ## Getting started
 
 Please follow the [ESPHome documentation](https://esphome.io/guides/getting_started_command_line.html) for the basics of ESPHome. You can use the provided [`office-desk-esp32.yaml`](https://github.com/iMicknl/LoctekMotion_IoT/blob/main/packages/office-desk-esp32.yaml) as a boilerplate for your own implementation. This implementation has been created for the ESP32 nodemcu, but can easily be adopted for other platforms and boards.
-
-> [!NOTE]
-> If your desk controller lacks an extra RJ45 port, you'll need a pass-through solution. This feature is not yet available in version 2 of this component. However, you can refer to the [archive](./archive/esphome/README.md) for the v1 implementation.
 
 ### Pin-out
 
@@ -57,6 +55,24 @@ Use the provided pin-out to connect your ESP32 to the desk controller's RJ45 por
 
 ![example setup](images/rj45-adapter-board.png)
 
+#### Pass-Through Configuations
+
+If your desk controller lacks an extra RJ45 port, you'll need a pass-through solution. This involves additionally connecting the RJ45 of the Keypad to the pins bellow.
+| KeyPad RJ45 pin | Name      | Connection
+| -------- | --------- | ------------
+| 8        | +5V (VDD) |  VIN  (Split)
+| 7        | GND       |  GND  (Split)
+| 6        | TX        |  RX0  (GPIO3)
+| 5        | RX        |  RX2  (Split)
+| 4        | PIN 20    |  (Not Required)
+| 3        | (unknown) |  (Not Required)
+| 2        | SWIM      |  (Pass-Through)
+| 1        | RES       |  (Pass-Through)
+
+The pins marked Split are to be connected to the ESP32 pin, the desk controller and to the keypad. The pins marked pass-through are to be connected directly between the controller and the keypad.
+Note: the current implentation does not utilise PIN20 however, this could be utilised to sense if the screen is on if desired.
+
+![Pass-Through Pinout](images/Pass-through_pinout.png)
 
 ### Optional: Custom Enclosure for a Clean Setup
 
