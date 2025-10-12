@@ -28,7 +28,7 @@ This repository will guide you on connecting your desk to Home Assistant and oth
 | Name                                                           | Description                                                                                                                    |
 | ------------------------------------------                     | --------------------------------------------------------------------------------------------------------------------           |
 | [ESPHome](packages/office-desk-esp32.yaml)                     | Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant.           |
-| [ESPHome Pass-through](packages/pass-through-desk-esp32.yaml)  | Control desks which have only 1 ethernet port using passthorugh configuration via an ESP32 module connected to Home Assistant. |
+| [ESPHome Pass-through](packages/pass-through-desk-esp32.yaml)  | Control desks which have only one RJ45 port using passthrough configuration via an ESP32 module connected to Home Assistant. |
 
 For v1 packages (Arduino, Raspberry Pi, older ESPHome packages, and different pin-outs), visit the [`archive`](./archive/) directory. For alternative solutions, see [similar projects](#similar-projects).
 
