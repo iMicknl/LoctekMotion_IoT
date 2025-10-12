@@ -1,0 +1,343 @@
+substitutions:
+  device_name: Flexispot EK5
+  name: office-desk-flexispot-ek5
+  min_height: "73.5" # cm
+  max_height: "123" # cm
+  ssid: "your_wifi_ssid"
+  wifi_password: "your_wifi_password"
+  ap_fallback_password: "MnANX95MWad1"
+  tx_pin: GPIO17 # TXD 2
+  rx_pin: GPIO16 # RXD 2
+  rx_pin_keypad: GPIO3 # RX 0
+  screen_pin: GPIO23
+  encryption_key: "iOZqtvw31Yy6sasRl5h2DElG2VDlqW2WjJEKObVN8bg="
+
+external_components:
+  source: github://iMicknl/LoctekMotion_IoT
+  components: [loctekmotion_desk_height, loctekmotion_desk_command]
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+esphome:
+  name: ${name}
+  friendly_name: ${device_name}
+  comment: Used to control your ${device_name} standing desk via Home Assistant.
+
+  # Wake Desk by sending the "M" command
+  # This will pull the current height after boot
+  on_boot:
+    priority: -10
+    then:
+      - button.press: button_m
+
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: ${encryption_key}
+
+ota:
+  platform: esphome
+
+wifi:
+  ssid: ${ssid}
+  password: ${wifi_password}
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: ${device_name} Fallback Hotspot
+    password: ${ap_fallback_password}
+
+captive_portal:
+
+uart:
+  - id: desk_uart
+    baud_rate: 9600
+    tx_pin: ${tx_pin}
+    rx_pin: ${rx_pin}
+    # debug:
+
+  - id: keypad_uart
+    baud_rate: 9600
+    rx_pin: ${rx_pin_keypad}
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
+
+  - platform: uptime
+    name: Uptime
+
+  - platform: loctekmotion_desk_height
+    id: "desk_height"
+    name: Desk Height
+    uart_id: desk_uart
+    on_value_range:
+    - below: ${min_height}
+      then:
+        - switch.turn_off: switch_down
+        - button.press: button_wake_screen
+    - above: ${max_height}
+      then:
+        - switch.turn_off: switch_up
+        - button.press: button_wake_screen
+    on_value:
+      then:
+        - cover.template.publish:
+            id: desk_cover
+            position: !lambda |-
+                // The sensor outputs values from min_height (cm) to max_height (cm)
+                // We need to translate this to 0 - 1 scale.
+                float position = (float(x) - float(${min_height})) / (float(${max_height}) - float(${min_height}));
+                return position;
+        - component.update: set_desk_height
+
+  - platform: loctekmotion_desk_command
+    id: "desk_command"
+    name: Desk Command
+    uart_id: keypad_uart
+    on_value_range:
+      - above: 1
+        below: 1
+        then:
+          - switch.turn_on: switch_up
+      - above: 2
+        below: 2
+        then:
+          - switch.turn_on: switch_down
+      - above: 3
+        below: 3
+        then:
+          - button.press: button_preset1
+      - above: 4
+        below: 4
+        then:
+          - button.press: button_preset2
+      - above: 5
+        below: 5
+        then:
+          - button.press: button_stand
+      - above: 6
+        below: 6
+        then:
+          - button.press: button_m
+      - above: 7
+        below: 7
+        then:
+          - button.press: button_alarm
+      - above: 8
+        below: 8
+        then:
+          - switch.turn_off: switch_up
+          - switch.turn_off: switch_down
+          - button.press: button_wake_screen
+
+switch:
+  - platform: gpio
+    name: "Virtual Screen" # PIN20
+    id: virtual_screen
+    pin:
+      number: ${screen_pin}
+      mode: OUTPUT
+    restore_mode: ALWAYS_ON
+    entity_category: "config"
+    internal: true
+
+  - platform: uart
+    name: "Up"
+    id: switch_up
+    icon: mdi:arrow-up-bold
+    data: [0x9b, 0x06, 0x02, 0x01, 0x00, 0xfc, 0xa0, 0x9d]
+    uart_id: desk_uart
+    send_every: 108ms
+    internal: true
+    on_turn_on:
+      - button.press: button_wake_screen
+      - delay: 200ms
+
+  - platform: uart
+    name: "Down"
+    id: switch_down
+    icon: mdi:arrow-down-bold
+    data: [0x9b, 0x06, 0x02, 0x02, 0x00, 0x0c, 0xa0, 0x9d]
+    uart_id: desk_uart
+    send_every: 108ms
+    internal: true
+    on_turn_on:
+      - button.press: button_wake_screen
+      - delay: 200ms
+
+  - platform: uart
+    name: "Alarm off"
+    id: switch_alarm
+    icon: mdi:alarm
+    data: [0x9b, 0x06, 0x02, 0x40, 0x00, 0xAC, 0x90, 0x9d]
+    uart_id: desk_uart
+    send_every: 108ms
+    on_turn_on:
+      - delay: 3000ms
+      - switch.turn_off: switch_alarm
+    entity_category: "config"
+
+  - platform: uart
+    name: "Child Lock"
+    id: switch_child_lock
+    icon: mdi:account-lock
+    data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
+    uart_id: desk_uart
+    send_every: 108ms
+    on_turn_on:
+      - delay: 5000ms
+      - switch.turn_off: switch_child_lock
+    entity_category: "config"
+
+button:
+  - platform: template
+    name: "Preset 1"
+    id: button_preset1
+    icon: mdi:numeric-1-box
+    on_press:
+      - button.press: button_wake_screen
+      - delay: 200ms
+      - uart.write:
+          id: desk_uart
+          data: [0x9b, 0x06, 0x02, 0x04, 0x00, 0xac, 0xa3, 0x9d]
+
+  - platform: template
+    name: "Preset 2"
+    id: button_preset2
+    icon: mdi:numeric-2-box
+    on_press:
+      - button.press: button_wake_screen
+      - delay: 200ms
+      - uart.write:
+          id: desk_uart
+          data: [0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d]
+
+  - platform: template
+    name: "Sit" # Preset 3 on some control panels
+    id: button_sit
+    icon: mdi:chair-rolling
+    on_press:
+      - button.press: button_wake_screen
+      - delay: 200ms
+      - uart.write:
+          id: desk_uart
+          data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
+
+  - platform: template
+    name: "Stand" # Preset 4 on some control panels
+    id: button_stand
+    icon: mdi:human-handsup
+    on_press:
+      - button.press: button_wake_screen
+      - delay: 200ms
+      - uart.write:
+          id: desk_uart
+          data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
+
+  - platform: template
+    name: "Memory"
+    id: button_m
+    icon: mdi:alpha-m-box
+    entity_category: "config"
+    on_press:
+      - uart.write:
+          id: desk_uart
+          data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
+
+  - platform: template
+    name: "Wake Screen"
+    id: button_wake_screen
+    icon: mdi:gesture-tap-button
+    entity_category: "config"
+    on_press:
+      - uart.write:
+          id: desk_uart
+          data: [0x9b, 0x06, 0x02, 0x00, 0x00, 0x6c, 0xa1, 0x9d]
+
+  - platform: template
+    name: "Alarm"
+    id: button_alarm
+    icon: mdi:alarm
+    on_press:
+      - uart.write:
+          id: desk_uart
+          data: [0x9b, 0x06, 0x02, 0x40, 0x00, 0xAC, 0x90, 0x9d]
+
+  - platform: restart
+    name: "Restart"
+    entity_category: "config"
+
+cover:
+  - platform: template
+    id: "desk_cover"
+    icon: mdi:desk # or mdi:human-male-height-variant
+    name: "Desk"
+    device_class: blind # makes it easier to integrate with Google/Alexa
+    has_position: true
+    position_action:
+      - if:
+          condition:
+            - lambda: !lambda |-
+                return pos > id(desk_cover).position;
+          then:
+            - cover.open: desk_cover
+            - wait_until:
+                lambda: |-
+                  return id(desk_cover).position  >= pos;
+            - cover.stop: desk_cover
+          else:
+            - cover.close: desk_cover
+            - wait_until:
+                lambda: |-
+                  return id(desk_cover).position <= pos;
+            - cover.stop: desk_cover
+    stop_action:
+      - switch.turn_off: switch_up
+      - switch.turn_off: switch_down
+      - button.press: button_wake_screen
+    open_action:
+      - switch.turn_off: switch_down
+      - switch.turn_on: switch_up
+    close_action:
+      - switch.turn_off: switch_up
+      - switch.turn_on: switch_down
+    optimistic: false
+
+number:
+  - platform: template
+    name: "Desk Height"
+    id: set_desk_height
+    min_value: ${min_height}
+    max_value: ${max_height}
+    icon: "mdi:counter"
+    unit_of_measurement: "cm"
+    device_class: "distance"
+    step: 0.1
+    lambda: !lambda |-
+      return id(desk_height).state;
+    set_action:
+      - if:
+          condition:
+            - lambda: !lambda |-
+                return x > id(desk_height).state;
+          then:
+            - cover.open: desk_cover
+            - wait_until:
+                lambda: |-
+                  return id(desk_height).state  >= x;
+            - cover.stop: desk_cover
+          else:
+            - cover.close: desk_cover
+            - wait_until:
+                lambda: |-
+                  return id(desk_height).state <= x;
+            - cover.stop: desk_cover
