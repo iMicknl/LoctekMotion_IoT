@@ -1,2 +1,2 @@
-esphome==2025.10.3
+esphome==2025.10.4
 pre-commit
