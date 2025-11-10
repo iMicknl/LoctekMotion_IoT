@@ -157,6 +157,8 @@ In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I u
 Note that RX and TX is defined like this on receiver (control panel) side.
 So the custom controller also uses RX to receive data and TX to send data.
 
+Also confirmed working with E7's with the `HS13G-1` controller.
+
 #### HS13A-1
 
 - **Desk model**: Flexispot EK5
