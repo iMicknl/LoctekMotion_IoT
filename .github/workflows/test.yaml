@@ -33,7 +33,7 @@ jobs:
           path: |
             ~/.cache/esphome/
             ~/.platformio/
-          key: esphome-${{ runner.os }}-${{ matrix.version }}-${{ hashFiles('tests/office-desk-*.yaml', 'components/**', 'packages/**') }}
+          key: esphome-${{ runner.os }}-${{ matrix.version }}-${{ hashFiles('pyproject.toml', 'uv.lock', 'tests/office-desk-*.yaml', 'components/**', 'packages/**') }}
           restore-keys: |
             esphome-${{ runner.os }}-${{ matrix.version }}-
             esphome-${{ runner.os }}-
