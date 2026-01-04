@@ -46,31 +46,31 @@ class LoctekMotion:
 
     def decode_seven_segment(self, byte):
         """Decode a seven-segment display byte to a digit."""
-        binaryByte = bin(byte).replace("0b", "").zfill(8)
+        binary_byte = bin(byte).replace("0b", "").zfill(8)
         decimal = False
-        if binaryByte[0] == "1":
+        if binary_byte[0] == "1":
             decimal = True
-        if binaryByte[1:] == "0111111":
+        if binary_byte[1:] == "0111111":
             return 0, decimal
-        if binaryByte[1:] == "0000110":
+        if binary_byte[1:] == "0000110":
             return 1, decimal
-        if binaryByte[1:] == "1011011":
+        if binary_byte[1:] == "1011011":
             return 2, decimal
-        if binaryByte[1:] == "1001111":
+        if binary_byte[1:] == "1001111":
             return 3, decimal
-        if binaryByte[1:] == "1100110":
+        if binary_byte[1:] == "1100110":
             return 4, decimal
-        if binaryByte[1:] == "1101101":
+        if binary_byte[1:] == "1101101":
             return 5, decimal
-        if binaryByte[1:] == "1111101":
+        if binary_byte[1:] == "1111101":
             return 6, decimal
-        if binaryByte[1:] == "0000111":
+        if binary_byte[1:] == "0000111":
             return 7, decimal
-        if binaryByte[1:] == "1111111":
+        if binary_byte[1:] == "1111111":
             return 8, decimal
-        if binaryByte[1:] == "1101111":
+        if binary_byte[1:] == "1101111":
             return 9, decimal
-        if binaryByte[1:] == "1000000":
+        if binary_byte[1:] == "1000000":
             return 10, decimal
         return -1, decimal
 
@@ -106,11 +106,11 @@ class LoctekMotion:
                     if height1 < 0 or height2 < 0 or height3 < 0:
                         print("Display Empty", "          ", end="\r")
                     else:
-                        finalHeight = height1 + height2 + height3
+                        final_height = height1 + height2 + height3
                         decimal = decimal1 or decimal2 or decimal3
                         if decimal:
-                            finalHeight = finalHeight / 10
-                        print("Height:", finalHeight, "       ", end="\r")
+                            final_height = final_height / 10
+                        print("Height:", final_height, "       ", end="\r")
                 history[4] = history[3]
                 history[3] = history[2]
                 history[2] = history[1]
