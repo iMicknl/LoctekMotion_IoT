@@ -1,0 +1,49 @@
+[project]
+name = "loctekmotion-iot"
+version = "1.0.0"
+description = "Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant."
+readme = "README.md"
+authors = [
+    {name = "Mick Vleeshouwer", email = "mick@imick.nl"},
+]
+license = {text = "MIT"}
+requires-python = ">=3.11"
+
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "esphome==2025.10.4",
+    "pre-commit>=4.5.1",
+    "ruff>=0.14.10",
+]
+
+[project.urls]
+homepage = "https://github.com/iMicknl/LoctekMotion_IoT"
+repository = "https://github.com/iMicknl/LoctekMotion_IoT"
+
+[tool.ruff.lint]
+select = [
+    # pydocstyle
+    "D",
+    # flake8-async
+    # "ASYNC",
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # ruff
+    "RUF",
+]
+ignore = ["E501"] # Line too long
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

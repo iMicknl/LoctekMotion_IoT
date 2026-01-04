@@ -1,2 +1,0 @@
-esphome==2025.10.4
-pre-commit
