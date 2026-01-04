@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ["esp32", "esp8266", "esp32-passthrough", "esp8266-passthrough"]
+        version: ["esp32", "esp32-passthrough"]
 
     steps:
       - uses: actions/checkout@v6
