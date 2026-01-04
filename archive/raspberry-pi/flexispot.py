@@ -1,3 +1,5 @@
+"""Flexispot desk control module for Raspberry Pi."""
+
 import sys
 
 import RPi.GPIO as GPIO
@@ -19,6 +21,8 @@ SUPPORTED_COMMANDS = {
 
 
 class LoctekMotion:
+    """Control Loctek motion desk via serial communication."""
+
     def __init__(self, serial, pin_20):
         """Initialize LoctekMotion."""
         self.serial = serial
@@ -41,6 +45,7 @@ class LoctekMotion:
         self.serial.write(command)
 
     def decode_seven_segment(self, byte):
+        """Decode a seven-segment display byte to a digit."""
         binaryByte = bin(byte).replace("0b", "").zfill(8)
         decimal = False
         if binaryByte[0] == "1":
@@ -70,6 +75,7 @@ class LoctekMotion:
         return -1, decimal
 
     def current_height(self):
+        """Read and display the current desk height from serial data."""
         history = [None] * 5
         msg_type = 0
         msg_len = 0
@@ -84,12 +90,11 @@ class LoctekMotion:
                     msg_len = data[0]
                 if history[1] == 0x9B:
                     msg_type = data[0]
-                if history[2] == 0x9B:
-                    if msg_type == 0x12 and msg_len == 7:
-                        if data[0] == 0:
-                            print("height is empty                ", end="\r")
-                        else:
-                            valid = True
+                if history[2] == 0x9B and msg_type == 0x12 and msg_len == 7:
+                    if data[0] == 0:
+                        print("height is empty                ", end="\r")
+                    else:
+                        valid = True
                 if history[3] == 0x9B and valid:
                     pass
                 if history[4] == 0x9B and valid and msg_len == 7:
@@ -117,6 +122,7 @@ class LoctekMotion:
 
 
 def main():
+    """Main entry point for desk control."""
     try:
         command = sys.argv[1]
         ser = serial.Serial(SERIAL_PORT, 9600, timeout=500)

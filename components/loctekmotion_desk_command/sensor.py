@@ -1,3 +1,5 @@
+"""Desk command sensor for Loctek motion desk."""
+
 import esphome.codegen as cg
 from esphome.components import sensor, uart
 from esphome.const import (
@@ -32,6 +34,7 @@ FINAL_VALIDATE_SCHEMA = uart.final_validate_device_schema(
 
 
 async def to_code(config):
+    """Generate code for the desk command sensor."""
     var = await sensor.new_sensor(config)
     await cg.register_component(var, config)
     await uart.register_uart_device(var, config)
