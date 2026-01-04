@@ -140,7 +140,7 @@ void DeskHeightSensor::loop() {
 }
 
 void DeskHeightSensor::dump_config() {
-  LOG_SENSOR("", "LoctekMotion Desk height Sensor", this);
+  LOG_SENSOR("", "LoctekMotion Desk Height Sensor", this);
 }
 
 } // namespace loctekmotion_desk_height

@@ -59,7 +59,7 @@ void DeskCommandSensor::loop() {
 }
 
 void DeskCommandSensor::dump_config() {
-  LOG_SENSOR("", "LoctekMotion Desk command Sensor", this);
+  LOG_SENSOR("", "LoctekMotion Desk Command Sensor", this);
 }
 
 } // namespace loctekmotion_desk_command
