@@ -1,6 +1,6 @@
 substitutions:
-  device_name: Flexispot EK5
-  name: office-desk-flexispot-ek5
+  device_name: Flexispot desk
+  name: office-desk-flexispot
   min_height: "73.5" # cm
   max_height: "123" # cm
   ssid: "your_wifi_ssid"
@@ -71,7 +71,7 @@ uart:
 
 sensor:
   - platform: wifi_signal
-    name: "WiFi Signal"
+    name: "WiFi signal"
     update_interval: 60s
 
   - platform: uptime
@@ -79,7 +79,7 @@ sensor:
 
   - platform: loctekmotion_desk_height
     id: "desk_height"
-    name: Desk Height
+    name: Desk height
     uart_id: desk_uart
     on_value_range:
     - below: ${min_height}
@@ -103,7 +103,7 @@ sensor:
 
   - platform: loctekmotion_desk_command
     id: "desk_command"
-    name: Desk Command
+    name: Desk command
     uart_id: keypad_uart
     on_value_range: # The sensor outputs values 1 to 8 depending on the button pressed.
       - above: 1
@@ -143,7 +143,7 @@ sensor:
 
 switch:
   - platform: gpio
-    name: "Virtual Screen" # PIN20
+    name: "Virtual screen" # PIN20
     id: virtual_screen
     pin:
       number: ${screen_pin}
@@ -189,7 +189,7 @@ switch:
     entity_category: "config"
 
   - platform: uart
-    name: "Child Lock"
+    name: "Child lock"
     id: switch_child_lock
     icon: mdi:account-lock
     data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
@@ -256,7 +256,7 @@ button:
           data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
 
   - platform: template
-    name: "Wake Screen"
+    name: "Wake screen"
     id: button_wake_screen
     icon: mdi:gesture-tap-button
     entity_category: "config"
@@ -316,7 +316,7 @@ cover:
 
 number:
   - platform: template
-    name: "Desk Height"
+    name: "Desk height"
     id: set_desk_height
     min_value: ${min_height}
     max_value: ${max_height}

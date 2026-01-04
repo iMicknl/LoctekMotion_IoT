@@ -1,6 +1,6 @@
 substitutions:
-  device_name: Flexispot EK5
-  name: office-desk-flexispot-ek5
+  device_name: Flexispot desk
+  name: office-desk-flexispot
   min_height: "73.5" # cm
   max_height: "123" # cm
   ssid: "your_wifi_ssid"
