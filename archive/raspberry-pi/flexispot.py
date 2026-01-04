@@ -1,25 +1,26 @@
-import serial
-import RPi.GPIO as GPIO
 import sys
 
-SERIAL_PORT = "/dev/ttyS0" # GPIO14 (TX) and GPIO15 (RX)
-PIN_20 = 12 # GPIO 12
+import RPi.GPIO as GPIO
+import serial
+
+SERIAL_PORT = "/dev/ttyS0"  # GPIO14 (TX) and GPIO15 (RX)
+PIN_20 = 12  # GPIO 12
 
 SUPPORTED_COMMANDS = {
-    "up": bytearray(b'\x9b\x06\x02\x01\x00\xfc\xa0\x9d'),
-    "down": bytearray(b'\x9b\x06\x02\x02\x00\x0c\xa0\x9d'),
-    "m": bytearray(b'\x9b\x06\x02\x20\x00\xac\xb8\x9d'),
-    "wake_up": bytearray(b'\x9b\x06\x02\x00\x00\x6c\xa1\x9d'),
-    "preset_1": bytearray(b'\x9b\x06\x02\x04\x00\xac\xa3\x9d'),
-    "preset_2": bytearray(b'\x9b\x06\x02\x08\x00\xac\xa6\x9d'),
-    "preset_3": bytearray(b'\x9b\x06\x02\x10\x00\xac\xac\x9d'),
-    "preset_4": bytearray(b'\x9b\x06\x02\x00\x01\xac\x60\x9d'),
+    "up": bytearray(b"\x9b\x06\x02\x01\x00\xfc\xa0\x9d"),
+    "down": bytearray(b"\x9b\x06\x02\x02\x00\x0c\xa0\x9d"),
+    "m": bytearray(b"\x9b\x06\x02\x20\x00\xac\xb8\x9d"),
+    "wake_up": bytearray(b"\x9b\x06\x02\x00\x00\x6c\xa1\x9d"),
+    "preset_1": bytearray(b"\x9b\x06\x02\x04\x00\xac\xa3\x9d"),
+    "preset_2": bytearray(b"\x9b\x06\x02\x08\x00\xac\xa6\x9d"),
+    "preset_3": bytearray(b"\x9b\x06\x02\x10\x00\xac\xac\x9d"),
+    "preset_4": bytearray(b"\x9b\x06\x02\x00\x01\xac\x60\x9d"),
 }
 
-class LoctekMotion():
 
+class LoctekMotion:
     def __init__(self, serial, pin_20):
-        """Initialize LoctekMotion"""
+        """Initialize LoctekMotion."""
         self.serial = serial
 
         # Or GPIO.BOARD - GPIO Numbering vs Pin numbering
@@ -31,7 +32,7 @@ class LoctekMotion():
         GPIO.output(pin_20, GPIO.HIGH)
 
     def execute_command(self, command_name: str):
-        """Execute command"""
+        """Execute command."""
         command = SUPPORTED_COMMANDS.get(command_name)
 
         if not command:
@@ -40,7 +41,7 @@ class LoctekMotion():
         self.serial.write(command)
 
     def decode_seven_segment(self, byte):
-        binaryByte = bin(byte).replace("0b","").zfill(8)
+        binaryByte = bin(byte).replace("0b", "").zfill(8)
         decimal = False
         if binaryByte[0] == "1":
             decimal = True
@@ -79,34 +80,32 @@ class LoctekMotion():
                 data = self.serial.read(1)
                 # 9b starts the data
                 # the value after 9b has the length of the packet
-                if history[0] == 0x9b:
+                if history[0] == 0x9B:
                     msg_len = data[0]
-                if history[1] == 0x9b:
+                if history[1] == 0x9B:
                     msg_type = data[0]
-                if history[2] == 0x9b:
+                if history[2] == 0x9B:
                     if msg_type == 0x12 and msg_len == 7:
                         if data[0] == 0:
-                            print("height is empty                ", end='\r')
+                            print("height is empty                ", end="\r")
                         else:
                             valid = True
-                if history[3] == 0x9b:
-                    if valid == True:
-                         pass
-                if history[4] == 0x9b:
-                    if valid == True and msg_len == 7:
-                        height1, decimal1 = self.decode_seven_segment(history[1])
-                        height1 = height1 * 100
-                        height2, decimal2 = self.decode_seven_segment(history[0])
-                        height2 = height2 * 10
-                        height3, decimal3 = self.decode_seven_segment(data[0])
-                        if height1 < 0 or height2 < 0 or height3 < 0:
-                            print("Display Empty","          ",end='\r')
-                        else:
-                            finalHeight = height1 + height2 + height3
-                            decimal = decimal1 or decimal2 or decimal3
-                            if decimal == True:
-                                finalHeight = finalHeight/10
-                            print("Height:",finalHeight,"       ",end='\r')
+                if history[3] == 0x9B and valid:
+                    pass
+                if history[4] == 0x9B and valid and msg_len == 7:
+                    height1, decimal1 = self.decode_seven_segment(history[1])
+                    height1 = height1 * 100
+                    height2, decimal2 = self.decode_seven_segment(history[0])
+                    height2 = height2 * 10
+                    height3, decimal3 = self.decode_seven_segment(data[0])
+                    if height1 < 0 or height2 < 0 or height3 < 0:
+                        print("Display Empty", "          ", end="\r")
+                    else:
+                        finalHeight = height1 + height2 + height3
+                        decimal = decimal1 or decimal2 or decimal3
+                        if decimal:
+                            finalHeight = finalHeight / 10
+                        print("Height:", finalHeight, "       ", end="\r")
                 history[4] = history[3]
                 history[3] = history[2]
                 history[2] = history[1]
@@ -115,6 +114,7 @@ class LoctekMotion():
             except Exception as e:
                 print(e)
                 break
+
 
 def main():
     try:
@@ -130,7 +130,7 @@ def main():
     # Error handling for command line arguments
     except IndexError:
         program = sys.argv[0]
-        print("Usage: python3",program,"[COMMAND]")
+        print("Usage: python3", program, "[COMMAND]")
         print("Supported Commands:")
         for command in SUPPORTED_COMMANDS:
             print("\t", command)
@@ -139,6 +139,7 @@ def main():
         sys.exit(1)
     finally:
         GPIO.cleanup()
+
 
 if __name__ == "__main__":
     main()

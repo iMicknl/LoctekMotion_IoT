@@ -1,8 +1,8 @@
 import esphome.codegen as cg
 from esphome.components import sensor, uart
 from esphome.const import (
-    STATE_CLASS_MEASUREMENT,
     ICON_COUNTER,
+    STATE_CLASS_MEASUREMENT,
 )
 
 CODEOWNERS = ["@iMicknl"]
@@ -29,6 +29,7 @@ FINAL_VALIDATE_SCHEMA = uart.final_validate_device_schema(
     parity=None,
     stop_bits=1,
 )
+
 
 async def to_code(config):
     var = await sensor.new_sensor(config)
