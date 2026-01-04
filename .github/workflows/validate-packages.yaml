@@ -30,6 +30,9 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
+      - name: "Install pip (required for ESPHome)"
+        run: uv pip install pip
+
       - name: "Validate ${{ matrix.version }}"
         run: uv run esphome config packages/office-desk-${{ matrix.version }}.yaml
 
