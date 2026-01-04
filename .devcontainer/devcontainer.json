@@ -14,7 +14,7 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pip3 install --user -r requirements.txt && pre-commit install",
+	"postCreateCommand": "uv sync && uv run pre-commit install",
 
 	// Configure tool-specific properties.
 	"customizations": {
