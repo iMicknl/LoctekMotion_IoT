@@ -1,5 +1,5 @@
 substitutions:
-  device_name: Flexispot
+  device_name: Flexispot desk
   name: office-desk-flexispot
   min_height: "73.5" # cm
   max_height: "123" # cm
