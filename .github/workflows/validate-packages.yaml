@@ -27,6 +27,17 @@ jobs:
         with:
           python-version: 3.13
 
+      - name: Cache ESPHome build files
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/esphome/
+            ~/.platformio/
+          key: esphome-${{ runner.os }}-${{ matrix.version }}-${{ hashFiles('packages/office-desk-*.yaml', 'components/**') }}-${{ hashFiles('pyproject.toml', 'uv.lock') }}
+          restore-keys: |
+            esphome-${{ runner.os }}-${{ matrix.version }}-
+            esphome-${{ runner.os }}-
+
       - name: Install the project
         run: uv sync --all-extras --dev
 
