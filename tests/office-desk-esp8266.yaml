@@ -26,11 +26,14 @@ esphome:
   friendly_name: ${device_name}
   comment: Used to control your ${device_name} standing desk via Home Assistant.
 
-  # Wake Desk by sending the "M" command
-  # This will pull the current height after boot
+  # Delay UART interaction on boot to give the desk controller time to initialize.
+  # After the delay, wake the desk by sending the "M" command to request the current height.
   on_boot:
-    priority: -10
+    priority: -100
     then:
+      - delay: 10s
+      - button.press: button_wake_screen
+      - delay: 300ms
       - button.press: button_m
 
 
