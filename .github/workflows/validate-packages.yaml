@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ["esp32"]
+        version: ["esp32", "esp8266", "esp32-passthrough", "esp8266-passthrough"]
 
     steps:
       - uses: actions/checkout@v6
@@ -30,8 +30,8 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
-      - name: "Validate  ${{ matrix.version }}"
-        run: uv run esphome config tests/office-desk-${{ matrix.version }}.yaml
+      - name: "Validate ${{ matrix.version }}"
+        run: uv run esphome config packages/office-desk-${{ matrix.version }}.yaml
 
-      - name: "Compile  ${{ matrix.version }}"
-        run: uv run esphome compile tests/office-desk-${{ matrix.version }}.yaml
+      - name: "Compile ${{ matrix.version }}"
+        run: uv run esphome compile packages/office-desk-${{ matrix.version }}.yaml
