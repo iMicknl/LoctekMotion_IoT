@@ -30,7 +30,7 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
       - name: "Validate  ${{ matrix.version }}"
-        run: esphome config tests/office-desk-${{ matrix.version }}.yaml
+        run: uv run esphome config tests/office-desk-${{ matrix.version }}.yaml
 
       - name: "Compile  ${{ matrix.version }}"
-        run: esphome compile tests/office-desk-${{ matrix.version }}.yaml
+        run: uv run esphome compile tests/office-desk-${{ matrix.version }}.yaml

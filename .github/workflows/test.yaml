@@ -28,7 +28,7 @@ jobs:
           python-version: 3.13
 
       - name: "Validate  ${{ matrix.version }}"
-        run: esphome config tests/office-desk-${{ matrix.version }}.yaml
+        run: uv run esphome config tests/office-desk-${{ matrix.version }}.yaml
 
       - name: "Compile  ${{ matrix.version }}"
-        run: esphome compile tests/office-desk-${{ matrix.version }}.yaml
+        run: uv run esphome compile tests/office-desk-${{ matrix.version }}.yaml
