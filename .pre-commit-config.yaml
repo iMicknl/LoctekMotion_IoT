@@ -1,4 +1,13 @@
 repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.14.10
+    hooks:
+      # Run the linter.
+      - id: ruff-check
+        args: [ --fix ]
+      # Run the formatter.
+      - id: ruff-format
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -6,14 +15,9 @@ repos:
         args: ['--unsafe'] # required for !secret
       - id: trailing-whitespace
       - id: end-of-file-fixer
-
-  # - repo: https://github.com/pocc/pre-commit-hooks
-  #   rev: v1.3.5
-  #   hooks:
-      # - id: clang-format
-      # - id: clang-tidy
-      # - id: cppcheck
-      # - id: cpplint
+      - id: no-commit-to-branch
+        stages: [pre-commit]
+        args: [--branch, main]
 
   - repo: https://github.com/pre-commit/mirrors-clang-format
     rev: v21.1.8
