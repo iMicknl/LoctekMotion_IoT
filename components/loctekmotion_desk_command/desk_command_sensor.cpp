@@ -33,7 +33,8 @@ void DeskCommandSensor::loop() {
 
       // Fourth byte is message (if msg type 0x02 & msg len 5 or 6)
       if (this->history[2] == 0x9b) {
-        if (this->msg_type == 0x02 && ((this->msg_len == 6) || (this->msg_len == 5))) {
+        if (this->msg_type == 0x02 &&
+            ((this->msg_len == 6) || (this->msg_len == 5))) {
           if (incomingByte != 0) {
             this->value = log2(incomingByte * 2); // refactor 2^n to 1-7
           } else {
