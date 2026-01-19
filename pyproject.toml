@@ -13,7 +13,7 @@ dependencies = []
 
 [dependency-groups]
 dev = [
-    "esphome==2025.12.5",
+    "esphome==2025.12.7",
     "pre-commit>=4.5.1",
     "ruff>=0.14.10",
 ]
