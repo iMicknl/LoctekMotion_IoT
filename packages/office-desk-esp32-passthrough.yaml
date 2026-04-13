@@ -3,7 +3,7 @@ substitutions:
   name: office-desk-flexispot
   unit_of_measurement: "cm" # or "in"
   min_height: "73.5"
-  max_height: "123" 
+  max_height: "123"
   ssid: "your_wifi_ssid"
   wifi_password: "your_wifi_password"
   ap_fallback_password: "CHANGE_ME"
