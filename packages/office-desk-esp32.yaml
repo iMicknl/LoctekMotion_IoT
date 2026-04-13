@@ -10,7 +10,7 @@ substitutions:
   tx_pin: GPIO17 # TXD 2
   rx_pin: GPIO16 # RXD 2
   screen_pin: GPIO23
-  encryption_key: "CHANGE_ME"
+  encryption_key: "iOZqtvw31Yy6sasRl5h2DElG2VDlqW2WjJEKObVN8bg=" # CHANGE_ME
 
 external_components:
   source: github://iMicknl/LoctekMotion_IoT
