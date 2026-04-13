@@ -4,14 +4,14 @@ substitutions:
   unit_of_measurement: "cm" # or "in"
   min_height: "73.5"
   max_height: "123"
-  ssid: "your_wifi_ssid"
-  wifi_password: "your_wifi_password"
-  ap_fallback_password: "CHANGE_ME"
+  ssid: !secret wifi_ssid
+  wifi_password: !secret wifi_password
+  ap_fallback_password: !secret ap_fallback_password
   tx_pin: GPIO17 # TXD 2
   rx_pin: GPIO16 # RXD 2
   rx_pin_keypad: GPIO3 # RX 0
   screen_pin: GPIO23
-  encryption_key: "iOZqtvw31Yy6sasRl5h2DElG2VDlqW2WjJEKObVN8bg=" # CHANGE_ME
+  encryption_key: !secret encryption_key
 
 external_components:
   source: github://iMicknl/LoctekMotion_IoT
