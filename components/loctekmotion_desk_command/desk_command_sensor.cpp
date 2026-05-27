@@ -40,7 +40,8 @@ void DeskCommandSensor::loop() {
           if (this->history[0] != 0) {
             this->value = log2(this->history[0] * 2); // 1..7
           } else if (incomingByte != 0) {
-            this->value = 8 + log2(incomingByte * 2); // 9 for M4, 10 for M5, ...
+            this->value =
+                8 + log2(incomingByte * 2); // 9 for M4, 10 for M5, ...
           } else {
             this->value = 8; // release
           }
