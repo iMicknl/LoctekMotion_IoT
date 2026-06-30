@@ -31,19 +31,25 @@ void DeskCommandSensor::loop() {
         this->msg_type = incomingByte;
       }
 
-      // Fourth byte is message (if msg type 0x02 & msg len 5 or 6)
-      if (this->history[2] == 0x9b) {
+      // Decide command on byte 5: history[0] is byte 4 (bits 0..6 — Up, Down,
+      // M1..M3, M-memory, Alarm), incomingByte is byte 5 (bits 8.. — M4 and
+      // any future high-byte buttons). Both zero == release.
+      if (this->history[3] == 0x9b) {
         if (this->msg_type == 0x02 &&
             ((this->msg_len == 6) || (this->msg_len == 5))) {
-          if (incomingByte != 0) {
-            this->value = log2(incomingByte * 2); // refactor 2^n to 1-7
+          if (this->history[0] != 0) {
+            this->value = log2(this->history[0] * 2); // 1..7
+          } else if (incomingByte != 0) {
+            this->value =
+                8 + log2(incomingByte * 2); // 9 for M4, 10 for M5, ...
           } else {
-            this->value = 8;
+            this->value = 8; // release
           }
         }
       }
 
       // Save byte buffer to history arrary
+      this->history[3] = this->history[2];
       this->history[2] = this->history[1];
       this->history[1] = this->history[0];
       this->history[0] = incomingByte;
