@@ -1,0 +1,89 @@
+substitutions:
+  device_name: Flexispot desk
+  name: office-desk-flexispot
+  unit_of_measurement: "cm" # or "in"
+  min_height: "73.5"
+  max_height: "123"
+  ssid: !secret wifi_ssid
+  wifi_password: !secret wifi_password
+  ap_fallback_password: !secret ap_fallback_password
+  tx_pin: GPIO17 # TXD 2
+  rx_pin: GPIO16 # RXD 2
+  rx_pin_keypad: GPIO3 # RX 0
+  screen_pin: GPIO23
+  encryption_key: !secret encryption_key
+  thread_tlv: !secret thread_tlv
+
+external_components:
+  source: github://iMicknl/LoctekMotion_IoT
+  components: [loctekmotion_desk_height, loctekmotion_desk_command]
+
+esp32:
+  board: esp32-c6-devkitm-1
+  framework:
+    type: esp-idf
+
+network:
+  enable_ipv6: true
+
+openthread:
+  tlv: ${thread_tlv}
+
+uart:
+  - id: keypad_uart
+    baud_rate: 9600
+    rx_pin: ${rx_pin_keypad}
+
+  - platform: loctekmotion_desk_command
+    id: "desk_command"
+    name: Desk command
+    uart_id: keypad_uart
+    on_value_range: # The sensor outputs values 1 to 8 depending on the button pressed.
+      - above: 1
+        below: 1
+        then:
+          - switch.turn_on: switch_up
+      - above: 2
+        below: 2
+        then:
+          - switch.turn_on: switch_down
+      - above: 3
+        below: 3
+        then:
+          - button.press: button_preset1
+      - above: 4
+        below: 4
+        then:
+          - button.press: button_preset2
+      - above: 5
+        below: 5
+        then:
+          - button.press: button_stand
+      - above: 6
+        below: 6
+        then:
+          - button.press: button_m
+      - above: 7
+        below: 7
+        then:
+          - button.press: button_alarm
+      - above: 8
+        below: 8
+        then: # When a button is released value 8 is sent, switches which send recurring data must be stopped.
+          - switch.turn_off: switch_up
+          - switch.turn_off: switch_down
+          - button.press: button_wake_screen
+
+switch:
+  - platform: gpio
+    name: "Virtual screen" # PIN20
+    id: virtual_screen
+    pin:
+      number: ${screen_pin}
+      mode: OUTPUT
+    restore_mode: ALWAYS_ON
+    entity_category: "config"
+    internal: true
+
+packages:
+  core: !include core.yaml
