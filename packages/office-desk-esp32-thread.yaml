@@ -49,7 +49,7 @@ network:
   enable_ipv6: true
 
 openthread:
-  tlv: $(thread_tlv)
+  tlv: ${thread_tlv}
 
 uart:
   - id: desk_uart
