@@ -22,4 +22,4 @@ openthread:
   tlv: ${thread_tlv}
 
 packages:
-  core: !include core.yaml
+  core: !include ../core/core.yaml

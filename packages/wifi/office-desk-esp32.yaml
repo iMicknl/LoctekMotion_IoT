@@ -9,7 +9,6 @@ substitutions:
   ap_fallback_password: !secret ap_fallback_password
   tx_pin: GPIO17 # TXD 2
   rx_pin: GPIO16 # RXD 2
-  rx_pin_keypad: GPIO3 # RX 0
   screen_pin: GPIO23
   encryption_key: !secret encryption_key
 
@@ -35,5 +34,4 @@ sensor:
     update_interval: 60s
 
 packages:
-  # Passthrough core (includes: keypad sensor, desk_command, virtual screen, and base core.yaml)
-  core_passthrough: !include core-passthrough.yaml
+  core: !include ../core/core.yaml

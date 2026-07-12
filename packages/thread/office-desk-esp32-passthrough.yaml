@@ -9,24 +9,21 @@ substitutions:
   ap_fallback_password: !secret ap_fallback_password
   tx_pin: GPIO17 # TXD 2
   rx_pin: GPIO16 # RXD 2
+  rx_pin_keypad: GPIO3 # RX 0
   screen_pin: GPIO23
   encryption_key: !secret encryption_key
+  thread_tlv: !secret thread_tlv
 
 esp32:
-  board: esp32dev
+  board: esp32-c6-devkitm-1
   framework:
-    type: arduino
+    type: esp-idf
 
-wifi:
-  ssid: ${ssid}
-  password: ${wifi_password}
+network:
+  enable_ipv6: true
 
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: ${device_name} Fallback Hotspot
-    password: ${ap_fallback_password}
-
-captive_portal:
+openthread:
+  tlv: ${thread_tlv}
 
 sensor:
   - platform: wifi_signal
@@ -34,4 +31,5 @@ sensor:
     update_interval: 60s
 
 packages:
-  core: !include core.yaml
+  # Passthrough core (includes: keypad sensor, desk_command, virtual screen, and base core.yaml)
+  core_passthrough: !include ../core/core-passthrough.yaml

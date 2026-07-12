@@ -16,10 +16,10 @@ jobs:
       matrix:
         version:
           [
-            "esp32",
-            "esp32-passthrough",
-            "esp32-thread",
-            "esp32-passthrough-thread",
+            "wifi/office-desk-esp32",
+            "wifi/office-desk-esp32-passthrough",
+            "thread/office-desk-esp32",
+            "thread/office-desk-esp32-passthrough",
           ]
 
     steps:
@@ -39,7 +39,7 @@ jobs:
           path: |
             ~/.cache/esphome/
             ~/.platformio/
-          key: esphome-${{ runner.os }}-${{ matrix.version }}-${{ hashFiles('packages/office-desk-*.yaml', 'components/**') }}-${{ hashFiles('pyproject.toml', 'uv.lock') }}
+          key: esphome-${{ runner.os }}-${{ matrix.version }}-${{ hashFiles('packages/**/*.yaml', 'components/**') }}-${{ hashFiles('pyproject.toml', 'uv.lock') }}
           restore-keys: |
             esphome-${{ runner.os }}-${{ matrix.version }}-
             esphome-${{ runner.os }}-
@@ -51,7 +51,7 @@ jobs:
         run: uv pip install pip
 
       - name: "Validate ${{ matrix.version }}"
-        run: uv run esphome config packages/office-desk-${{ matrix.version }}.yaml
+        run: uv run esphome config packages/${{ matrix.version }}.yaml
 
       - name: "Compile ${{ matrix.version }}"
-        run: uv run esphome compile packages/office-desk-${{ matrix.version }}.yaml
+        run: uv run esphome compile packages/${{ matrix.version }}.yaml
