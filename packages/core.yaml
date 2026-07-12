@@ -124,6 +124,7 @@ switch:
 button:
   - platform: template
     name: "Preset 1"
+    id: button_preset1
     icon: mdi:numeric-1-box
     on_press:
       - button.press: button_wake_screen
@@ -134,6 +135,7 @@ button:
 
   - platform: template
     name: "Preset 2"
+    id: button_preset2
     icon: mdi:numeric-2-box
     on_press:
       - button.press: button_wake_screen
@@ -144,6 +146,7 @@ button:
 
   - platform: template
     name: "Sit" # Preset 3 on some control panels
+    id: button_sit
     icon: mdi:chair-rolling
     on_press:
       - button.press: button_wake_screen
@@ -154,6 +157,7 @@ button:
 
   - platform: template
     name: "Stand" # Preset 4 on some control panels
+    id: button_stand
     icon: mdi:human-handsup
     on_press:
       - button.press: button_wake_screen
