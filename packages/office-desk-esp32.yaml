@@ -294,3 +294,47 @@ number:
                 lambda: |-
                   return id(desk_height).state <= x;
             - cover.stop: desk_cover
+
+select:
+  - platform: template
+    name: "Polling mode"
+    id: polling_mode
+    icon: mdi:timer-cog
+    entity_category: "config"
+    optimistic: true
+    restore_value: false # always starts back on "Normal (10s)" after any restart
+    initial_option: "Normal (10s)"
+    options:
+      - "Off"
+      - "Normal (10s)"
+      - "Greedy (5s)"
+    on_value:
+      then:
+        - if:
+            condition:
+              not:
+                - select.is:
+                    id: polling_mode
+                    options: ["Off"]
+            then:
+              - button.press: button_m
+
+interval:
+  - interval: 5s
+    then:
+      - if:
+          condition:
+            select.is:
+              id: polling_mode
+              options: ["Greedy (5s)"]
+          then:
+            - button.press: button_wake_screen
+  - interval: 10s
+    then:
+      - if:
+          condition:
+            select.is:
+              id: polling_mode
+              options: ["Normal (10s)"]
+          then:
+            - button.press: button_wake_screen
