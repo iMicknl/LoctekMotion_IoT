@@ -13,11 +13,6 @@ substitutions:
   screen_pin: GPIO23
   encryption_key: !secret encryption_key
 
-esp32:
-  board: esp32dev
-  framework:
-    type: arduino
-
 wifi:
   ssid: ${ssid}
   password: ${wifi_password}

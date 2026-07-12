@@ -2,6 +2,11 @@ external_components:
   source: github://iMicknl/LoctekMotion_IoT
   components: [ loctekmotion_desk_height ]
 
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
 esphome:
   name: ${name}
   friendly_name: ${device_name}
