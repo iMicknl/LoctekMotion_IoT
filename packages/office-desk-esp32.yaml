@@ -302,7 +302,7 @@ select:
     icon: mdi:timer-cog
     entity_category: "config"
     optimistic: true
-    restore_value: false # always starts back on "Normal (10s)" after any restart
+    restore_value: true # preserve the last selected polling mode across restarts
     initial_option: "Normal (10s)"
     options:
       - "Off"
