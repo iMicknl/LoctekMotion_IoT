@@ -4,11 +4,11 @@ substitutions:
   unit_of_measurement: "cm" # or "in"
   min_height: "73.5"
   max_height: "123"
-  thread_tlv: !secret thread_tlv
   tx_pin: GPIO17 # TXD 2
   rx_pin: GPIO16 # RXD 2
   screen_pin: GPIO23
   encryption_key: !secret encryption_key
+  thread_tlv: !secret thread_tlv
 
 esp32:
   board: esp32-c6-devkitm-1
