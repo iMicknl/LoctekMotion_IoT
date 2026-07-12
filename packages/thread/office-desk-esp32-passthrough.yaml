@@ -4,9 +4,6 @@ substitutions:
   unit_of_measurement: "cm" # or "in"
   min_height: "73.5"
   max_height: "123"
-  ssid: !secret wifi_ssid
-  wifi_password: !secret wifi_password
-  ap_fallback_password: !secret ap_fallback_password
   tx_pin: GPIO17 # TXD 2
   rx_pin: GPIO16 # RXD 2
   rx_pin_keypad: GPIO3 # RX 0
