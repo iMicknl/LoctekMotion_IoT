@@ -15,7 +15,7 @@ dependencies = []
 dev = [
     "esphome==2026.6.4",
     "pre-commit>=4.6.0",
-    "ruff>=0.15.20",
+    "ruff>=0.15.22",
 ]
 
 [project.urls]
