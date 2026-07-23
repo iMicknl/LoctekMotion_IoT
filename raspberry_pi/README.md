@@ -88,7 +88,34 @@ pip install -r requirements.txt
 You'll need to re-run `source venv/bin/activate` in any new terminal session before using the
 script.
 
-### 4. Try it
+### 4. Test your wiring first (read-only, safe)
+
+Before sending any command that could move the desk, verify your wiring with
+[`test_wiring.py`](test_wiring.py). It only ever sends the Wake Up command (which just
+enables the display/serial interface for a few seconds, exactly like touching a key on the
+physical keypad - it never moves the desk), then listens and reports what it received:
+
+```bash
+python3 test_wiring.py
+```
+
+Example output when wired correctly:
+
+```
+✅ Decoded 1 valid height reading(s), last: 91.5 cm
+RX, TX, GND and PIN20 all look correctly wired.
+```
+
+If nothing is received, or bytes arrive but no height is decoded, the script prints a
+checklist (RX/TX swapped, missing GND, PIN20 wiring, `raspi-config` serial settings, wrong
+serial device, control box unpowered) to help you debug before trying `up`/`down`/presets.
+
+Run `python3 test_wiring.py --no-wake` to listen completely passively without sending
+anything at all (useful e.g. to check for keypad-originated traffic on a pass-through wiring).
+
+### 5. Try it
+
+Once `test_wiring.py` confirms your wiring is correct:
 
 ```bash
 python3 flexispot_e7.py wake

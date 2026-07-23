@@ -310,6 +310,44 @@ class FlexispotE7Desk:
             if height is not None:
                 yield height
 
+    def diagnostic_listen(self, duration: float = 8.0, send_wake: bool = True) -> dict:
+        """Listen on the serial line for `duration` seconds for wiring diagnostics.
+
+        This never sends a movement, preset, memory, alarm or child-lock
+        command, so it cannot move the desk. If `send_wake` is True
+        (default), only the Wake Up command is sent once at the start - the
+        same safe, non-movement command normally used to enable the display
+        and prompt a height broadcast. Set `send_wake=False` to listen
+        completely passively (e.g. to check for keypad-originated traffic on
+        a pass-through wiring, without sending anything at all).
+
+        Returns a dict with `total_bytes`, `raw_hex` (list of hex byte
+        strings, in the order received) and `heights` (list of decoded
+        height readings, in the order decoded).
+        """
+        ser = self._require_serial()
+        if send_wake:
+            self.wake_up()
+
+        parser = HeightFrameParser()
+        total_bytes = 0
+        raw_hex: list = []
+        heights: list = []
+
+        end_time = time.monotonic() + duration
+        while time.monotonic() < end_time:
+            data = ser.read(1)
+            if not data:
+                continue
+            byte = data[0]
+            total_bytes += 1
+            raw_hex.append(f"{byte:02x}")
+            height = parser.feed(byte)
+            if height is not None:
+                heights.append(height)
+
+        return {"total_bytes": total_bytes, "raw_hex": raw_hex, "heights": heights}
+
     def get_height(self, timeout: float = 5.0) -> Optional[float]:
         """Wake the desk and return a single freshly-read height, or None on timeout."""
         self.wake_up()
