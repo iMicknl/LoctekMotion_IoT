@@ -13,11 +13,12 @@ from __future__ import annotations
 import argparse
 import sys
 import time
-from dataclasses import dataclass
 from typing import Iterator, Optional
 
 import RPi.GPIO as GPIO
 import serial
+
+from protocol import COMMANDS, HeightFrameParser
 
 # ========== CONFIGURATION ==========
 
@@ -42,119 +43,6 @@ WAKE_SCREEN_DELAY_S = 0.2
 # command. When watching height continuously, Wake Up is resent at this
 # interval to keep the broadcast going.
 WAKE_KEEPALIVE_INTERVAL_S = 3.0
-
-START_BYTE = 0x9B
-END_BYTE = 0x9D
-
-# Command bytes, as documented in the "Execute a command" section of the main
-# README.md and used by packages/office-desk-esp32.yaml. These are identical
-# across LoctekMotion control panels; only the RJ45 wiring differs per model.
-COMMANDS: dict[str, bytes] = {
-    "wake_up": bytes([0x9B, 0x06, 0x02, 0x00, 0x00, 0x6C, 0xA1, 0x9D]),
-    "up": bytes([0x9B, 0x06, 0x02, 0x01, 0x00, 0xFC, 0xA0, 0x9D]),
-    "down": bytes([0x9B, 0x06, 0x02, 0x02, 0x00, 0x0C, 0xA0, 0x9D]),
-    "memory": bytes([0x9B, 0x06, 0x02, 0x20, 0x00, 0xAC, 0xB8, 0x9D]),
-    "preset_1": bytes([0x9B, 0x06, 0x02, 0x04, 0x00, 0xAC, 0xA3, 0x9D]),
-    "preset_2": bytes([0x9B, 0x06, 0x02, 0x08, 0x00, 0xAC, 0xA6, 0x9D]),
-    "preset_3": bytes([0x9B, 0x06, 0x02, 0x10, 0x00, 0xAC, 0xAC, 0x9D]),  # Stand
-    "preset_4": bytes([0x9B, 0x06, 0x02, 0x00, 0x01, 0xAC, 0x60, 0x9D]),  # Sit
-    "alarm": bytes([0x9B, 0x06, 0x02, 0x40, 0x00, 0xAC, 0x90, 0x9D]),
-    # Note: upstream packages/office-desk-esp32.yaml defines "Child lock" with
-    # the exact same payload byte (0x20) as "Memory". That is not a typo made
-    # here - it is how the control box command is documented upstream - but it
-    # does mean the two commands are currently indistinguishable on the wire.
-    "child_lock": bytes([0x9B, 0x06, 0x02, 0x20, 0x00, 0xAC, 0xB8, 0x9D]),
-}
-
-
-# ========== SEVEN-SEGMENT DECODING ==========
-# Ported from components/loctekmotion_desk_height/desk_height_sensor.cpp, which
-# is more complete than the older archive/raspberry-pi/flexispot.py decoder
-# (it also handles the 10-byte message variant and the "no digit"/hyphen case).
-
-_SEGMENT_TO_DIGIT = {
-    0b0111111: 0,
-    0b0000110: 1,
-    0b1011011: 2,
-    0b1001111: 3,
-    0b1100110: 4,
-    0b1101101: 5,
-    0b1111101: 6,
-    0b0000111: 7,
-    0b1111111: 8,
-    0b1101111: 9,
-    0b1000000: 10,  # hyphen / dash segment only
-}
-
-
-def decode_seven_segment(byte: int) -> tuple[int, bool]:
-    """Decode a single 7-segment display byte into (digit, is_decimal_point).
-
-    Returns digit -1 for a segment pattern that doesn't match any known digit.
-    """
-    is_decimal = bool(byte & 0x80)
-    digit = _SEGMENT_TO_DIGIT.get(byte & 0x7F, -1)
-    return digit, is_decimal
-
-
-@dataclass
-class HeightFrameParser:
-    """Incrementally parses the UART byte stream for height-broadcast frames.
-
-    Mirrors the state machine in desk_height_sensor.cpp: frames start with
-    START_BYTE, the 2nd byte is the length, the 3rd byte is the type (0x12 for
-    height broadcasts), followed by 3 seven-segment digit bytes, ending in
-    END_BYTE. Height broadcasts only occur for a short time after a Wake Up
-    command has been sent.
-    """
-
-    history: list[Optional[int]] = None
-    msg_len: int = 0
-    msg_type: int = 0
-    valid: bool = False
-    value: Optional[float] = None
-
-    def __post_init__(self) -> None:
-        self.history = [None] * 5
-
-    def feed(self, byte: int) -> Optional[float]:
-        """Feed a single incoming byte. Returns a newly decoded height, if any."""
-        result = None
-
-        if byte == START_BYTE:
-            self.msg_len = 0
-            self.valid = False
-
-        if self.history[0] == START_BYTE:
-            self.msg_len = byte
-
-        if self.history[1] == START_BYTE:
-            self.msg_type = byte
-
-        if self.history[2] == START_BYTE:
-            if self.msg_type == 0x12 and self.msg_len in (7, 10):
-                digit, _ = decode_seven_segment(byte)
-                # byte == 0 means the digit is blank (e.g. a suppressed leading
-                # zero); digit <= 0 also excludes segment patterns that don't
-                # match any known digit. Both cases keep `valid` False, same
-                # as desk_height_sensor.cpp.
-                if byte != 0 and digit > 0:
-                    self.valid = True
-
-        if self.history[4] == START_BYTE and self.valid:
-            height1, _ = decode_seven_segment(self.history[1])
-            height2, decimal2 = decode_seven_segment(self.history[0])
-            height3, _ = decode_seven_segment(byte)
-            if height2 != 10 and height1 >= 0 and height2 >= 0 and height3 >= 0:
-                final_height = height1 * 100 + height2 * 10 + height3
-                if decimal2:
-                    final_height /= 10
-                self.value = final_height
-                result = final_height
-
-        self.history = [byte] + self.history[:4]
-
-        return result
 
 
 # ========== DESK CONTROLLER ==========

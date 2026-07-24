@@ -13,6 +13,15 @@ control box over its RJ45 serial port.
 > updates, etc. for free. Use this Raspberry Pi script if you specifically want a
 > standalone script/CLI, or already have a Pi you want to reuse.
 
+## Files in this folder
+
+| File               | What it does                                                              | Can it move the desk? |
+| ------------------ | -------------------------------------------------------------------------- | ---------------------- |
+| `protocol.py`       | Pure UART protocol logic (commands, 7-segment/height decoding, frame parsing). No serial/GPIO access. | No - it's a library, not runnable on its own. |
+| `flexispot_e7.py`   | The actual desk controller (library + CLI): movement, presets, height, etc. | **Yes** - this is the one that drives the desk. |
+| `test_wiring.py`    | Read-only wiring check: sends only the (non-movement) Wake Up command, then listens. | No. |
+| `sniff.py`          | Fully passive protocol sniffer/logger for reverse-engineering buttons and min/max height. | No - never writes anything, doesn't touch GPIO. |
+
 ## Is this for my desk?
 
 This script is written for the **HS13B-1** control panel, which is what a FlexiSpot E7 ships
@@ -163,6 +172,47 @@ python3 flexispot_e7.py goto 100
   desk only has one RJ45 port (shared with the keypad), you'll need a pass-through wiring setup
   like the one described for ESPHome in the [main README](../README.md#pass-through-configuations);
   this script doesn't currently include keypad pass-through decoding.
+
+## Reverse-engineering buttons and min/max height (`sniff.py`)
+
+If you want to find out for yourself what each physical keypad button sends, or what your
+desk's actual minimum/maximum height is, use [`sniff.py`](sniff.py) - a purely passive
+protocol sniffer. It **never writes anything to the serial port and never touches any GPIO
+pin**, so there's no way it can move the desk or interfere with anything; it just decodes
+whatever bytes show up.
+
+```bash
+python3 sniff.py
+# or, to also save everything to a file for later review:
+python3 sniff.py --log capture.txt
+```
+
+Then press buttons on the physical keypad, or move the desk to its top/bottom limit by hand.
+Each captured frame is printed with its type, payload (in hex *and* binary, since commands are
+bitmasks - handy for spotting which bit a button sets), checksum, and whether it matches one of
+the already-known commands in `protocol.py`:
+
+```
+[14:32:01] #1 raw=[9b 06 02 01 00 fc a0 9d] type=0x02 len=6 KNOWN COMMAND: 'up' payload=01 00 (00000001 00000000) checksum=fca0
+[14:32:03] #2 raw=[9b 07 12 07 cf 6d 00 00 9d] type=0x12 len=7 (height broadcast) payload=07 cf 6d (00000111 11001111 01101101) checksum=0000
+           height=73.5 cm  (seen so far: min=73.5, max=73.5)
+```
+
+For a button that isn't already documented, you'll see its raw payload/binary printed with no
+"KNOWN COMMAND" label - note down the payload byte and which bit is set, that's your new
+command. Move the desk fully down and then fully up while sniffing to see the true min/max
+height your desk reaches (printed live, and summarized at the end).
+
+**Wiring note:** to see what a *keypad button press* sends, your RX line needs to be tapped
+into the wire that actually carries keypad→control box traffic. If your desk's control box has
+a spare RJ45 port and you're connected there (as in the [pinout table](#hardware--pinout)
+above), you may only see the box's own broadcasts (e.g. height) rather than the keypad's
+button commands - in that case, wire into the pass-through connection between the keypad and
+control box instead, as described in the main README's
+["Pass-Through Configurations"](../README.md#pass-through-configuations) section.
+
+Since `sniff.py` only depends on `pyserial` (no `RPi.GPIO`), you can also run it from a laptop
+with a USB-serial/RS232 adapter instead of tying up the Raspberry Pi.
 
 ## Using it as a library
 
