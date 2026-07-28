@@ -48,6 +48,12 @@ jobs:
         if: matrix.version == 'esp32'
         run: uv run python -m unittest tests/test_configurations.py -v
 
+      - name: Test native height decoder
+        if: matrix.version == 'esp32'
+        run: |
+          c++ -std=c++17 -Wall -Wextra -Werror -I. tests/height_decoder_test.cpp -o /tmp/height_decoder_test
+          /tmp/height_decoder_test
+
       - name: "Validate  ${{ matrix.version }}"
         run: uv run esphome config tests/office-desk-${{ matrix.version }}.yaml
 
