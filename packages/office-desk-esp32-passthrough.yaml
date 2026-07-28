@@ -12,9 +12,10 @@ substitutions:
   rx_pin_keypad: GPIO3 # RX 0
   screen_pin: GPIO23
   encryption_key: !secret encryption_key
+  external_components_source: github://iMicknl/LoctekMotion_IoT
 
 external_components:
-  source: github://iMicknl/LoctekMotion_IoT
+  source: ${external_components_source}
   components: [loctekmotion_desk_height, loctekmotion_desk_command]
 
 esp32:

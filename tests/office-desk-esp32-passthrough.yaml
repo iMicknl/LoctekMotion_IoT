@@ -1,30 +1,18 @@
 substitutions:
   device_name: Flexispot desk
   name: office-desk-flexispot
-  min_height: "73.5" # cm
-  max_height: "123" # cm
-  ssid: "your_wifi_ssid"
-  wifi_password: "your_wifi_password"
-  ap_fallback_password: "your_ap_fallback_password"
-  tx_pin: GPIO17 # TXD 2
-  rx_pin: GPIO16 # RXD 2
+  unit_of_measurement: cm
+  min_height: "73.5"
+  max_height: "123"
+  ssid: your_wifi_ssid
+  wifi_password: your_wifi_password
+  ap_fallback_password: your_ap_fallback_password
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  rx_pin_keypad: GPIO3
   screen_pin: GPIO23
-  encryption_key: "iOZqtvw31Yy6sasRl5h2DElG2VDlqW2WjJEKObVN8bg="
+  encryption_key: iOZqtvw31Yy6sasRl5h2DElG2VDlqW2WjJEKObVN8bg=
+  external_components_source: ../components
 
-external_components:
-  - source:
-      type: local
-      path: ../components
-
-esp32:
-  board: esp32dev
-  framework:
-    type: arduino
-
-esphome:
-  name: ${name}
-  friendly_name: ${device_name}
-  comment: Used to control your ${device_name} standing desk via Home Assistant.
-
-
-# TODO
+packages:
+  desk: !include ../packages/office-desk-esp32-passthrough.yaml

@@ -44,6 +44,10 @@ jobs:
       - name: "Install pip (required for ESPHome)"
         run: uv pip install pip
 
+      - name: Validate test fixture coverage
+        if: matrix.version == 'esp32'
+        run: uv run python -m unittest tests/test_configurations.py -v
+
       - name: "Validate  ${{ matrix.version }}"
         run: uv run esphome config tests/office-desk-${{ matrix.version }}.yaml
 
