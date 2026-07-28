@@ -53,6 +53,34 @@ class ConfigurationTests(unittest.TestCase):
             with self.subTest(value=value):
                 self.assertIn(f"return x == {value};", command_config)
 
+    def test_motion_automations_have_bounded_central_control(self) -> None:
+        """Require every production package to stop stalled movement."""
+        for fixture in (
+            "office-desk-esp32.yaml",
+            "office-desk-esp32-passthrough.yaml",
+        ):
+            with self.subTest(fixture=fixture):
+                rendered = self.render_config(fixture)
+                for script_id in (
+                    "start_moving_up",
+                    "start_moving_down",
+                    "movement_failsafe",
+                ):
+                    self.assertIn(f"id: {script_id}", rendered)
+
+                self.assertGreaterEqual(rendered.count("timeout: 30s"), 4)
+                self.assertIn("has_state()", rendered)
+                self.assertIn("std::isfinite", rendered)
+
+                up_switch = rendered.split("id: switch_up", maxsplit=1)[1].split(
+                    "id: switch_down", maxsplit=1
+                )[0]
+                down_switch = rendered.split("id: switch_down", maxsplit=1)[1].split(
+                    "id: switch_alarm", maxsplit=1
+                )[0]
+                self.assertNotIn("on_turn_on:", up_switch)
+                self.assertNotIn("on_turn_on:", down_switch)
+
 
 if __name__ == "__main__":
     unittest.main()

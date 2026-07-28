@@ -13,6 +13,7 @@ substitutions:
   screen_pin: GPIO23
   encryption_key: !secret encryption_key
   external_components_source: github://iMicknl/LoctekMotion_IoT
+  movement_timeout: 30s
 
 external_components:
   source: ${external_components_source}
@@ -114,12 +115,12 @@ sensor:
             condition:
               lambda: return x == 1;
             then:
-              - switch.turn_on: switch_up
+              - script.execute: start_moving_up
         - if:
             condition:
               lambda: return x == 2;
             then:
-              - switch.turn_on: switch_down
+              - script.execute: start_moving_down
         - if:
             condition:
               lambda: return x == 3;
@@ -149,9 +150,37 @@ sensor:
             condition:
               lambda: return x == 8;
             then:
-              - switch.turn_off: switch_up
-              - switch.turn_off: switch_down
-              - button.press: button_wake_screen
+              - cover.stop: desk_cover
+
+script:
+  - id: movement_failsafe
+    mode: restart
+    then:
+      - delay: ${movement_timeout}
+      - switch.turn_off: switch_up
+      - switch.turn_off: switch_down
+
+  - id: start_moving_up
+    mode: restart
+    then:
+      - script.stop: start_moving_down
+      - script.stop: movement_failsafe
+      - switch.turn_off: switch_down
+      - button.press: button_wake_screen
+      - delay: 200ms
+      - switch.turn_on: switch_up
+      - script.execute: movement_failsafe
+
+  - id: start_moving_down
+    mode: restart
+    then:
+      - script.stop: start_moving_up
+      - script.stop: movement_failsafe
+      - switch.turn_off: switch_up
+      - button.press: button_wake_screen
+      - delay: 200ms
+      - switch.turn_on: switch_down
+      - script.execute: movement_failsafe
 
 switch:
   - platform: gpio
@@ -172,9 +201,6 @@ switch:
     uart_id: desk_uart
     send_every: 108ms
     internal: true
-    on_turn_on:
-      - button.press: button_wake_screen
-      - delay: 200ms
 
   - platform: uart
     name: "Down"
@@ -184,9 +210,6 @@ switch:
     uart_id: desk_uart
     send_every: 108ms
     internal: true
-    on_turn_on:
-      - button.press: button_wake_screen
-      - delay: 200ms
 
   - platform: uart
     name: "Alarm off"
@@ -305,25 +328,30 @@ cover:
           then:
             - cover.open: desk_cover
             - wait_until:
-                lambda: |-
-                  return id(desk_cover).position  >= pos;
+                condition:
+                  lambda: |-
+                    return id(desk_cover).position >= pos;
+                timeout: ${movement_timeout}
             - cover.stop: desk_cover
           else:
             - cover.close: desk_cover
             - wait_until:
-                lambda: |-
-                  return id(desk_cover).position <= pos;
+                condition:
+                  lambda: |-
+                    return id(desk_cover).position <= pos;
+                timeout: ${movement_timeout}
             - cover.stop: desk_cover
     stop_action:
+      - script.stop: start_moving_up
+      - script.stop: start_moving_down
+      - script.stop: movement_failsafe
       - switch.turn_off: switch_up
       - switch.turn_off: switch_down
       - button.press: button_wake_screen
     open_action:
-      - switch.turn_off: switch_down
-      - switch.turn_on: switch_up
+      - script.execute: start_moving_up
     close_action:
-      - switch.turn_off: switch_up
-      - switch.turn_on: switch_down
+      - script.execute: start_moving_down
     optimistic: false
 
 number:
@@ -342,16 +370,32 @@ number:
       - if:
           condition:
             - lambda: !lambda |-
-                return x > id(desk_height).state;
+                return id(desk_height).has_state() &&
+                       std::isfinite(id(desk_height).state) &&
+                       std::isfinite(x);
           then:
-            - cover.open: desk_cover
-            - wait_until:
-                lambda: |-
-                  return id(desk_height).state  >= x;
-            - cover.stop: desk_cover
+            - if:
+                condition:
+                  - lambda: !lambda |-
+                      return x > id(desk_height).state;
+                then:
+                  - cover.open: desk_cover
+                  - wait_until:
+                      condition:
+                        lambda: |-
+                          return id(desk_height).state >= x;
+                      timeout: ${movement_timeout}
+                  - cover.stop: desk_cover
+                else:
+                  - cover.close: desk_cover
+                  - wait_until:
+                      condition:
+                        lambda: |-
+                          return id(desk_height).state <= x;
+                      timeout: ${movement_timeout}
+                  - cover.stop: desk_cover
           else:
-            - cover.close: desk_cover
-            - wait_until:
-                lambda: |-
-                  return id(desk_height).state <= x;
+            - logger.log:
+                level: WARN
+                format: "Ignoring height request until valid desk feedback is available"
             - cover.stop: desk_cover
