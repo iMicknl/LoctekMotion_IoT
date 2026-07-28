@@ -40,6 +40,19 @@ class ConfigurationTests(unittest.TestCase):
                     msg=f"{fixture} does not exercise the command component",
                 )
 
+    def test_passthrough_commands_use_exact_value_routing(self) -> None:
+        """Ensure discrete command values are handled outside open ranges."""
+        rendered = self.render_config("office-desk-esp32-passthrough.yaml")
+        command_config = rendered.split(
+            "platform: loctekmotion_desk_command", maxsplit=1
+        )[1].split("\nswitch:", maxsplit=1)[0]
+
+        self.assertNotIn("on_value_range:", command_config)
+        self.assertIn("on_value:", command_config)
+        for value in range(1, 9):
+            with self.subTest(value=value):
+                self.assertIn(f"return x == {value};", command_config)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -108,41 +108,50 @@ sensor:
     id: "desk_command"
     name: Desk command
     uart_id: keypad_uart
-    on_value_range: # The sensor outputs values 1 to 8 depending on the button pressed.
-      - above: 1
-        below: 1
-        then:
-          - switch.turn_on: switch_up
-      - above: 2
-        below: 2
-        then:
-          - switch.turn_on: switch_down
-      - above: 3
-        below: 3
-        then:
-          - button.press: button_preset1
-      - above: 4
-        below: 4
-        then:
-          - button.press: button_preset2
-      - above: 5
-        below: 5
-        then:
-          - button.press: button_stand
-      - above: 6
-        below: 6
-        then:
-          - button.press: button_m
-      - above: 7
-        below: 7
-        then:
-          - button.press: button_alarm
-      - above: 8
-        below: 8
-        then: # When a button is released value 8 is sent, switches which send recurring data must be stopped.
-          - switch.turn_off: switch_up
-          - switch.turn_off: switch_down
-          - button.press: button_wake_screen
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: return x == 1;
+            then:
+              - switch.turn_on: switch_up
+        - if:
+            condition:
+              lambda: return x == 2;
+            then:
+              - switch.turn_on: switch_down
+        - if:
+            condition:
+              lambda: return x == 3;
+            then:
+              - button.press: button_preset1
+        - if:
+            condition:
+              lambda: return x == 4;
+            then:
+              - button.press: button_preset2
+        - if:
+            condition:
+              lambda: return x == 5;
+            then:
+              - button.press: button_stand
+        - if:
+            condition:
+              lambda: return x == 6;
+            then:
+              - button.press: button_m
+        - if:
+            condition:
+              lambda: return x == 7;
+            then:
+              - button.press: button_alarm
+        - if:
+            condition:
+              lambda: return x == 8;
+            then:
+              - switch.turn_off: switch_up
+              - switch.turn_off: switch_down
+              - button.press: button_wake_screen
 
 switch:
   - platform: gpio
