@@ -762,7 +762,7 @@ wheels = [
 
 [[package]]
 name = "esphome"
-version = "2026.6.4"
+version = "2026.6.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aioesphomeapi" },
@@ -796,9 +796,9 @@ dependencies = [
     { name = "voluptuous" },
     { name = "zeroconf" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1d/e2/d10f9b8e68374ecb2cc9175e7e1f024aafd0e6a44b146f0af4e8f79dec4d/esphome-2026.6.4.tar.gz", hash = "sha256:c355e50c258d0db37037cf7c928746d67da03efc7856a83f021366cc7bc4fc6f", size = 4533433, upload-time = "2026-07-01T04:26:34.36Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ad/2e/c8042be4cec6c5544094742fc23986a33f792f6ffe3d2915e95d34df04c6/esphome-2026.6.5.tar.gz", hash = "sha256:a83efdc1f65a09057159ceeffbd4daab6aa11c639fb0f0f3f254c1174b1a8538", size = 4533148, upload-time = "2026-07-09T00:21:44.939Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e7/f1/d226dab265939595c85dfc2a2c1a6b9108cf326c364009b5377a2179aed2/esphome-2026.6.4-py3-none-any.whl", hash = "sha256:c827abc1a3f57652c8832c94ce96a3b41fa72b8ede676c2d31314b7c5c7919c3", size = 6327234, upload-time = "2026-07-01T04:26:32.044Z" },
+    { url = "https://files.pythonhosted.org/packages/cf/12/2802cce5280a67221f944de67471d30587543b234a6882bcf19ae1f2f250/esphome-2026.6.5-py3-none-any.whl", hash = "sha256:4edcebb876c160aea2376cf32453a9b32b64afbb65d49cb4bdd66e2538edba51", size = 6327235, upload-time = "2026-07-09T00:21:42.074Z" },
 ]
 
 [[package]]
@@ -998,8 +998,8 @@ dev = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "esphome", specifier = "==2026.6.4" },
-    { name = "pre-commit", specifier = ">=4.6.0" },
+    { name = "esphome", specifier = "==2026.6.5" },
+    { name = "pre-commit", specifier = ">=4.6.1" },
     { name = "ruff", specifier = ">=0.15.20" },
 ]
 
@@ -1278,7 +1278,7 @@ wheels = [
 
 [[package]]
 name = "pre-commit"
-version = "4.6.0"
+version = "4.6.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cfgv" },
@@ -1287,9 +1287,9 @@ dependencies = [
     { name = "pyyaml" },
     { name = "virtualenv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8e/22/2de9408ac81acbb8a7d05d4cc064a152ccf33b3d480ebe0cd292153db239/pre_commit-4.6.0.tar.gz", hash = "sha256:718d2208cef53fdc38206e40524a6d4d9576d103eb16f0fec11c875e7716e9d9", size = 198525, upload-time = "2026-04-21T20:31:41.613Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/25/3a/ddb78f32a0814e66b18a099377a106a2dcdce92d86a034d69d65df9b256e/pre_commit-4.6.1.tar.gz", hash = "sha256:03e809865c7d178b9979d06c761fcbfe6808fdaded8581a745bb110e52050421", size = 198646, upload-time = "2026-07-21T20:56:58.225Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/80/6e/4b28b62ecb6aae56769c34a8ff1d661473ec1e9519e2d5f8b2c150086b26/pre_commit-4.6.0-py2.py3-none-any.whl", hash = "sha256:e2cf246f7299edcabcf15f9b0571fdce06058527f0a06535068a86d38089f29b", size = 226472, upload-time = "2026-04-21T20:31:40.092Z" },
+    { url = "https://files.pythonhosted.org/packages/fb/49/bc925106abcdac498074f2cbe6137e94e09f418dd2b7775df5b577dc0313/pre_commit-4.6.1-py2.py3-none-any.whl", hash = "sha256:0e3b2942510d1fb34eec167a3ec57331bf8442122f1153a9fb8b58f5c49b2717", size = 226186, upload-time = "2026-07-21T20:56:57.064Z" },
 ]
 
 [[package]]
