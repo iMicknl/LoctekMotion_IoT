@@ -8,6 +8,7 @@ substitutions:
 external_components:
   - source: ../components
     components:
+      - loctekmotion_protocol
       - loctekmotion_desk_height
       - loctekmotion_desk_command
 

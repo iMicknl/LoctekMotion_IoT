@@ -11,6 +11,7 @@ from esphome.const import (
 
 CODEOWNERS = ["@iMicknl"]
 DEPENDENCIES = ["uart"]
+AUTO_LOAD = ["loctekmotion_protocol"]
 
 loctekmotion_ns = cg.esphome_ns.namespace("loctekmotion_desk_height")
 DeskHeightSensor = loctekmotion_ns.class_(

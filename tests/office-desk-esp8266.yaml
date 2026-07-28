@@ -14,7 +14,7 @@ substitutions:
 
 external_components:
   - source: ../components
-    components: [loctekmotion_desk_height]
+    components: [loctekmotion_protocol, loctekmotion_desk_height]
 
 esphome:
   name: ${name}

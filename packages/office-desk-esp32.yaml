@@ -4,6 +4,7 @@ substitutions:
   unit_of_measurement: "cm" # or "in"
   min_height: "73.5"
   max_height: "123"
+  movement_timeout: 30s
   ssid: !secret wifi_ssid
   wifi_password: !secret wifi_password
   ap_fallback_password: !secret ap_fallback_password
@@ -15,7 +16,7 @@ substitutions:
 
 external_components:
   source: ${external_components_source}
-  components: [ loctekmotion_desk_height ]
+  components: [loctekmotion_protocol, loctekmotion_desk_height]
 
 esp32:
   board: esp32dev
@@ -81,12 +82,10 @@ sensor:
     on_value_range:
     - below: ${min_height}
       then:
-        - switch.turn_off: switch_down
-        - button.press: button_wake_screen
+        - cover.stop: desk_cover
     - above: ${max_height}
       then:
-        - switch.turn_off: switch_up
-        - button.press: button_wake_screen
+        - cover.stop: desk_cover
     on_value:
       then:
         - cover.template.publish:
@@ -97,6 +96,37 @@ sensor:
                 float position = (float(x) - float(${min_height})) / (float(${max_height}) - float(${min_height}));
                 return position;
         - component.update: set_desk_height
+
+script:
+  - id: start_moving_up
+    mode: restart
+    then:
+      - script.stop: start_moving_down
+      - script.stop: movement_failsafe
+      - switch.turn_off: switch_down
+      - button.press: button_wake_screen
+      - delay: 200ms
+      - switch.turn_on: switch_up
+      - script.execute: movement_failsafe
+
+  - id: start_moving_down
+    mode: restart
+    then:
+      - script.stop: start_moving_up
+      - script.stop: movement_failsafe
+      - switch.turn_off: switch_up
+      - button.press: button_wake_screen
+      - delay: 200ms
+      - switch.turn_on: switch_down
+      - script.execute: movement_failsafe
+
+  - id: movement_failsafe
+    mode: restart
+    then:
+      - delay: ${movement_timeout}
+      - switch.turn_off: switch_up
+      - switch.turn_off: switch_down
+      - button.press: button_wake_screen
 
 switch:
   - platform: gpio
@@ -116,9 +146,6 @@ switch:
     uart_id: desk_uart
     send_every: 108ms
     internal: true
-    on_turn_on:
-      - button.press: button_wake_screen
-      - delay: 200ms
 
   - platform: uart
     name: "Down"
@@ -128,9 +155,6 @@ switch:
     uart_id: desk_uart
     send_every: 108ms
     internal: true
-    on_turn_on:
-      - button.press: button_wake_screen
-      - delay: 200ms
 
   - platform: uart
     name: "Alarm off"
@@ -241,29 +265,47 @@ cover:
       - if:
           condition:
             - lambda: !lambda |-
-                return pos > id(desk_cover).position;
+                return id(desk_height).has_state() &&
+                       std::isfinite(id(desk_height).state) &&
+                       id(desk_height).state >= float(${min_height}) &&
+                       id(desk_height).state <= float(${max_height});
           then:
-            - cover.open: desk_cover
-            - wait_until:
-                lambda: |-
-                  return id(desk_cover).position  >= pos;
-            - cover.stop: desk_cover
+            - if:
+                condition:
+                  - lambda: !lambda |-
+                      return pos > id(desk_cover).position;
+                then:
+                  - cover.open: desk_cover
+                  - wait_until:
+                      condition:
+                        lambda: |-
+                          return id(desk_cover).position >= pos;
+                      timeout: ${movement_timeout}
+                  - cover.stop: desk_cover
+                else:
+                  - cover.close: desk_cover
+                  - wait_until:
+                      condition:
+                        lambda: |-
+                          return id(desk_cover).position <= pos;
+                      timeout: ${movement_timeout}
+                  - cover.stop: desk_cover
           else:
-            - cover.close: desk_cover
-            - wait_until:
-                lambda: |-
-                  return id(desk_cover).position <= pos;
+            - logger.log:
+                level: WARN
+                format: "Ignoring position request without valid height feedback"
             - cover.stop: desk_cover
     stop_action:
+      - script.stop: start_moving_up
+      - script.stop: start_moving_down
+      - script.stop: movement_failsafe
       - switch.turn_off: switch_up
       - switch.turn_off: switch_down
       - button.press: button_wake_screen
     open_action:
-      - switch.turn_off: switch_down
-      - switch.turn_on: switch_up
+      - script.execute: start_moving_up
     close_action:
-      - switch.turn_off: switch_up
-      - switch.turn_on: switch_down
+      - script.execute: start_moving_down
     optimistic: false
 
 number:
@@ -282,16 +324,33 @@ number:
       - if:
           condition:
             - lambda: !lambda |-
-                return x > id(desk_height).state;
+                return id(desk_height).has_state() &&
+                       std::isfinite(id(desk_height).state) &&
+                       id(desk_height).state >= float(${min_height}) &&
+                       id(desk_height).state <= float(${max_height});
           then:
-            - cover.open: desk_cover
-            - wait_until:
-                lambda: |-
-                  return id(desk_height).state  >= x;
-            - cover.stop: desk_cover
+            - if:
+                condition:
+                  - lambda: !lambda |-
+                      return x > id(desk_height).state;
+                then:
+                  - cover.open: desk_cover
+                  - wait_until:
+                      condition:
+                        lambda: |-
+                          return id(desk_height).state >= x;
+                      timeout: ${movement_timeout}
+                  - cover.stop: desk_cover
+                else:
+                  - cover.close: desk_cover
+                  - wait_until:
+                      condition:
+                        lambda: |-
+                          return id(desk_height).state <= x;
+                      timeout: ${movement_timeout}
+                  - cover.stop: desk_cover
           else:
-            - cover.close: desk_cover
-            - wait_until:
-                lambda: |-
-                  return id(desk_height).state <= x;
+            - logger.log:
+                level: WARN
+                format: "Ignoring height request without valid height feedback"
             - cover.stop: desk_cover
