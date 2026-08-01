@@ -215,9 +215,11 @@ port in a few important ways:
 
 - The two RJ45 jacks are **not parallel taps**: the accessory port never sees
   the control panel's traffic, only frames the control box itself sends.
-- Commands are only accepted after `PIN 20` has been HIGH for **~1 second**
-  (matches the physical panel's UX, where the first key press only wakes the
-  display and the second one acts).
+- Wakefulness is **global**: the box accepts accessory-port commands whenever
+  it is awake, regardless of which port woke it. From cold, `PIN 20` must be
+  HIGH for **~1 second** before a command registers (matches the physical
+  panel's UX, where the first key press only wakes the display and the second
+  one acts).
 - The control box **only reports height in response to a received command**
   (including the harmless Wake Up / "no keys" frame `9b 06 02 00 00 6c a1 9d`).
   It does **not** broadcast during autonomous preset travel — to track a
@@ -225,8 +227,10 @@ port in a few important ways:
 - While awake, the control box streams a **~5 Hz heartbeat**
   `9b 04 11 7c c3 9d` on the accessory port, stopping a few seconds after it
   goes back to sleep. A heartbeat session that your controller did not
-  initiate means the desk was adjusted via the physical panel — useful as a
-  trigger to re-poll the height afterwards.
+  initiate means the desk is being adjusted via the physical panel — and
+  since wakefulness is global, you can poll with Wake Up frames **during**
+  that session for live height tracking of panel-driven moves (verified not
+  to interfere with physically held buttons).
 - Two further frames were observed and safely ignored: `9b 04 15 bf c2 9d`
   (appears around command handling) and `9b 04 81 10 c3 9d` (meaning unknown).
 - Checksum note: all frames verify as **CRC16-Modbus** computed over the

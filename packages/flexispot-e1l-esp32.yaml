@@ -16,7 +16,9 @@
 #   - The box only reports height in response to a command -> preset buttons
 #     poll with Wake Up frames during the autonomous travel.
 #   - A ~5 Hz heartbeat (9b 04 11) runs while the box is awake -> used to
-#     detect adjustments made on the physical panel and re-poll the height.
+#     detect adjustments made on the physical panel; polling during such a
+#     session gives live height tracking of panel-driven moves (wakefulness
+#     is global, and the polls don't interfere with held panel buttons).
 
 substitutions:
   device_name: flexispot-desk
@@ -88,19 +90,19 @@ uart:
             }
             UARTDebug::log_hex(direction, bytes, ' ');
 
-# Heartbeat watchdog: when an awake-session ends (>3s silence) that we didn't
-# start, the desk was moved via the physical panel -> refresh the height once.
+# Heartbeat watchdog: an awake-session we didn't start = the physical panel
+# is in use -> start live_poll so the height tracks the move live. Session
+# end (>3s silence) just clears state.
 interval:
   - interval: 1s
     then:
       - lambda: |-
+          if (id(last_hb) != 0 && !id(self_wake) && !id(live_poll).is_running()) {
+            id(live_poll).execute();
+          }
           if (id(last_hb) != 0 && (millis() - id(last_hb)) > 3000) {
             id(last_hb) = 0;
-            if (id(self_wake)) {
-              id(self_wake) = false;
-            } else {
-              id(refresh_height).execute();
-            }
+            id(self_wake) = false;
           }
 
 sensor:
@@ -132,6 +134,18 @@ script:
       - script.execute: wake_desk
       - delay: 1s
       - uart.write: [0x9B, 0x06, 0x02, 0x00, 0x00, 0x6C, 0xA1, 0x9D]
+  # Live tracking of panel-initiated sessions: poll with the harmless
+  # "no keys pressed" Wake Up frame while the foreign session's heartbeat is
+  # alive (no need to raise PIN 20 — the panel already woke the box).
+  - id: live_poll
+    mode: single
+    then:
+      - while:
+          condition:
+            lambda: 'return id(last_hb) != 0;'
+          then:
+            - uart.write: [0x9B, 0x06, 0x02, 0x00, 0x00, 0x6C, 0xA1, 0x9D]
+            - delay: 1s
   # The box travels to presets on its own without reporting. Poll it once per
   # second (Wake Up frame = "no keys pressed", does not affect motion) so the
   # height tracks during travel and ends correct. Each iteration restarts
