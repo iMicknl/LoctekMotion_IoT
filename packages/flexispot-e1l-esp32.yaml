@@ -1,0 +1,213 @@
+# Flexispot E1L (control box CB38M2J(IB)-1, accessory RJ45 port) — ESP32
+#
+# Plug the ESP32 into the control box's FREE second RJ45 jack; the physical
+# control panel stays in the other one. Pinout = HS13B-1 (see README).
+#
+#   RJ45 pin 8 -> +5V (powers the ESP32 via VIN)
+#   RJ45 pin 7 -> GND
+#   RJ45 pin 5 -> ${rx_pin}  (control box -> ESP: heartbeat + height frames)
+#   RJ45 pin 6 -> ${tx_pin}  (ESP -> control box: commands)
+#   RJ45 pin 4 -> ${screen_pin}  (PIN 20 wake line)
+#
+# E1L accessory-port quirks handled by this package (see README section
+# "Flexispot E1L" for details):
+#   - PIN 20 must be HIGH ~1s before a command is accepted -> every button
+#     wakes first, then sends.
+#   - The box only reports height in response to a command -> preset buttons
+#     poll with Wake Up frames during the autonomous travel.
+#   - A ~5 Hz heartbeat (9b 04 11) runs while the box is awake -> used to
+#     detect adjustments made on the physical panel; polling during such a
+#     session gives live height tracking of panel-driven moves (wakefulness
+#     is global, and the polls don't interfere with held panel buttons).
+
+substitutions:
+  device_name: flexispot-desk
+  friendly_name: Flexispot Desk
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  screen_pin: GPIO23
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+external_components:
+  - source: github://iMicknl/LoctekMotion_IoT
+    components: [ loctekmotion_desk_height ]
+
+logger:
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+captive_portal:
+
+web_server:
+  port: 80
+  version: 3
+  local: true
+
+globals:
+  # millis() of the last heartbeat frame (9b 04 11) from the control box;
+  # the box streams these at ~5 Hz while awake, silence = asleep.
+  - id: last_hb
+    type: uint32_t
+    initial_value: '0'
+  # true while the current awake-session was started by us (wake_desk);
+  # suppresses the auto-refresh so it cannot retrigger itself forever.
+  - id: self_wake
+    type: bool
+    initial_value: 'false'
+
+uart:
+  - id: desk_uart
+    baud_rate: 9600
+    tx_pin: ${tx_pin}
+    rx_pin: ${rx_pin}
+    debug:
+      direction: RX
+      after:
+        delimiter: [0x9D]
+      sequence:
+        - lambda: |-
+            if (bytes.size() == 6 && bytes[1] == 0x04 && bytes[2] == 0x11) {
+              id(last_hb) = millis();  // heartbeat: track silently, don't log
+              return;
+            }
+            UARTDebug::log_hex(direction, bytes, ' ');
+
+# Heartbeat watchdog: an awake-session we didn't start = the physical panel
+# is in use -> start live_poll so the height tracks the move live. Session
+# end (>3s silence) just clears state.
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          if (id(last_hb) != 0 && !id(self_wake) && !id(live_poll).is_running()) {
+            id(live_poll).execute();
+          }
+          if (id(last_hb) != 0 && (millis() - id(last_hb)) > 3000) {
+            id(last_hb) = 0;
+            id(self_wake) = false;
+          }
+
+sensor:
+  - platform: loctekmotion_desk_height
+    uart_id: desk_uart
+    name: "Desk Height"
+    id: desk_height
+
+switch:
+  - platform: gpio
+    name: "Screen Wake"
+    id: screen_wake
+    pin: ${screen_pin}
+    restore_mode: ALWAYS_OFF
+
+script:
+  - id: wake_desk
+    mode: restart
+    then:
+      - globals.set:
+          id: self_wake
+          value: 'true'
+      - switch.turn_on: screen_wake
+      - delay: 15s
+      - switch.turn_off: screen_wake
+  - id: refresh_height
+    mode: single
+    then:
+      - script.execute: wake_desk
+      - delay: 1s
+      - uart.write: [0x9B, 0x06, 0x02, 0x00, 0x00, 0x6C, 0xA1, 0x9D]
+  # Live tracking of panel-initiated sessions: poll with the harmless
+  # "no keys pressed" Wake Up frame while the foreign session's heartbeat is
+  # alive (no need to raise PIN 20 — the panel already woke the box).
+  - id: live_poll
+    mode: single
+    then:
+      - while:
+          condition:
+            lambda: 'return id(last_hb) != 0;'
+          then:
+            - uart.write: [0x9B, 0x06, 0x02, 0x00, 0x00, 0x6C, 0xA1, 0x9D]
+            - delay: 1s
+  # The box travels to presets on its own without reporting. Poll it once per
+  # second (Wake Up frame = "no keys pressed", does not affect motion) so the
+  # height tracks during travel and ends correct. Each iteration restarts
+  # wake_desk so the wake line stays high throughout.
+  - id: poll_height_burst
+    mode: restart
+    then:
+      - repeat:
+          count: 25
+          then:
+            - script.execute: wake_desk
+            - uart.write: [0x9B, 0x06, 0x02, 0x00, 0x00, 0x6C, 0xA1, 0x9D]
+            - delay: 1s
+
+button:
+  - platform: template
+    name: "Desk Up"
+    icon: mdi:arrow-up-bold
+    on_press:
+      - script.execute: wake_desk
+      - delay: 1s
+      - uart.write: [0x9B, 0x06, 0x02, 0x01, 0x00, 0xFC, 0xA0, 0x9D]
+  - platform: template
+    name: "Desk Down"
+    icon: mdi:arrow-down-bold
+    on_press:
+      - script.execute: wake_desk
+      - delay: 1s
+      - uart.write: [0x9B, 0x06, 0x02, 0x02, 0x00, 0x0C, 0xA0, 0x9D]
+  - platform: template
+    name: "Desk Preset 1"
+    icon: mdi:numeric-1-box
+    on_press:
+      - script.execute: wake_desk
+      - delay: 1s
+      - uart.write: [0x9B, 0x06, 0x02, 0x04, 0x00, 0xAC, 0xA3, 0x9D]
+      - script.execute: poll_height_burst
+  - platform: template
+    name: "Desk Preset 2"
+    icon: mdi:numeric-2-box
+    on_press:
+      - script.execute: wake_desk
+      - delay: 1s
+      - uart.write: [0x9B, 0x06, 0x02, 0x08, 0x00, 0xAC, 0xA6, 0x9D]
+      - script.execute: poll_height_burst
+  - platform: template
+    name: "Desk Preset 3"
+    icon: mdi:numeric-3-box
+    on_press:
+      - script.execute: wake_desk
+      - delay: 1s
+      - uart.write: [0x9B, 0x06, 0x02, 0x10, 0x00, 0xAC, 0xAC, 0x9D]
+      - script.execute: poll_height_burst
+  - platform: template
+    name: "Desk M"
+    icon: mdi:alpha-m-box
+    on_press:
+      - script.execute: wake_desk
+      - delay: 1s
+      - uart.write: [0x9B, 0x06, 0x02, 0x20, 0x00, 0xAC, 0xB8, 0x9D]
+  - platform: template
+    name: "Refresh Height"
+    icon: mdi:refresh
+    on_press:
+      - script.execute: refresh_height

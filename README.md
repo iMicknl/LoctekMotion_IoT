@@ -128,6 +128,7 @@ In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I u
     <td align="center"><a href="#hs13b-1"><br /><sub><b>HS13B-1</b></sub></a></td>
     <td align="center"><a href="#hs13a-1"><br /><sub><b>HS13A-1</b></sub></a></td>
     <td align="center"><a href="#hs01b-1"><br /><sub><b>HS01B-1</b></sub></a></td>
+    <td align="center"><a href="#flexispot-e1l-unmarked-touch-panel"><br /><sub><b>E1L (unmarked)</b></sub></a></td>
   </tr>
 </table>
 <!-- markdownlint-enable -->
@@ -196,6 +197,49 @@ So the custom controller also uses RX to receive data and TX to send data.
 
 Note that RX and TX is defined like this on receiver (control panel) side.
 So the custom controller also uses RX to receive data and TX to send data.
+
+#### Flexispot E1L (unmarked touch panel)
+
+- **Desk model**: Flexispot E1L (L-shaped, 2 motors)
+- **Tested with control box**: CB38M2J(IB)-1 (same model as the Flexispot E7)
+- **Control panel**: no model number printed anywhere; curved touch panel with LED display and Up / Down / 1 / 2 / 3 / M / A keys
+- **Source**: empirical UART sniffing (2026), see behavior notes below
+
+The pinout is identical to [HS13B-1](#hs13b-1). The desk was integrated via the
+control box's **second (top) RJ45 jack** while the control panel stayed
+connected to the bottom jack. Both the standard command set and the height
+frames work — but this accessory port behaves differently than the primary
+port in a few important ways:
+
+**Behavior notes (accessory port):**
+
+- The two RJ45 jacks are **not parallel taps**: the accessory port never sees
+  the control panel's traffic, only frames the control box itself sends.
+- Wakefulness is **global**: the box accepts accessory-port commands whenever
+  it is awake, regardless of which port woke it. From cold, `PIN 20` must be
+  HIGH for **~1 second** before a command registers (matches the physical
+  panel's UX, where the first key press only wakes the display and the second
+  one acts).
+- The control box **only reports height in response to a received command**
+  (including the harmless Wake Up / "no keys" frame `9b 06 02 00 00 6c a1 9d`).
+  It does **not** broadcast during autonomous preset travel — to track a
+  preset move, keep sending Wake Up ~once per second while the desk travels.
+- While awake, the control box streams a **~5 Hz heartbeat**
+  `9b 04 11 7c c3 9d` on the accessory port, stopping a few seconds after it
+  goes back to sleep. A heartbeat session that your controller did not
+  initiate means the desk is being adjusted via the physical panel — and
+  since wakefulness is global, you can poll with Wake Up frames **during**
+  that session for live height tracking of panel-driven moves (verified not
+  to interfere with physically held buttons).
+- Two further frames were observed and safely ignored: `9b 04 15 bf c2 9d`
+  (appears around command handling) and `9b 04 81 10 c3 9d` (meaning unknown).
+- Checksum note: all frames verify as **CRC16-Modbus** computed over the
+  bytes from `length` through the end of `payload`, transmitted high byte
+  first — this matches the checksums in the command list below and lets you
+  construct arbitrary frames.
+
+See [`packages/flexispot-e1l-esp32.yaml`](packages/flexispot-e1l-esp32.yaml)
+for a complete ESPHome package implementing all of the above.
 
 Other control panels / control boxes could be supported in the same way, but you would need to figure the RJ45 pinout mapping. Most control boxes have an extra RJ45 port for serial communication, but otherwise you would need to place your device in between the control panel and the control box.
 
