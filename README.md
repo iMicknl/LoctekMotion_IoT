@@ -27,14 +27,14 @@ This repository will guide you on connecting your desk to Home Assistant and oth
 
 | Name                                                           | Description                                                                                                                    |
 | ------------------------------------------                     | --------------------------------------------------------------------------------------------------------------------           |
-| [ESPHome](packages/office-desk-esp32.yaml)                     | Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant.           |
-| [ESPHome Pass-through](packages/office-desk-esp32-passthrough.yaml)  | Control desks which have only one RJ45 port using passthrough configuration via an ESP32 module connected to Home Assistant. |
+| [ESPHome](packages/wifi/office-desk-esp32.yaml)                     | Control your desk via an ESP32 module connected to Home Assistant. Can be adapted to ESP8266 or other ESP32 variant.           |
+| [ESPHome Pass-through](packages/wifi/office-desk-esp32-passthrough.yaml)  | Control desks which have only one RJ45 port using passthrough configuration via an ESP32 module connected to Home Assistant. |
 
 For v1 packages (Arduino, Raspberry Pi, older ESPHome packages, and different pin-outs), visit the [`archive`](./archive/) directory. For alternative solutions, see [similar projects](#similar-projects).
 
 ## Getting started
 
-Please follow the [ESPHome documentation](https://esphome.io/guides/getting_started_command_line.html) for the basics of ESPHome. You can use the provided [`office-desk-esp32.yaml`](https://github.com/iMicknl/LoctekMotion_IoT/blob/main/packages/office-desk-esp32.yaml) as a boilerplate for your own implementation. This implementation has been created for the ESP32 nodemcu, but can easily be adopted for other platforms and boards.
+Please follow the [ESPHome documentation](https://esphome.io/guides/getting_started_command_line.html) for the basics of ESPHome. You can use the provided [`office-desk-esp32.yaml`](https://github.com/iMicknl/LoctekMotion_IoT/blob/main/packages/wifi/office-desk-esp32.yaml) as a boilerplate for your own implementation. This implementation has been created for the ESP32 nodemcu, but can easily be adopted for other platforms and boards.
 
 ### Pin-out
 

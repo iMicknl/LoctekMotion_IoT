@@ -1,0 +1,32 @@
+substitutions:
+  device_name: Flexispot desk
+  name: office-desk-flexispot
+  unit_of_measurement: "cm" # or "in"
+  min_height: "73.5"
+  max_height: "123"
+  tx_pin: GPIO17 # TXD 2
+  rx_pin: GPIO16 # RXD 2
+  rx_pin_keypad: GPIO3 # RX 0
+  screen_pin: GPIO23
+  encryption_key: !secret encryption_key
+  thread_tlv: !secret thread_tlv
+
+esp32:
+  board: esp32-c6-devkitm-1
+  framework:
+    type: esp-idf
+
+network:
+  enable_ipv6: true
+
+openthread:
+  tlv: ${thread_tlv}
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi signal"
+    update_interval: 60s
+
+packages:
+  # Passthrough core (includes: keypad sensor, desk_command, virtual screen, and base core.yaml)
+  core_passthrough: !include ../core/core-passthrough.yaml

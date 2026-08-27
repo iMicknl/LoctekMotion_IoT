@@ -1,0 +1,68 @@
+# Core configuration shared by all passthrough variants (WiFi and Thread)
+# This package includes core.yaml for the base desk functionality
+# and adds passthrough-specific components (desk_command sensor, keypad UART)
+
+external_components:
+  source: github://iMicknl/LoctekMotion_IoT
+  components: [loctekmotion_desk_height, loctekmotion_desk_command]
+
+uart:
+  - id: keypad_uart
+    baud_rate: 9600
+    rx_pin: ${rx_pin_keypad}
+
+sensor:
+  - platform: loctekmotion_desk_command
+    id: "desk_command"
+    name: Desk command
+    uart_id: keypad_uart
+    on_value_range: # The sensor outputs values 1 to 8 depending on the button pressed.
+      - above: 1
+        below: 1
+        then:
+          - switch.turn_on: switch_up
+      - above: 2
+        below: 2
+        then:
+          - switch.turn_on: switch_down
+      - above: 3
+        below: 3
+        then:
+          - button.press: button_preset1
+      - above: 4
+        below: 4
+        then:
+          - button.press: button_preset2
+      - above: 5
+        below: 5
+        then:
+          - button.press: button_stand
+      - above: 6
+        below: 6
+        then:
+          - button.press: button_m
+      - above: 7
+        below: 7
+        then:
+          - button.press: button_alarm
+      - above: 8
+        below: 8
+        then: # When a button is released value 8 is sent, switches which send recurring data must be stopped.
+          - switch.turn_off: switch_up
+          - switch.turn_off: switch_down
+          - button.press: button_wake_screen
+
+switch:
+  - platform: gpio
+    name: "Virtual screen" # PIN20
+    id: virtual_screen
+    pin:
+      number: ${screen_pin}
+      mode: OUTPUT
+    restore_mode: ALWAYS_ON
+    entity_category: "config"
+    internal: true
+
+packages:
+  # Base core configuration (logger, API, sensors, switches, buttons, cover, number)
+  core: !include core.yaml
