@@ -1,15 +1,16 @@
 substitutions:
-  device_name: Flexispot EK5
-  name: office-desk-flexispot-ek5
-  min_height: "73.5" # cm
-  max_height: "123" # cm
-  ssid: "your_wifi_ssid"
-  wifi_password: "your_wifi_password"
-  ap_fallback_password: "MnANX95MWad1"
+  device_name: Flexispot desk
+  name: office-desk-flexispot
+  unit_of_measurement: "cm" # or "in"
+  min_height: "73.5"
+  max_height: "123"
+  ssid: !secret wifi_ssid
+  wifi_password: !secret wifi_password
+  ap_fallback_password: !secret ap_fallback_password
   tx_pin: GPIO17 # TXD 2
   rx_pin: GPIO16 # RXD 2
   screen_pin: GPIO23
-  encryption_key: "iOZqtvw31Yy6sasRl5h2DElG2VDlqW2WjJEKObVN8bg="
+  encryption_key: !secret encryption_key
 
 external_components:
   source: github://iMicknl/LoctekMotion_IoT
@@ -25,13 +26,15 @@ esphome:
   friendly_name: ${device_name}
   comment: Used to control your ${device_name} standing desk via Home Assistant.
 
-  # Wake Desk by sending the "M" command
-  # This will pull the current height after boot
+  # Delay UART interaction on boot to give the desk controller time to initialize.
+  # After the delay, wake the desk by sending the "M" command to request the current height.
   on_boot:
-    priority: -10
+    priority: -100
     then:
+      - delay: 10s
+      - button.press: button_wake_screen
+      - delay: 300ms
       - button.press: button_m
-
 
 # Enable logging
 logger:
@@ -64,7 +67,7 @@ uart:
 
 sensor:
   - platform: wifi_signal
-    name: "WiFi Signal"
+    name: "WiFi signal"
     update_interval: 60s
 
   - platform: uptime
@@ -72,14 +75,17 @@ sensor:
 
   - platform: loctekmotion_desk_height
     id: "desk_height"
-    name: Desk Height
+    name: Desk height
+    unit_of_measurement: ${unit_of_measurement}
     on_value_range:
     - below: ${min_height}
       then:
         - switch.turn_off: switch_down
+        - button.press: button_wake_screen
     - above: ${max_height}
       then:
         - switch.turn_off: switch_up
+        - button.press: button_wake_screen
     on_value:
       then:
         - cover.template.publish:
@@ -93,7 +99,7 @@ sensor:
 
 switch:
   - platform: gpio
-    name: "Virtual Screen" # PIN20
+    name: "Virtual screen" # PIN20
     pin:
       number: ${screen_pin}
       mode: OUTPUT
@@ -109,6 +115,9 @@ switch:
     uart_id: desk_uart
     send_every: 108ms
     internal: true
+    on_turn_on:
+      - button.press: button_wake_screen
+      - delay: 200ms
 
   - platform: uart
     name: "Down"
@@ -118,6 +127,9 @@ switch:
     uart_id: desk_uart
     send_every: 108ms
     internal: true
+    on_turn_on:
+      - button.press: button_wake_screen
+      - delay: 200ms
 
   - platform: uart
     name: "Alarm off"
@@ -132,7 +144,7 @@ switch:
     entity_category: "config"
 
   - platform: uart
-    name: "Child Lock"
+    name: "Child lock"
     id: switch_child_lock
     icon: mdi:account-lock
     data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
@@ -148,6 +160,8 @@ button:
     name: "Preset 1"
     icon: mdi:numeric-1-box
     on_press:
+      - button.press: button_wake_screen
+      - delay: 200ms
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x04, 0x00, 0xac, 0xa3, 0x9d]
@@ -156,6 +170,8 @@ button:
     name: "Preset 2"
     icon: mdi:numeric-2-box
     on_press:
+      - button.press: button_wake_screen
+      - delay: 200ms
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d]
@@ -164,6 +180,8 @@ button:
     name: "Sit" # Preset 3 on some control panels
     icon: mdi:chair-rolling
     on_press:
+      - button.press: button_wake_screen
+      - delay: 200ms
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
@@ -172,6 +190,8 @@ button:
     name: "Stand" # Preset 4 on some control panels
     icon: mdi:human-handsup
     on_press:
+      - button.press: button_wake_screen
+      - delay: 200ms
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
@@ -187,7 +207,7 @@ button:
           data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
 
   - platform: template
-    name: "Wake Screen"
+    name: "Wake screen"
     id: button_wake_screen
     icon: mdi:gesture-tap-button
     entity_category: "config"
@@ -236,6 +256,7 @@ cover:
     stop_action:
       - switch.turn_off: switch_up
       - switch.turn_off: switch_down
+      - button.press: button_wake_screen
     open_action:
       - switch.turn_off: switch_down
       - switch.turn_on: switch_up
@@ -246,12 +267,12 @@ cover:
 
 number:
   - platform: template
-    name: "Desk Height"
+    name: "Desk height"
     id: set_desk_height
     min_value: ${min_height}
     max_value: ${max_height}
     icon: "mdi:counter"
-    unit_of_measurement: "cm"
+    unit_of_measurement: ${unit_of_measurement}
     device_class: "distance"
     step: 0.1
     lambda: !lambda |-

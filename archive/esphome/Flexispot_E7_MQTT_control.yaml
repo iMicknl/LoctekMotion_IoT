@@ -81,7 +81,7 @@ uart:
 
 sensor:
   - platform: wifi_signal
-    name: "WiFi Signal"
+    name: "WiFi signal"
     update_interval: 60s
 
   - platform: uptime
@@ -94,14 +94,14 @@ sensor:
       return {desk_height_sensor};
     sensors:
       id: "desk_height"
-      name: Desk Height
+      name: Desk height
       unit_of_measurement: cm
       accuracy_decimals: 1
       icon: "mdi:counter"
 
 switch:
   - platform: gpio
-    name: "Virtual Screen"
+    name: "Virtual screen"
     pin:
       number: D2
       mode: OUTPUT
