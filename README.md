@@ -38,16 +38,18 @@ Please follow the [ESPHome documentation](https://esphome.io/guides/getting_star
 
 ### Pin-out
 
-| RJ45 pin | Name      | ESP32        |
-| -------- | --------- | ------------ |
-| 8        | +5V (VDD) | VIN          |
-| 7        | GND       | GND          |
-| 6        | TX        | TX2 (GPIO17) |
-| 5        | RX        | RX2 (GPIO16) |
-| 4        | PIN 20    | D23 (GPIO23) |
-| 3        | (unknown) |              |
-| 2        | SWIM      |              |
-| 1        | RES       |              |
+| RJ45 pin ([T-568B](./images/RJ45-Pinout-T568B.jpg)) | Name      | ESP32        |
+| --------------------------------------------------- | --------- | ------------ |
+| 8 🟫                                                 | +5V (VDD) | VIN          |
+| 7 ⬜🟫                                                | GND       | GND          |
+| 6 🟩                                                 | TX        | TX2 (GPIO17) |
+| 5 ⬜🟦                                                | RX        | RX2 (GPIO16) |
+| 4 🟦                                                 | PIN 20    | D23 (GPIO23) |
+| 3 ⬜🟩                                                | (unknown) |              |
+| 2 🟧                                                 | SWIM      |              |
+| 1 ⬜🟧                                                | RES       |              |
+
+You can use other GPIO pins (e.g. on an ESP32-C3) by changing the `tx_pin`, `rx_pin` and `screen_pin` substitutions in the package.
 
 This pin-out should be compatible with all control panels featuring an RJ45 port for serial communication. If it doesn't work for your setup, consider trying an alternative pin-out from the [archive](./archive/esphome/README.md).
 
