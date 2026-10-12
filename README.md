@@ -93,6 +93,16 @@ Features ✅:
 
 🔗 Download the enclosure model at [makerworld.com](https://makerworld.com/de/models/1220796-flexispot-smartdesk-enclosure-esp32-devkit-lan#profileId-1237633).
 
+### Optional: Enclosure for a Pass-Through Setup
+
+A [pass-through configuration](#pass-through-configuations) needs two RJ45 jacks, which the enclosure above does not have. This case fits an ESP32 DevKit between two RJ45 breakout boards — desk controller on one side, keypad on the other.
+
+| Enclosure | Assembled |
+| --------- | --------- |
+| ![Pass-through enclosure, printed](images/passthrough-case/passthrough-printed.jpeg) | ![ESP32 and both RJ45 breakouts mounted in the case](images/passthrough-case/all-together.jpeg) |
+
+🔗 Models (STL + Fusion 360 source): [`models/passthrough-case`](models/passthrough-case)
+
 ### Troubleshooting
 
 **My height sensor is not providing the correct value**
