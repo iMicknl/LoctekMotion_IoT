@@ -22,10 +22,10 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
 
-      - name: Set up Python 3.13
+      - name: Set up Python 3.14
         uses: actions/setup-python@v7
         with:
-          python-version: 3.13
+          python-version: "3.14"
 
       - name: Cache ESPHome build files
         uses: actions/cache@v6
