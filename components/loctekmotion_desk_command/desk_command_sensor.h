@@ -21,7 +21,7 @@ public:
 protected:
   float value = 0;
   float lastPublished = -1;
-  uint8_t history[3];
+  uint8_t history[4];
   uint8_t msg_len = 0;
   uint8_t msg_type;
   bool valid = false;

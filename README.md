@@ -38,16 +38,18 @@ Please follow the [ESPHome documentation](https://esphome.io/guides/getting_star
 
 ### Pin-out
 
-| RJ45 pin | Name      | ESP32        |
-| -------- | --------- | ------------ |
-| 8        | +5V (VDD) | VIN          |
-| 7        | GND       | GND          |
-| 6        | TX        | TX2 (GPIO17) |
-| 5        | RX        | RX2 (GPIO16) |
-| 4        | PIN 20    | D23 (GPIO23) |
-| 3        | (unknown) |              |
-| 2        | SWIM      |              |
-| 1        | RES       |              |
+| RJ45 pin ([T-568B](./images/RJ45-Pinout-T568B.jpg)) | Name      | ESP32        |
+| --------------------------------------------------- | --------- | ------------ |
+| 8 🟫                                                 | +5V (VDD) | VIN          |
+| 7 ⬜🟫                                                | GND       | GND          |
+| 6 🟩                                                 | TX        | TX2 (GPIO17) |
+| 5 ⬜🟦                                                | RX        | RX2 (GPIO16) |
+| 4 🟦                                                 | PIN 20    | D23 (GPIO23) |
+| 3 ⬜🟩                                                | (unknown) |              |
+| 2 🟧                                                 | SWIM      |              |
+| 1 ⬜🟧                                                | RES       |              |
+
+You can use other GPIO pins (e.g. on an ESP32-C3) by changing the `tx_pin`, `rx_pin` and `screen_pin` substitutions in the package.
 
 This pin-out should be compatible with all control panels featuring an RJ45 port for serial communication. If it doesn't work for your setup, consider trying an alternative pin-out from the [archive](./archive/esphome/README.md).
 
@@ -90,6 +92,16 @@ Features ✅:
 ![image](images/enclosure/Attached-to-desk.JPEG)
 
 🔗 Download the enclosure model at [makerworld.com](https://makerworld.com/de/models/1220796-flexispot-smartdesk-enclosure-esp32-devkit-lan#profileId-1237633).
+
+### Optional: Enclosure for a Pass-Through Setup
+
+A [pass-through configuration](#pass-through-configuations) needs two RJ45 jacks, which the enclosure above does not have. This case fits an ESP32 DevKit between two RJ45 breakout boards — desk controller on one side, keypad on the other.
+
+| Enclosure | Assembled |
+| --------- | --------- |
+| ![Pass-through enclosure, printed](images/passthrough-case/passthrough-printed.jpeg) | ![ESP32 and both RJ45 breakouts mounted in the case](images/passthrough-case/all-together.jpeg) |
+
+🔗 Models (STL + Fusion 360 source): [`models/passthrough-case`](models/passthrough-case)
 
 ### Troubleshooting
 
