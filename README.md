@@ -53,7 +53,7 @@ You can use other GPIO pins (e.g. on an ESP32-C3) by changing the `tx_pin`, `rx_
 
 This pin-out should be compatible with all control panels featuring an RJ45 port for serial communication. If it doesn't work for your setup, consider trying an alternative pin-out from the [archive](./archive/esphome/README.md).
 
-Use the provided pin-out to connect your ESP32 to the desk controller's RJ45 port using an ethernet cable. If your control box has two RJ45 jacks for the control panel (labelled HS on the CB38M2J(IB)-1), plug the ESP32 into the spare one and leave the control panel connected to the other. Do not plug into a motor (M) port. If you're not experienced with electronics and soldering, consider using an RJ45 Adapter Board from sites like Aliexpress, connected with Dupont cables to your ESP32.
+Use the provided pin-out to connect your ESP32 to the desk controller's RJ45 port using an ethernet cable. If your control box has two RJ45 jacks for the control panel (labelled HS), plug the ESP32 into the spare one and leave the control panel connected to the other. Do not plug into a motor (M) port. If you're not experienced with electronics and soldering, consider using an RJ45 Adapter Board from sites like Aliexpress, connected with Dupont cables to your ESP32.
 
 ![example setup](images/rj45-adapter-board.png)
 
