@@ -151,7 +151,7 @@ In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I u
 
 #### HS13B-1
 
-- **Desk model**: Flexispot E7 (the Flexispot E1L uses the same control box)
+- **Desk model**: Flexispot E7, Flexispot E1L
 - **Tested with control box**: CB38M2J(IB)-1
 - **Source**: Printed on the PCB of the control box.
 
