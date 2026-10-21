@@ -53,7 +53,7 @@ You can use other GPIO pins (e.g. on an ESP32-C3) by changing the `tx_pin`, `rx_
 
 This pin-out should be compatible with all control panels featuring an RJ45 port for serial communication. If it doesn't work for your setup, consider trying an alternative pin-out from the [archive](./archive/esphome/README.md).
 
-Use the provided pin-out to connect your ESP32 to the desk controller's RJ45 port using an ethernet cable. If you're not experienced with electronics and soldering, consider using an RJ45 Adapter Board from sites like Aliexpress, connected with Dupont cables to your ESP32.
+Use the provided pin-out to connect your ESP32 to the desk controller's RJ45 port using an ethernet cable. If your control box has two RJ45 jacks for the control panel (labelled HS), plug the ESP32 into the spare one and leave the control panel connected to the other. Do not plug into a motor (M) port. If you're not experienced with electronics and soldering, consider using an RJ45 Adapter Board from sites like Aliexpress, connected with Dupont cables to your ESP32.
 
 ![example setup](images/rj45-adapter-board.png)
 
@@ -151,7 +151,7 @@ In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I u
 
 #### HS13B-1
 
-- **Desk model**: Flexispot E7
+- **Desk model**: Flexispot E7, Flexispot E1L
 - **Tested with control box**: CB38M2J(IB)-1
 - **Source**: Printed on the PCB of the control box.
 
@@ -217,7 +217,18 @@ Based upon the great work of [minifloat](https://www.mikrocontroller.net/topic/4
 
 The control box sends the height as 4-bit hexadecimal, which is decoded in the control panel to drive the 7-segment display. The second number on the display also supports an optional decimal point ("8 segment").
 
-Make sure you set the baud rate to 9600. For most LoctekMotion desks, the control box only broadcasts the current height for x seconds after you sent the Wake Up command. Otherwise you will receive `0x00` `0x00` `0x00` as payload.
+Make sure you set the baud rate to 9600. How often the height is sent depends on the control box and on which jack you are connected to. For most LoctekMotion desks, the control box only broadcasts the current height for a few seconds after you sent the Wake Up command. Otherwise you will receive `0x00` `0x00` `0x00` as payload. On the spare jack of the CB38M2J(IB)-1 the height is not broadcast at all, see the note below.
+
+A height frame looks like `9b 07 12 <digit 1> <digit 2> <digit 3> <checksum> <checksum> 9d`. The three payload bytes are the 7-segment patterns of the digits, with `0x80` set for the decimal point; for example `9b 07 12 07 cf 6d 64 b1 9d` is 73.5. The two checksum bytes of every frame, height frames and commands alike, are [CRC16-Modbus](https://en.wikipedia.org/wiki/Modbus) over the bytes from `length` to the end of `payload`, transmitted high byte first (unlike Modbus RTU). This matches the [command list](#command-list) below and lets you construct arbitrary frames.
+
+> [!NOTE]
+> **Observations on the spare RJ45 jack of the CB38M2J(IB)-1.** Made on a Flexispot E1L (control box listed under [HS13B-1](#hs13b-1)) with an ESP32 in the spare HS jack, wired as in the [pin-out](#pin-out), and the original control panel in the other HS jack. Last tested in October 2026. Not yet confirmed on other control boxes, on the panel's jack, or in pass-through setups.
+>
+> - **Not a parallel tap.** Commands sent by the control panel do not appear on the spare jack; only frames the control box sends to this jack are seen. What the box sends to the panel cannot be observed from here.
+> - **Height is sent on wake and on command, not continuously.** About 0.5 s after the box is woken (`PIN 20` HIGH, from either jack) it sends one height frame. Each Wake Up command we sent was answered within about 0.1 s with the acknowledgement `9b 04 15 bf c2 9d` followed by one or more height frames; the earlier tests showed the same acknowledgement after other commands. Nothing is sent while idle, and in the earlier tests nothing was sent during autonomous preset travel either. To follow the height during a move, send Wake Up about once per second: it is the "no button pressed" command (payload `00 00`), does not move the desk, and did not prolong the wake session or the display. `9b 04 81 10 c3 9d` was also seen in the earlier tests, meaning unknown.
+> - **Heartbeat.** While `PIN 20` is HIGH, from either jack, the box streams `9b 04 11 7c c3 9d` on this jack at roughly 5 Hz (period 200 to 220 ms). It depends only on `PIN 20`: not on commands being sent, and not on the display, which turned off about 9 s after the box was woken whether or not Wake Up polls were being sent (other commands not tested). No further heartbeat was seen once `PIN 20` went LOW.
+> - **Detecting use of the physical panel.** The control panel keeps `PIN 20` HIGH for about 10 s after a key press, so a heartbeat session that your controller did not start means the panel is in use. This only works if your controller keeps `PIN 20` LOW while idle; if `PIN 20` is held HIGH permanently, as the provided package does, the heartbeat never stops. Polling with Wake Up during such a session is answered normally and did not change its length; in the earlier tests it also did not interfere with a physically held panel button, which allows tracking the height while the panel moves the desk.
+> - Expect a few stray bytes, mostly `00`, on the line when `PIN 20` changes level. They do not form a valid frame.
 
 ![](https://alselectro.files.wordpress.com/2015/03/image-27.png)
 
@@ -227,6 +238,8 @@ source: [alselectro](https://alselectro.wordpress.com/2015/03/03/8051-tutorials-
 ### Execute a command
 
 The control box only accepts commands when the 'screen is active'. To activate the screen, `PIN 20` needs to be set to HIGH for about 1 second. The screen gets disabled automatically again after some amount of time receiving no commands.
+
+The wake state is shared between both RJ45 jacks: once the box is awake, it accepts commands on either jack regardless of which one woke it (verified on the CB38M2J(IB)-1, see the note under [Retrieve current height](#retrieve-current-height)).
 
 #### Command list
 
