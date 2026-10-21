@@ -51,6 +51,13 @@ int hex_to_int(uint8_t s) {
 bool is_decimal(uint8_t b) { return (b & 0x80) == 0x80; }
 
 // ========== INTERNAL METHODS ==========
+void DeskHeightSensor::setup() {
+  if (this->heartbeat_sensor_ != nullptr) {
+    // No heartbeat frame seen yet: report OFF rather than unknown.
+    this->heartbeat_sensor_->publish_initial_state(false);
+  }
+}
+
 void DeskHeightSensor::loop() {
   uint8_t incomingByte;
   while (this->available() > 0) {
@@ -134,13 +141,30 @@ void DeskHeightSensor::loop() {
           this->publish_state(this->value);
           this->lastPublished = this->value;
         }
+
+        // Heartbeat frame (9b 04 11 7c c3 9d): streamed at ~5 Hz while PIN 20
+        // is HIGH on either RJ45 jack of the control box.
+        if (this->msg_len == 0x04 && this->msg_type == 0x11) {
+          this->last_heartbeat_ = millis();
+          if (this->heartbeat_sensor_ != nullptr &&
+              !this->heartbeat_sensor_->state) {
+            this->heartbeat_sensor_->publish_state(true);
+          }
+        }
       }
     }
+  }
+
+  // Heartbeat stopped: PIN 20 went LOW (no frame for heartbeat_timeout_).
+  if (this->heartbeat_sensor_ != nullptr && this->heartbeat_sensor_->state &&
+      millis() - this->last_heartbeat_ > this->heartbeat_timeout_) {
+    this->heartbeat_sensor_->publish_state(false);
   }
 }
 
 void DeskHeightSensor::dump_config() {
   LOG_SENSOR("", "LoctekMotion Desk Height Sensor", this);
+  LOG_BINARY_SENSOR("  ", "Heartbeat", this->heartbeat_sensor_);
 }
 
 } // namespace loctekmotion_desk_height

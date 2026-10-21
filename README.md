@@ -18,6 +18,7 @@ This repository will guide you on connecting your desk to Home Assistant and oth
 - Manage 4 presets with button entities
 - Monitor desk height with a sensor entity
 - Adjust desk height in cm using a number entity *(experimental)*
+- Live height tracking when the desk is moved from the physical control panel or by a preset *(opt-in)*
 
 #### Known issues
 
@@ -77,6 +78,14 @@ The pins marked 'split' are to be connected to the ESP32 pin, the desk controlle
 Note: the current implementation does not utilize PIN20 however, this could be utilized to sense if the screen is on if desired.
 
 ![Pass-Through Pinout](images/Pass-through_pinout.png)
+
+### Optional: Live height tracking
+
+By default the height sensor only updates when a command is sent from Home Assistant, because on the spare RJ45 jack the control box only sends the height when PIN 20 is raised or in reply to a frame it receives. The `Live height tracking` switch (Configuration category in Home Assistant, off by default) makes the height follow the desk while it moves, whether from Home Assistant, from a preset or from the physical control panel.
+
+When enabled, the ESP keeps PIN 20 LOW while idle and raises it for 25 seconds around each of its own commands. Whenever PIN 20 is HIGH on either jack, the control box streams a heartbeat frame (`9b 04 11 7c c3 9d`), and for as long as that heartbeat lasts the ESP asks for the height once per second, except while it is itself holding a key such as Up or Down, when the height arrives with the key frames anyway. A key press on the physical panel raises PIN 20 too, so moves made at the desk are tracked for as long as the panel keeps the line awake, about 10 seconds per key press.
+
+This was verified with the ESP on the spare RJ45 jack of the CB38M2J(IB)-1 control box of a Flexispot E1L. Other control boxes and pass-through setups are untested: panel tracking needs a control box that sends the heartbeat frame while PIN 20 is HIGH. The polling uses the optional `heartbeat:` binary sensor of the `loctekmotion_desk_height` component, configured in the package. Turn the switch off if commands stop working on your desk; with the switch off the only difference to the previous package is that the Memory and Alarm buttons and the Alarm off and Child lock switches now send a Wake Up frame first, as Up, Down and the presets already did, which makes the Alarm off and Child lock holds 200 ms longer.
 
 ### Optional: Custom Enclosure for a Clean Setup
 

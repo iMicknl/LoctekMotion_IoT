@@ -40,10 +40,18 @@ esphome:
   on_boot:
     priority: -100
     then:
+      - if:
+          condition:
+            switch.is_on: switch_live_tracking
+          then:
+            - switch.turn_off: switch_virtual_screen
       - delay: 10s
-      - button.press: button_wake_screen
-      - delay: 300ms
-      - button.press: button_m
+      - script.execute: prepare_command
+      - script.wait: prepare_command
+      - delay: 100ms # the box needs ~300 ms after the first Wake Up before it accepts a command
+      - uart.write:
+          id: desk_uart
+          data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
 
 # Enable logging
 logger:
@@ -86,6 +94,12 @@ sensor:
     id: "desk_height"
     name: Desk height
     unit_of_measurement: ${unit_of_measurement}
+    heartbeat:
+      id: desk_heartbeat
+      name: Desk heartbeat
+      internal: true
+      on_press:
+        - script.execute: live_poll
     on_value_range:
     - below: ${min_height}
       then:
@@ -109,12 +123,33 @@ sensor:
 switch:
   - platform: gpio
     name: "Virtual screen" # PIN20
+    id: switch_virtual_screen
     pin:
       number: ${screen_pin}
       mode: OUTPUT
     restore_mode: ALWAYS_ON
     entity_category: "config"
     internal: true
+
+  # Opt-in: keep PIN 20 LOW while idle so the control box heartbeat reveals
+  # when the physical control panel is used, and poll the height once per
+  # second while the heartbeat runs. Off (default) = PIN 20 permanently HIGH,
+  # no polling. Turning it on starts a normal 25 s hold, so a move that is in
+  # progress is not interrupted.
+  - platform: template
+    name: "Live height tracking"
+    id: switch_live_tracking
+    icon: mdi:eye-refresh
+    entity_category: "config"
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      - script.execute: wake_line
+      - script.execute: live_poll
+    on_turn_off:
+      - script.stop: live_poll
+      - script.stop: wake_line
+      - switch.turn_on: switch_virtual_screen
 
   - platform: uart
     name: "Up"
@@ -125,8 +160,8 @@ switch:
     send_every: 108ms
     internal: true
     on_turn_on:
-      - button.press: button_wake_screen
-      - delay: 200ms
+      - script.execute: prepare_command
+      - script.wait: prepare_command
 
   - platform: uart
     name: "Down"
@@ -137,8 +172,8 @@ switch:
     send_every: 108ms
     internal: true
     on_turn_on:
-      - button.press: button_wake_screen
-      - delay: 200ms
+      - script.execute: prepare_command
+      - script.wait: prepare_command
 
   - platform: uart
     name: "Alarm off"
@@ -148,6 +183,8 @@ switch:
     uart_id: desk_uart
     send_every: 108ms
     on_turn_on:
+      - script.execute: prepare_command
+      - script.wait: prepare_command
       - delay: 3000ms
       - switch.turn_off: switch_alarm
     entity_category: "config"
@@ -160,17 +197,79 @@ switch:
     uart_id: desk_uart
     send_every: 108ms
     on_turn_on:
+      - script.execute: prepare_command
+      - script.wait: prepare_command
       - delay: 5000ms
       - switch.turn_off: switch_child_lock
     entity_category: "config"
+
+script:
+  # Live height tracking: hold PIN 20 HIGH for 25 s (long enough for a full
+  # preset travel) after the last command, then release it so the heartbeat can
+  # signal activity on the physical panel. No-op when live tracking is off
+  # (PIN 20 stays permanently HIGH).
+  - id: wake_line
+    mode: restart
+    then:
+      - if:
+          condition:
+            switch.is_on: switch_live_tracking
+          then:
+            - switch.turn_on: switch_virtual_screen
+            - delay: 25s
+            - switch.turn_off: switch_virtual_screen
+
+  # Make the control box ready for a command. With live tracking off this is the
+  # usual "Wake screen + 200 ms" sequence.
+  - id: prepare_command
+    mode: single
+    then:
+      - if:
+          condition:
+            switch.is_off: switch_virtual_screen
+          then:
+            - script.execute: wake_line
+            - delay: 1s # PIN 20 must be HIGH for about 1 s before commands are accepted
+          else:
+            - script.execute: wake_line
+      - script.stop: live_poll # no poll between our Wake Up and the command
+      - button.press: button_wake_screen
+      - delay: 200ms
+      - script.execute: live_poll
+
+  # Live height tracking: while the heartbeat runs (PIN 20 HIGH, raised by us
+  # or by a key press on the physical panel), ask for the height once per
+  # second. Restarted after every command so the first poll comes 1 s after it.
+  # While a key frame is being streamed, keep the line awake instead of polling.
+  - id: live_poll
+    mode: restart
+    then:
+      - while:
+          condition:
+            and:
+              - switch.is_on: switch_live_tracking
+              - binary_sensor.is_on: desk_heartbeat
+          then:
+            - delay: 1s
+            - if:
+                condition:
+                  or:
+                    - switch.is_on: switch_up
+                    - switch.is_on: switch_down
+                    - switch.is_on: switch_alarm
+                    - switch.is_on: switch_child_lock
+                then:
+                  - script.execute: wake_line
+                else:
+                  - button.press: button_wake_screen
 
 button:
   - platform: template
     name: ${preset_1_name}
     icon: ${preset_1_icon}
     on_press:
-      - button.press: button_wake_screen
-      - delay: 200ms
+      - script.execute: prepare_command
+      - script.wait: prepare_command
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x04, 0x00, 0xac, 0xa3, 0x9d]
@@ -179,8 +278,8 @@ button:
     name: ${preset_2_name}
     icon: ${preset_2_icon}
     on_press:
-      - button.press: button_wake_screen
-      - delay: 200ms
+      - script.execute: prepare_command
+      - script.wait: prepare_command
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d]
@@ -189,8 +288,8 @@ button:
     name: ${preset_4_name}
     icon: ${preset_4_icon}
     on_press:
-      - button.press: button_wake_screen
-      - delay: 200ms
+      - script.execute: prepare_command
+      - script.wait: prepare_command
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
@@ -199,8 +298,8 @@ button:
     name: ${preset_3_name}
     icon: ${preset_3_icon}
     on_press:
-      - button.press: button_wake_screen
-      - delay: 200ms
+      - script.execute: prepare_command
+      - script.wait: prepare_command
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x10, 0x00, 0xac, 0xac, 0x9d]
@@ -211,6 +310,8 @@ button:
     icon: mdi:alpha-m-box
     entity_category: "config"
     on_press:
+      - script.execute: prepare_command
+      - script.wait: prepare_command
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
@@ -230,6 +331,8 @@ button:
     id: button_alarm
     icon: mdi:alarm
     on_press:
+      - script.execute: prepare_command
+      - script.wait: prepare_command
       - uart.write:
           id: desk_uart
           data: [0x9b, 0x06, 0x02, 0x40, 0x00, 0xAC, 0x90, 0x9d]
