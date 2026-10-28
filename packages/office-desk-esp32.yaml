@@ -312,7 +312,8 @@ select:
     entity_category: "config"
     optimistic: true
     restore_value: true # preserve the last selected polling mode across restarts
-    initial_option: "Normal (10s)"
+    # Off by default, as every poll wakes up the keypad display
+    initial_option: "Off"
     options:
       - "Off"
       - "Normal (10s)"
@@ -326,24 +327,31 @@ select:
                     id: polling_mode
                     options: ["Off"]
             then:
-              - button.press: button_m
+              - button.press: button_wake_screen
 
+# Polls are skipped while moving, so a Wake Up frame never ends up between movement commands
 interval:
   - interval: 5s
     then:
       - if:
           condition:
-            select.is:
-              id: polling_mode
-              options: ["Greedy (5s)"]
+            and:
+              - select.is:
+                  id: polling_mode
+                  options: ["Greedy (5s)"]
+              - switch.is_off: switch_up
+              - switch.is_off: switch_down
           then:
             - button.press: button_wake_screen
   - interval: 10s
     then:
       - if:
           condition:
-            select.is:
-              id: polling_mode
-              options: ["Normal (10s)"]
+            and:
+              - select.is:
+                  id: polling_mode
+                  options: ["Normal (10s)"]
+              - switch.is_off: switch_up
+              - switch.is_off: switch_down
           then:
             - button.press: button_wake_screen
