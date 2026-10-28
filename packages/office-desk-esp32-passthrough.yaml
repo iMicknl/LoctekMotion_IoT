@@ -116,7 +116,7 @@ sensor:
     id: "desk_command"
     name: Desk command
     uart_id: keypad_uart
-    on_value_range: # The sensor outputs values 1 to 8 depending on the button pressed.
+    on_value_range: # The sensor outputs values 1 to 9 depending on the button pressed.
       - above: 1
         below: 1
         then:
@@ -151,6 +151,10 @@ sensor:
           - switch.turn_off: switch_up
           - switch.turn_off: switch_down
           - button.press: button_wake_screen
+      - above: 9
+        below: 9
+        then:
+          - button.press: button_sit
 
 switch:
   - platform: gpio
