@@ -12,6 +12,15 @@ substitutions:
   rx_pin_keypad: GPIO3 # RX 0
   screen_pin: GPIO23
   encryption_key: !secret encryption_key
+  # Rename to match your control panel (e.g. "Preset 3" / "Preset 4")
+  preset_1_name: "Preset 1"
+  preset_1_icon: mdi:numeric-1-box
+  preset_2_name: "Preset 2"
+  preset_2_icon: mdi:numeric-2-box
+  preset_3_name: "Stand"
+  preset_3_icon: mdi:human-handsup
+  preset_4_name: "Sit"
+  preset_4_icon: mdi:chair-rolling
 
 external_components:
   source: github://iMicknl/LoctekMotion_IoT
@@ -20,7 +29,7 @@ external_components:
 esp32:
   board: esp32dev
   framework:
-    type: arduino
+    type: esp-idf
 
 esphome:
   name: ${name}
@@ -204,9 +213,9 @@ switch:
 
 button:
   - platform: template
-    name: "Preset 1"
+    name: ${preset_1_name}
     id: button_preset1
-    icon: mdi:numeric-1-box
+    icon: ${preset_1_icon}
     on_press:
       - button.press: button_wake_screen
       - delay: 200ms
@@ -215,9 +224,9 @@ button:
           data: [0x9b, 0x06, 0x02, 0x04, 0x00, 0xac, 0xa3, 0x9d]
 
   - platform: template
-    name: "Preset 2"
+    name: ${preset_2_name}
     id: button_preset2
-    icon: mdi:numeric-2-box
+    icon: ${preset_2_icon}
     on_press:
       - button.press: button_wake_screen
       - delay: 200ms
@@ -226,9 +235,9 @@ button:
           data: [0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d]
 
   - platform: template
-    name: "Sit" # Preset 3 on some control panels
+    name: ${preset_4_name}
     id: button_sit
-    icon: mdi:chair-rolling
+    icon: ${preset_4_icon}
     on_press:
       - button.press: button_wake_screen
       - delay: 200ms
@@ -237,9 +246,9 @@ button:
           data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
 
   - platform: template
-    name: "Stand" # Preset 4 on some control panels
+    name: ${preset_3_name}
     id: button_stand
-    icon: mdi:human-handsup
+    icon: ${preset_3_icon}
     on_press:
       - button.press: button_wake_screen
       - delay: 200ms

@@ -19,7 +19,7 @@ external_components:
 esp32:
   board: esp32dev
   framework:
-    type: arduino
+    type: esp-idf
 
 esphome:
   name: ${name}
@@ -163,7 +163,7 @@ button:
           data: [0x9b, 0x06, 0x02, 0x08, 0x00, 0xac, 0xa6, 0x9d]
 
   - platform: template
-    name: "Sit" # Preset 3 on some control panels
+    name: "Sit" # Preset 4
     icon: mdi:chair-rolling
     on_press:
       - uart.write:
@@ -171,7 +171,7 @@ button:
           data: [0x9b, 0x06, 0x02, 0x00, 0x01, 0xac, 0x60, 0x9d]
 
   - platform: template
-    name: "Stand" # Preset 4 on some control panels
+    name: "Stand" # Preset 3
     icon: mdi:human-handsup
     on_press:
       - uart.write:
