@@ -1,0 +1,33 @@
+name: Release Drafter
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency: release-drafter
+
+jobs:
+  update_release_draft:
+    name: Update release draft
+    runs-on: ubuntu-latest
+    steps:
+      # PATCH counts the releases already published this month; drafts don't
+      # count, so the open draft keeps its version until it is published.
+      - name: Determine date-based version
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          month="$(date -u +%Y.%-m)"
+          patch="$(gh release list --repo "$GITHUB_REPOSITORY" --exclude-drafts --limit 100 --json tagName \
+            --jq "[.[] | select(.tagName | startswith(\"${month}.\"))] | length")"
+          echo "version=${month}.${patch}" >> "$GITHUB_OUTPUT"
+
+      - uses: release-drafter/release-drafter@v7
+        with:
+          version: ${{ steps.version.outputs.version }}
