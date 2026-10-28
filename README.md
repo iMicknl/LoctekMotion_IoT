@@ -22,6 +22,7 @@ This repository will guide you on connecting your desk to Home Assistant and oth
 #### Known issues
 
 - Number entity may overshoot. The desk moves until the height sensor matches the requested height, which may cause overshooting due to reporting delays. Use the desk controller presets for accurate positioning.
+- Down does not work or the height looks too low? Your control panel may display inches. Set `unit_of_measurement: "in"` and `min_height` / `max_height` in inches in the package substitutions.
 
 ## Packages
 
@@ -147,6 +148,15 @@ In order to connect the control box to a Raspberry Pi and ESP32/ESP8266 chip I u
 
 > [!NOTE]
 > Eventually, we discovered that a single pin-out should work for all control panels. It seems multiple mappings can be used, but the most common one is the one used for the HS13B-1 control panel.
+
+Other combinations confirmed working by the community:
+
+| Control panel | Control box     | Desk model                    | Source                                                   |
+| ------------- | --------------- | ----------------------------- | -------------------------------------------------------- |
+| HS13M(-1C0)   | CB38M2L         | Flexispot E7 Pro (Plus), E7Q  | [#66](https://github.com/iMicknl/LoctekMotion_IoT/issues/66)   |
+| HS36B-1       | CB38M2L(IB)-1   | Flexispot E2Q, E5Q            | [#102](https://github.com/iMicknl/LoctekMotion_IoT/issues/102) |
+| HS11A-1C0     | CB38M2H(PB)-1   | Flexispot EC5                 | [#81](https://github.com/iMicknl/LoctekMotion_IoT/issues/81)   |
+| HS11B         |                 |                               | [#125](https://github.com/iMicknl/LoctekMotion_IoT/issues/125) |
 
 
 #### HS13B-1
