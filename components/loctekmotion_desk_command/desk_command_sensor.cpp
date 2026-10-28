@@ -34,12 +34,14 @@ void DeskCommandSensor::loop() {
       // Decide command on byte 5: history[0] is byte 4 (bits 0..6 — Up, Down,
       // M1..M3, M-memory, Alarm), incomingByte is byte 5 (bits 8.. — M4 and
       // any future high-byte buttons). Both zero == release.
+      // 5-byte frames (e.g. HS01B-1) have a single payload byte, so byte 5 is
+      // the checksum there and must not be decoded as a button.
       if (this->history[3] == 0x9b) {
         if (this->msg_type == 0x02 &&
             ((this->msg_len == 6) || (this->msg_len == 5))) {
           if (this->history[0] != 0) {
             this->value = log2(this->history[0] * 2); // 1..7
-          } else if (incomingByte != 0) {
+          } else if (this->msg_len == 6 && incomingByte != 0) {
             this->value =
                 8 + log2(incomingByte * 2); // 9 for M4, 10 for M5, ...
           } else {
