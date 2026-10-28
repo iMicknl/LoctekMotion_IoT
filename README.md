@@ -36,6 +36,8 @@ For v1 packages (Arduino, Raspberry Pi, older ESPHome packages, and different pi
 
 Please follow the [ESPHome documentation](https://esphome.io/guides/getting_started_command_line.html) for the basics of ESPHome. You can use the provided [`office-desk-esp32.yaml`](https://github.com/iMicknl/LoctekMotion_IoT/blob/main/packages/office-desk-esp32.yaml) as a boilerplate for your own implementation. This implementation has been created for the ESP32 nodemcu, but can easily be adopted for other platforms and boards.
 
+The package loads the ESPHome component from the `main` branch. To stay on a tested version, pin it to a [release](https://github.com/iMicknl/LoctekMotion_IoT/releases) instead, e.g. `source: github://iMicknl/LoctekMotion_IoT@2026.10.0`. Releases use date-based versions (`YYYY.M.PATCH`), like ESPHome.
+
 ### Pin-out
 
 | RJ45 pin ([T-568B](./images/RJ45-Pinout-T568B.jpg)) | Name      | ESP32        |

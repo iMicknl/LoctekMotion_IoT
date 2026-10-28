@@ -1,0 +1,24 @@
+# The version is date based (YYYY.M.PATCH, like ESPHome) and computed by the
+# release-drafter workflow, so no version-resolver categories are needed.
+name-template: "$RESOLVED_VERSION"
+tag-template: "$RESOLVED_VERSION"
+categories:
+  - title: "✨ New features"
+    when:
+      label: "enhancement"
+  - title: "🐛 Bug fixes"
+    when:
+      label: "bug"
+  - title: "📖 Documentation"
+    when:
+      label: "documentation"
+  - title: "🧰 Dependencies"
+    collapse-after: 5
+    when:
+      label: "dependencies"
+change-template: "- $TITLE (#$NUMBER) $AUTHORS"
+change-title-escapes: '\<*_&'
+template: |
+  ## Changes
+
+  $CHANGES
