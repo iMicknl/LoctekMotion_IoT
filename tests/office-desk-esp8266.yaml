@@ -237,6 +237,8 @@ script:
             and:
               - switch.is_on: switch_live_tracking
               - binary_sensor.is_on: desk_heartbeat
+              # A restored switch starts polling during setup; wait for the on_boot delay
+              - lambda: return millis() > 10000;
           then:
             - delay: 1s
             - if:

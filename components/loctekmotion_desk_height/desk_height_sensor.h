@@ -38,7 +38,7 @@ protected:
   uint8_t history[5];
 
   uint8_t msg_len = 0;
-  uint8_t msg_type;
+  uint8_t msg_type{0};
   bool valid = false;
 };
 
