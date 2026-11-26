@@ -76,6 +76,10 @@ sensor:
   - platform: loctekmotion_desk_height
     id: "desk_height"
     name: Desk height
+    child_lock:
+      id: desk_child_lock
+      name: "Child lock active"
+      internal: true
     on_value_range:
     - below: ${min_height}
       then:
@@ -134,17 +138,60 @@ switch:
       - switch.turn_off: switch_alarm
     entity_category: "config"
 
+  # Holds M, which toggles the child lock after about 3 seconds.
   - platform: uart
-    name: "Child lock"
-    id: switch_child_lock
-    icon: mdi:account-lock
+    name: "Memory hold"
+    id: switch_memory_hold
     data: [0x9b, 0x06, 0x02, 0x20, 0x00, 0xac, 0xb8, 0x9d]
     uart_id: desk_uart
     send_every: 108ms
-    on_turn_on:
-      - delay: 5000ms
-      - switch.turn_off: switch_child_lock
+    internal: true
+
+  # Shows the real child lock state and only toggles when needed.
+  - platform: template
+    name: "Child lock"
+    id: switch_child_lock
+    icon: mdi:account-lock
     entity_category: "config"
+    restore_mode: DISABLED
+    lambda: |-
+      if (!id(desk_child_lock).has_state()) return {};
+      return id(desk_child_lock).state;
+    turn_on_action:
+      - script.execute:
+          id: set_child_lock
+          locked: true
+    turn_off_action:
+      - script.execute:
+          id: set_child_lock
+          locked: false
+
+script:
+  - id: set_child_lock
+    mode: single
+    parameters:
+      locked: bool
+    then:
+      - if:
+          condition:
+            lambda: return !id(desk_child_lock).has_state();
+          then:
+            # State not known yet: toggle like holding M for 5 seconds.
+            - switch.turn_on: switch_memory_hold
+            - delay: 5s
+            - switch.turn_off: switch_memory_hold
+          else:
+            - if:
+                condition:
+                  lambda: return id(desk_child_lock).state != locked;
+                then:
+                  # Hold M until the display confirms the new state.
+                  - switch.turn_on: switch_memory_hold
+                  - wait_until:
+                      condition:
+                        lambda: return id(desk_child_lock).state == locked;
+                      timeout: 6s
+                  - switch.turn_off: switch_memory_hold
 
 button:
   - platform: template
