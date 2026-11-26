@@ -18,6 +18,7 @@ This repository will guide you on connecting your desk to Home Assistant and oth
 - Manage 4 presets with button entities
 - Monitor desk height with a sensor entity
 - Adjust desk height in cm using a number entity *(experimental)*
+- See whether the child lock is active *(optional, see [child lock state](#optional-child-lock-state))*
 
 #### Known issues
 
@@ -103,6 +104,26 @@ A [pass-through configuration](#pass-through-configuations) needs two RJ45 jacks
 | ![Pass-through enclosure, printed](images/passthrough-case/passthrough-printed.jpeg) | ![ESP32 and both RJ45 breakouts mounted in the case](images/passthrough-case/all-together.jpeg) |
 
 🔗 Models (STL + Fusion 360 source): [`models/passthrough-case`](models/passthrough-case)
+
+### Optional: Child lock state
+
+Holding M for about 3 seconds toggles the child lock; the `Child lock` switch in the packages holds M for 5 seconds to do so. The control box never reports the lock directly, so that switch cannot show whether the desk is locked. It can be read from the display instead: while the lock is active, the control box sends `LoC` instead of the height when a key is pressed.
+
+Add `child_lock` to the height sensor to get a binary sensor for it:
+
+```yaml
+sensor:
+  - platform: loctekmotion_desk_height
+    id: "desk_height"
+    name: Desk height
+    child_lock:
+      id: desk_child_lock
+      name: "Child lock active"
+```
+
+The sensor is ON while the display shows `LoC` and OFF while it shows a height or the memory menu `S-`, so it also follows changes made on the control panel. After boot it is unknown until the display has shown one of these; the M press the packages send on boot sets it.
+
+With this sensor, the `Child lock` switch can show the real state and only toggle when needed. See `switch_child_lock` and the `set_child_lock` script in [`tests/office-desk-esp32.yaml`](tests/office-desk-esp32.yaml) for a complete example. While the state is still unknown, that switch falls back to holding M for 5 seconds, as before.
 
 ### Troubleshooting
 
@@ -265,6 +286,21 @@ The wake state is shared between both RJ45 jacks: once the box is awake, it acce
 | Preset 4 (sit)   | `9b`  | `06`   | `02` | `00` `01` | `ac` `60` | `9d` |
 
 All bytes combined will become the command to send to the control box. See the [packages](#packages) for sample code.
+
+### Child lock
+
+Holding M toggles the child lock; the control box switches after about 3.2 seconds of M frames (sent every 108 ms). Holding it for 5 seconds toggled it only once. Short M presses and Wake Up do not change it.
+
+The lock state is only visible on the display. Display frames use the same format as height frames (`9b 07 12 <digit 1> <digit 2> <digit 3> <checksum> <checksum> 9d`):
+
+| Display | Payload      | Meaning                                         |
+| ------- | ------------ | ----------------------------------------------- |
+| `LoC`   | `38` `5c` `39` | Child lock active (shown on key presses)      |
+| `S-`    | `6d` `40` `00` | Memory menu after a short M press (not shown while locked) |
+| height  | e.g. `06` `06` `6d` (115) | Child lock off                     |
+| (off)   | `00` `00` `00` | Display off                                   |
+
+Observed on a Flexispot desk with an HS13G-1 control panel and a CB38M2M(IB)-4 control box, with the ESP32 on the spare HS jack and `PIN 20` held HIGH as in the packages. A Wake Up command did not produce any display frame in this setup; key presses (from the panel or via UART) did. The lock survived a power cycle in reports from other users ([#10](https://github.com/iMicknl/LoctekMotion_IoT/issues/10)).
 
 </details>
 
